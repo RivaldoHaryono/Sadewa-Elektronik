@@ -1,0 +1,246 @@
+:root {
+  --primary: #00d4ff;
+  --secondary: #7b2ff7;
+  --accent: #ff00ff;
+  --dark: #0a0e27;
+  --darker: #050816;
+  --light: #ffffff;
+  --gray: #8892b0;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: var(--darker);
+  color: var(--light);
+}
+
+/* BACKGROUND */
+.bg-animation {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(135deg, #0a0e27, #1a1a2e);
+}
+
+/* HEADER */
+header {
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.logo {
+  font-size: 2.5rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.tagline {
+  color: var(--gray);
+}
+
+/* NAV */
+nav {
+  position: sticky;
+  top: 0;
+  background: rgba(10, 14, 39, .8);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(0, 212, 255, .2);
+}
+
+.nav-container ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 1rem;
+  gap: 1rem;
+}
+
+.nav-container a {
+  color: var(--gray);
+  text-decoration: none;
+  padding: .5rem 1.2rem;
+  border-radius: 10px;
+}
+
+.nav-container a:hover,
+.nav-container a.active {
+  color: var(--light);
+  background: rgba(0, 212, 255, .15);
+}
+
+/* CONTAINER */
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 3rem 1rem;
+}
+
+/* SECTION */
+.section-title {
+  text-align: center;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* PRODUCT */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.product-card {
+  background: rgba(26, 26, 46, .7);
+  border-radius: 20px;
+  overflow: hidden;
+  transition: .3s;
+}
+
+.product-card:hover {
+  transform: translateY(-10px);
+}
+
+.product-image img {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+}
+
+.product-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--primary);
+  padding: .3rem .8rem;
+  border-radius: 20px;
+  font-size: .8rem;
+}
+
+.product-info {
+  padding: 1.5rem;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  color: var(--primary);
+  margin: 1rem 0;
+}
+
+.product-features li {
+  list-style: none;
+  color: var(--gray);
+  margin-bottom: .4rem;
+}
+
+.btn {
+  width: 100%;
+  padding: .9rem;
+  border: none;
+  border-radius: 30px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* CHAT */
+.chat-section {
+  margin-top: 4rem;
+}
+
+#chatlog {
+  height: 300px;
+  overflow-y: auto;
+  background: rgba(10, 14, 39, .6);
+  padding: 1rem;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+}
+
+.message {
+  margin-bottom: .8rem;
+  padding: .7rem 1rem;
+  border-radius: 15px;
+}
+
+.user {
+  background: var(--primary);
+  margin-left: auto;
+}
+
+.bot {
+  background: rgba(136, 146, 176, .2);
+}
+
+.chat-input-container {
+  display: flex;
+  gap: .5rem;
+}
+
+#userInput {
+  flex: 1;
+  padding: .8rem;
+  border-radius: 30px;
+  border: none;
+}
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 2rem;
+  color: var(--gray);
+}
+
+<style>
+
+/* ===== CART STYLE ===== */
+#cartBtn {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  padding: 1rem 1.3rem;
+  border-radius: 50px;
+  font-weight: 700;
+  cursor: pointer;
+  z-index: 1500;
+  box-shadow: 0 10px 25px rgba(0, 212, 255, .4);
+}
+
+#cartPanel {
+  position: fixed;
+  bottom: 90px;
+  right: 25px;
+  width: 320px;
+  background: rgba(10, 14, 39, .95);
+  border: 1px solid rgba(0, 212, 255, .3);
+  border-radius: 20px;
+  padding: 1.5rem;
+  display: none;
+  z-index: 1500;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: .5rem;
+  font-size: .9rem;
+}
+
+.cart-total {
+  margin: 1rem 0;
+  font-size: 1.1rem;
+  color: var(--primary);
+}

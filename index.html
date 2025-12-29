@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sadewa Elektronik - The First Cidahu Center Electronics</title>
+
+  <style>
+    :root {
+      --primary: #00d4ff;
+      --secondary: #7b2ff7;
+      --accent: #ff00ff;
+      --dark: #0a0e27;
+      --darker: #050816;
+      --light: #ffffff;
+      --gray: #8892b0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    /* ✅ Smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--darker);
+      color: var(--light);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    .bg-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      background: linear-gradient(135deg, #0a0e27 0%, #1a1a2e 50%, #0f0f23 100%);
+    }
+
+    .bg-animation::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, rgba(123, 47, 247, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(0, 212, 255, 0.15) 0%, transparent 50%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Page Containers */
+    .page-container {
+      display: none;
+    }
+
+    .page-container.active {
+      display: block;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, rgba(123, 47, 247, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+
+    /* Ubah warna font "Sadewa Elektronik" menjadi putih */
+    .logo {
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      margin-bottom: 0.5rem;
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        filter: drop-shadow(0 0 5px var(--primary));
+      }
+
+      50% {
+        filter: drop-shadow(0 0 20px var(--primary));
+      }
+    }
+
+    /* Ubah warna tagline menjadi kuning */
+    .tagline {
+      color: yellow;
+      /* Mengubah warna tagline menjadi kuning */
+      font-size: 1.1rem;
+      letter-spacing: 1px;
+    }
+
+    /* Navigation */
+    nav {
+      background: rgba(10, 14, 39, 0.7);
+      backdrop-filter: blur(30px);
+      border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    .nav-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    nav ul {
+      display: flex;
+      list-style: none;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    nav ul li a {
+      color: var(--gray);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      transition: all 0.3s;
+      position: relative;
+    }
+
+    nav ul li a:hover {
+      color: var(--light);
+      background: rgba(0, 212, 255, 0.1);
+    }
+
+    .admin-btn {
+      background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+    }
+
+    .admin-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+    }
+
+    /* ✅ Search bar 3D */
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .search-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.55rem 0.75rem;
+      border-radius: 16px;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.06), rgba(0, 212, 255, 0.06));
+      border: 1px solid rgba(0, 212, 255, 0.18);
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(14px);
+      transform-style: preserve-3d;
+      transition: transform 0.18s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+      will-change: transform;
+      min-width: 320px;
+      max-width: 520px;
+      flex: 1;
+    }
+
+    .search-wrap:hover {
+      border-color: rgba(0, 212, 255, 0.38);
+      box-shadow:
+        0 16px 40px rgba(0, 212, 255, 0.12),
+        0 12px 30px rgba(0, 0, 0, 0.35),
+        inset 0 1px 0 rgba(255, 255, 255, 0.10);
+    }
+
+    .search-icon {
+      font-size: 1.1rem;
+      opacity: 0.9;
+      transform: translateZ(18px);
+      user-select: none;
+    }
+
+    #productSearch {
+      width: 100%;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: var(--light);
+      font-size: 0.98rem;
+      padding: 0.35rem 0.4rem;
+      transform: translateZ(16px);
+    }
+
+    #productSearch::placeholder {
+      color: rgba(136, 146, 176, 0.85);
+    }
+
+    .search-clear {
+      border: none;
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--light);
+      width: 34px;
+      height: 34px;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+      transform: translateZ(18px);
+    }
+
+    .search-clear:hover {
+      transform: translateZ(18px) translateY(-2px);
+      background: rgba(0, 212, 255, 0.15);
+    }
+
+    .search-meta {
+      color: rgba(136, 146, 176, 0.95);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.35rem 0.65rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 212, 255, 0.18);
+      background: rgba(10, 14, 39, 0.35);
+      backdrop-filter: blur(10px);
+      white-space: nowrap;
+    }
+
+    mark.search-hit {
+      background: rgba(0, 212, 255, 0.25);
+      color: var(--light);
+      padding: 0.05rem 0.2rem;
+      border-radius: 6px;
+      border: 1px solid rgba(0, 212, 255, 0.25);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 3rem 1rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 100px;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      margin: 1rem auto;
+      border-radius: 2px;
+    }
+
+    /* ✅ Category bar (lebih profesional) */
+    .category-bar {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: -1rem 0 3rem;
+    }
+
+    .cat-btn {
+      padding: 0.6rem 1.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(0, 212, 255, 0.25);
+      background: rgba(10, 14, 39, 0.6);
+      color: var(--gray);
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      backdrop-filter: blur(10px);
+    }
+
+    .cat-btn:hover,
+    .cat-btn.active {
+      color: white;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.35);
+      border-color: rgba(0, 212, 255, 0.35);
+      transform: translateY(-2px);
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .product-card {
+      background: rgba(26, 26, 46, 0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 20px;
+      overflow: hidden;
+      transition: all 0.4s;
+    }
+
+    .product-card:hover {
+      transform: translateY(-15px);
+      box-shadow: 0 20px 40px rgba(0, 212, 255, 0.3);
+    }
+
+    .product-image {
+      height: 250px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 47, 247, 0.1));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .product-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-badge {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.4rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+      text-transform: uppercase;
+    }
+
+    .product-info {
+      padding: 1.5rem;
+    }
+
+    .product-title {
+      font-size: 1.5rem;
+      color: var(--light);
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
+    .product-desc {
+      color: var(--gray);
+      margin-bottom: 1rem;
+      font-size: 0.95rem;
+    }
+
+    .product-price {
+      font-size: 1.8rem;
+      color: var(--primary);
+      font-weight: 800;
+      margin-bottom: 1rem;
+    }
+
+    .product-features {
+      list-style: none;
+      margin-bottom: 1.5rem;
+    }
+
+    .product-features li {
+      color: var(--gray);
+      font-size: 0.9rem;
+      padding: 0.3rem 0 0.3rem 1.5rem;
+      position: relative;
+    }
+
+    .product-features li::before {
+      content: '✓';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 900;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      border-radius: 50px;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: 800;
+      width: 100%;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
+    }
+
+    /* Contact Section */
+    .contact-section {
+      background: linear-gradient(135deg, rgba(123, 47, 247, 0.1), rgba(0, 212, 255, 0.1));
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 20px;
+      padding: 3rem 2rem;
+      margin-bottom: 4rem;
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 2rem;
+    }
+
+    .contact-card {
+      background: rgba(26, 26, 46, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 15px;
+      padding: 2rem;
+      text-align: center;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 30px rgba(0, 212, 255, 0.3);
+    }
+
+    /* ✅ Futuristic sheen */
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(120deg, transparent, rgba(0, 212, 255, 0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .contact-card:hover::before {
+      opacity: 1;
+    }
+
+    .contact-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      filter: drop-shadow(0 0 12px rgba(0, 212, 255, 0.25));
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-title {
+      font-size: 1.05rem;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+      font-weight: 800;
+      letter-spacing: 1.4px;
+      text-transform: uppercase;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-info {
+      color: var(--gray);
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-link {
+      display: inline-block;
+      margin-top: 1rem;
+      padding: 0.7rem 1.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      text-decoration: none;
+      border-radius: 30px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      transition: all 0.3s;
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 212, 255, 0.35);
+    }
+
+    /* Chat Section */
+    .chat-section {
+      background: rgba(26, 26, 46, 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 20px;
+      padding: 2rem;
+      margin-bottom: 4rem;
+      box-shadow: 0 0 40px rgba(0, 212, 255, 0.12);
+    }
+
+    #chatlog {
+      height: 450px;
+      overflow-y: auto;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      background: rgba(10, 14, 39, 0.65);
+      border: 1px solid rgba(0, 212, 255, 0.1);
+      border-radius: 15px;
+    }
+
+    #chatlog::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #chatlog::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+
+    .message {
+      margin-bottom: 1rem;
+      padding: 1rem 1.5rem;
+      border-radius: 15px;
+      max-width: 85%;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .user-message {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      margin-left: auto;
+    }
+
+    .bot-message {
+      background: rgba(136, 146, 176, 0.2);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .product-card-chat {
+      background: rgba(26, 26, 46, 0.8);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 12px;
+      padding: 1rem;
+      margin: 0.5rem 0;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      transition: all 0.3s;
+    }
+
+    .product-card-chat:hover {
+      background: rgba(26, 26, 46, 0.95);
+      border-color: var(--primary);
+      transform: translateX(5px);
+    }
+
+    .product-image-chat {
+      width: 80px;
+      height: 80px;
+      min-width: 80px;
+      background: linear-gradient(135deg, rgba(0, 212, 255, 0.1), rgba(123, 47, 247, 0.1));
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      overflow: hidden;
+    }
+
+    .product-image-chat img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-info-chat {
+      flex: 1;
+    }
+
+    .product-name-chat {
+      font-weight: 800;
+      color: var(--light);
+      font-size: 1.1rem;
+      margin-bottom: 0.3rem;
+      letter-spacing: 0.3px;
+    }
+
+    .product-price-chat {
+      color: var(--primary);
+      font-weight: 800;
+      font-size: 1.2rem;
+      margin-bottom: 0.3rem;
+    }
+
+    .product-stock-chat {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    .stock-badge {
+      display: inline-block;
+      padding: 0.2rem 0.6rem;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      margin-left: 0.5rem;
+    }
+
+    .stock-badge.available {
+      background: rgba(16, 185, 129, 0.2);
+      color: #10b981;
+    }
+
+    .stock-badge.out {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+    }
+
+    .buy-btn-chat {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.5rem;
+      letter-spacing: 0.5px;
+    }
+
+    .buy-btn-chat:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 212, 255, 0.4);
+    }
+
+    .chat-input-container {
+      display: flex;
+      gap: 1rem;
+    }
+
+    #userInput {
+      flex: 1;
+      padding: 1rem 1.5rem;
+      background: rgba(10, 14, 39, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 50px;
+      color: var(--light);
+      font-size: 1rem;
+      outline: none;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    #userInput:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
+    }
+
+    #sendBtn {
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: 900;
+      transition: all 0.3s;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    #sendBtn:hover:not(:disabled) {
+      transform: translateY(-3px);
+    }
+
+    #sendBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Footer */
+    footer {
+      background: rgba(10, 14, 39, 0.8);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(0, 212, 255, 0.2);
+      padding: 3rem 1rem;
+      text-align: center;
+    }
+
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--gray);
+      text-decoration: none;
+      transition: color 0.3s;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .copyright {
+      color: var(--gray);
+      font-size: 0.9rem;
+    }
+
+    /* Admin Panel */
+    .admin-container {
+      background: linear-gradient(to right, #f3f4f6, #e5e7eb);
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    .admin-header {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .admin-title {
+      font-size: 2rem;
+      font-weight: 900;
+      color: #1f2937;
+      letter-spacing: 0.4px;
+    }
+
+    .admin-logout {
+      background: #ef4444;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all 0.3s;
+    }
+
+    .admin-logout:hover {
+      background: #dc2626;
+    }
+
+    .admin-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+      color: #1f2937;
+      font-weight: 900;
+      letter-spacing: 0.2px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .form-input {
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .form-textarea {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 1rem;
+      resize: vertical;
+      min-height: 100px;
+      font-weight: 600;
+    }
+
+    .icon-selector {
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+      margin: 1rem 0;
+    }
+
+    .icon-btn {
+      font-size: 1.5rem;
+      padding: 0.5rem;
+      border: 2px solid #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+      background: white;
+      transition: all 0.3s;
+    }
+
+    .icon-btn:hover,
+    .icon-btn.selected {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    .image-upload-container {
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 2rem;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin: 1rem 0;
+    }
+
+    .image-upload-container:hover {
+      border-color: #3b82f6;
+      background: #eff6ff;
+    }
+
+    .image-preview {
+      max-width: 200px;
+      max-height: 200px;
+      margin: 1rem auto;
+      border-radius: 8px;
+    }
+
+    .admin-button {
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: 800;
+      transition: all 0.3s;
+      margin-right: 0.5rem;
+    }
+
+    .admin-button-primary {
+      background: #3b82f6;
+      color: white;
+    }
+
+    .admin-button-primary:hover {
+      background: #2563eb;
+    }
+
+    .admin-button-danger {
+      background: #ef4444;
+      color: white;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+    }
+
+    .admin-button-danger:hover {
+      background: #dc2626;
+    }
+
+    .admin-table {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .admin-table table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .admin-table th {
+      background: #f3f4f6;
+      padding: 1rem;
+      text-align: left;
+      font-weight: 800;
+      color: #374151;
+      border-bottom: 1px solid #e5e7eb;
+    }
+
+    .admin-table td {
+      padding: 1rem;
+      border-bottom: 1px solid #e5e7eb;
+      color: #1f2937;
+      font-weight: 600;
+    }
+
+    .admin-table tr:hover {
+      background: #f9fafb;
+    }
+
+    .stock-status {
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+    }
+
+    .stock-available {
+      background: #d1fae5;
+      color: #065f46;
+    }
+
+    .stock-out {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .logo {
+        font-size: 2rem;
+      }
+
+      .section-title {
+        font-size: 2rem;
+      }
+
+      .product-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-container {
+        flex-direction: column;
+        gap: 1rem;
+        align-items: stretch;
+      }
+
+      .nav-right {
+        width: 100%;
+        justify-content: stretch;
+      }
+
+      .search-wrap {
+        min-width: 100%;
+      }
+
+      .chat-input-container {
+        flex-direction: column;
+      }
+
+      .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="bg-animation"></div>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <h2 class="modal-title">🔐 Admin Login</h2>
+      <form onsubmit="handleLogin(event)">
+        <div class="form-group">
+          <label>Username</label>
+          <input type="text" id="loginUsername" required>
+        </div>
+        <div class="form-group">
+          <label>Password</label>
+          <input type="password" id="loginPassword" required>
+        </div>
+        <button type="submit" class="btn-login">Login</button>
+        <button type="button" class="btn-cancel" onclick="closeLoginModal()">Batal</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Main Website -->
+  <div id="mainWebsite" class="page-container active">
+    <header>
+      <h1 class="logo">⚡ SADEWA ELEKTRONIK</h1>
+      <p class="tagline">The First Cidahu Official Electronics Center</p>
+    </header>
+
+    <nav>
+      <div class="nav-container">
+        <ul>
+          <li><a href="#products">Produk</a></li>
+          <li><a href="#contact">Kontak</a></li>
+          <li><a href="#chat">AI Assistant</a></li>
+          <li><a href="#about">Tentang Kami</a></li>
+        </ul>
+
+        <!-- Search + Meta + Admin -->
+        <div class="nav-right">
+          <div class="search-wrap" id="searchWrap" aria-label="Cari produk">
+            <span class="search-icon">🔎</span>
+            <input id="productSearch" type="text" placeholder="Cari produk (nama/kategori/fitur)..." autocomplete="off">
+            <button class="search-clear" id="clearSearchBtn" type="button" title="Bersihkan">×</button>
+          </div>
+          <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
+
+          <button class="admin-btn" onclick="showLoginModal()">🔧 Admin Panel</button>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container">
+      <section id="products">
+        <h2 class="section-title">Produk Unggulan</h2>
+
+        <!-- ✅ Category Filter (rapi & futuristik) -->
+        <div class="category-bar" id="categoryBar">
+          <button class="cat-btn active" onclick="filterCategory('all', this)">🌐 Semua</button>
+          <button class="cat-btn" onclick="filterCategory('Lampu', this)">💡 Lampu</button>
+          <button class="cat-btn" onclick="filterCategory('Kipas Angin', this)">💨 Kipas Angin</button>
+          <button class="cat-btn" onclick="filterCategory('Kabel', this)">🔌 Kabel</button>
+          <button class="cat-btn" onclick="filterCategory('Saklar', this)">🎛️ Saklar</button>
+          <button class="cat-btn" onclick="filterCategory('Antena', this)">📡 Antena</button>
+          <button class="cat-btn" onclick="filterCategory('Stopkontak', this)">🔋 Stopkontak</button>
+          <button class="cat-btn" onclick="filterCategory('Lainnya', this)">📦 Lainnya</button>
+        </div>
+
+        <div class="product-grid" id="productGrid"></div>
+      </section>
+
+      <section id="contact" class="contact-section">
+        <h2 class="section-title">Hubungi Kami</h2>
+        <div class="contact-grid">
+          <div class="contact-card">
+            <div class="contact-icon">📱</div>
+            <h3 class="contact-title">WhatsApp</h3>
+            <p class="contact-info">Chat langsung dengan kami</p>
+            <a href="https://wa.me/628123456789" class="contact-link" target="_blank">Chat Sekarang</a>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">📧</div>
+            <h3 class="contact-title">Email</h3>
+            <p class="contact-info">info@sadewaelektronik.com</p>
+            <a href="mailto:info@sadewaelektronik.com" class="contact-link">Kirim Email</a>
+          </div>
+          <div class="contact-card">
+            <div class="contact-icon">
+              <h3 class="contact-title">Lokasi</h3>
+              <p class="contact-info">Bojong-pari, West Java, Indonesia</p>
+              <a href="https://maps.app.goo.gl/GF1r9Dp8J8ZhPWfj7" class="contact-link" target="_blank">Lihat Peta</a>
+            </div>
+            <div class="contact-card">
+              <div class="contact-icon">⏰</div>
+              <h3 class="contact-title">Jam Operasional</h3>
+              <p class="contact-info">Senin - Sabtu: 08:00 - 20:00<br>Minggu: 08:00 - 20:00</p>
+            </div>
+          </div>
+      </section>
+
+      <section id="chat" class="chat-section">
+        <h2 class="section-title">🧠 Smart AI Shopping Assistant</h2>
+        <p style="text-align:center;color:var(--gray);margin-top:-2rem;margin-bottom:2rem;">
+          Asisten virtual cerdas untuk membantu Anda memilih produk terbaik
+        </p>
+
+        <div id="chatlog"></div>
+        <div class="chat-input-container">
+          <input type="text" id="userInput" placeholder="Tanyakan tentang produk, harga, atau spesifikasi...">
+          <button id="sendBtn">Kirim</button>
+        </div>
+      </section>
+    </div>
+
+    <!-- ✅ Footer / Tentang Kami (lebih profesional) -->
+    <footer id="about">
+      <h3 class="logo" style="margin-bottom: 0.75rem;">⚡ Sadewa Elektronik</h3>
+
+      <p style="max-width:800px;margin:1.25rem auto;color:var(--gray);font-size:1rem;line-height:1.8;">
+        Sadewa Elektronik adalah pusat elektronik modern di wilayah Cidahu dan sekitarnya.
+        Kami menyediakan produk listrik dan elektronik berkualitas dengan harga kompetitif,
+        pelayanan cepat, serta dukungan teknologi AI untuk pengalaman belanja yang lebih cerdas.
+      </p>
+
+      <div class="footer-links">
+        <a href="#products">Produk</a>
+        <a href="#contact">Kontak</a>
+        <a href="#chat">AI Assistant</a>
+        <a href="#">Kebijakan Privasi</a>
+        <a href="#">Syarat & Ketentuan</a>
+        <a href="#">FAQ</a>
+      </div>
+
+      <p class="copyright">© 2025 Sadewa Elektronik · Trusted Local Electronics Partner</p>
+    </footer>
+  </div>
+
+  <!-- Admin Panel -->
+  <div id="adminPanel" class="page-container admin-container">
+    <div class="admin-header">
+      <h1 class="admin-title">⚡ Admin Panel - Sadewa Elektronik</h1>
+      <button class="admin-logout" onclick="logoutAdmin()">← Logout</button>
+    </div>
+
+    <div class="admin-card">
+      <h2>➕ Tambah Produk</h2>
+
+      <form onsubmit="addProduct(event)">
+        <div class="form-grid">
+          <input type="text" class="form-input" id="productName" placeholder="Nama Produk" required>
+          <input type="number" class="form-input" id="productPrice" placeholder="Harga (Rp)" required>
+          <select class="form-input" id="productCategory" required>
+            <option value="">Pilih Kategori</option>
+            <option value="Lampu">Lampu</option>
+            <option value="Kipas Angin">Kipas Angin</option>
+            <option value="Kabel">Kabel</option>
+            <option value="Saklar">Saklar</option>
+            <option value="Antena">Antena</option>
+            <option value="Stopkontak">Stopkontak</option>
+            <option value="Lainnya">Lainnya</option>
+          </select>
+          <input type="number" class="form-input" id="productStock" placeholder="Stok" required>
+        </div>
+
+        <textarea class="form-textarea" id="productDesc" placeholder="Deskripsi Produk" required></textarea>
+        <textarea class="form-textarea" id="productFeatures" placeholder="Fitur (pisahkan dengan koma)"
+          required></textarea>
+
+        <div>
+          <label style="display: block; margin: 1rem 0 0.5rem; font-weight: 800; color: #374151;">Pilih Icon atau Upload
+            Foto:</label>
+          <div class="icon-selector" id="iconSelector">
+            <button type="button" class="icon-btn" onclick="selectIcon('⚡')">⚡</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('💡')">💡</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('🔌')">🔌</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('🔧')">🔧</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('📡')">📡</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('🛠️')">🛠️</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('💨')">💨</button>
+            <button type="button" class="icon-btn" onclick="selectIcon('🎛️')">🎛️</button>
+          </div>
+
+          <div class="image-upload-container" onclick="document.getElementById('imageInput').click()">
+            <p style="color: #6b7280; margin-bottom: 0.5rem;">📷 Klik untuk upload foto produk</p>
+            <p style="color: #9ca3af; font-size: 0.85rem;">JPG, PNG (Max 2MB)</p>
+            <input type="file" id="imageInput" accept="image/*" style="display: none;"
+              onchange="handleImageUpload(event)">
+            <img id="imagePreview" class="image-preview" style="display: none;">
+          </div>
+          <input type="hidden" id="productImage" value="⚡">
+        </div>
+
+        <div style="margin-top: 1.5rem;">
+          <button type="submit" class="admin-button admin-button-primary">💾 Simpan Produk</button>
+          <button type="button" class="admin-button admin-button-danger" onclick="resetForm()">🔄 Reset</button>
+        </div>
+      </form>
+    </div>
+
+    <div class="admin-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Preview</th>
+            <th>Nama Produk</th>
+            <th>Kategori</th>
+            <th>Harga</th>
+            <th>Stok</th>
+            <th>Aksi</th>
+          </tr>
+        </thead>
+        <tbody id="adminProductTable">
+          <tr>
+            <td colspan="6" style="text-align: center; color: #9ca3af;">Belum ada produk</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    // Admin credentials (default: admin/admin123)
+    const ADMIN_CREDENTIALS = {
+      username: 'admin',
+      password: 'admin123'
+    };
+
+    let products = [];
+    let isLoggedIn = false;
+    let selectedIcon = '⚡';
+    let uploadedImage = null;
+
+    // ✅ Filter state (search + category digabung)
+    let filteredProducts = null;
+    let lastSearchQuery = '';
+    let activeCategory = 'all';
+
+    // Initialize
+    function init() {
+      loadProducts();
+      initChat();
+      initSearchBar();
+      initSmoothScrollJS();
+      updateSearchMeta();
+    }
+
+    // Load products
+    function loadProducts() {
+      const stored = JSON.parse(localStorage.getItem('sadewaProducts') || '[]');
+      products = stored;
+      applyFilters();
+      renderAdminTable();
+    }
+
+    // Save products
+    function saveProducts() {
+      localStorage.setItem('sadewaProducts', JSON.stringify(products));
+    }
+
+    // Login Modal
+    function showLoginModal() {
+      document.getElementById('loginModal').classList.add('active');
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').classList.remove('active');
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const username = document.getElementById('loginUsername').value;
+      const password = document.getElementById('loginPassword').value;
+
+      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
+        isLoggedIn = true;
+        closeLoginModal();
+        showAdminPanel();
+      } else {
+        alert('Username atau password salah!');
+      }
+    }
+
+    function showAdminPanel() {
+      document.getElementById('mainWebsite').classList.remove('active');
+      document.getElementById('adminPanel').classList.add('active');
+    }
+
+    function logoutAdmin() {
+      isLoggedIn = false;
+      document.getElementById('adminPanel').classList.remove('active');
+      document.getElementById('mainWebsite').classList.add('active');
+    }
+  </script>
+</body>
+
+</html>
