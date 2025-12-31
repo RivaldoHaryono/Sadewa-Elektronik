@@ -53,6 +53,7 @@ nav {
   background: rgba(10, 14, 39, .8);
   backdrop-filter: blur(20px);
   border-bottom: 1px solid rgba(0, 212, 255, .2);
+  z-index: 100;
 }
 
 .nav-container ul {
@@ -105,16 +106,27 @@ nav {
   border-radius: 20px;
   overflow: hidden;
   transition: .3s;
+  position: relative;
 }
 
 .product-card:hover {
   transform: translateY(-10px);
+  box-shadow: 0 10px 30px rgba(0, 212, 255, .2);
 }
 
-.product-image img {
+/* GAMBAR PRODUK - OTOMATIS MENYESUAIKAN */
+.product-image {
   width: 100%;
-  height: 220px;
+  height: 250px;
   object-fit: cover;
+  display: block;
+}
+
+.product-card img {
+  width: 100%;
+  height: 250px;
+  object-fit: cover;
+  display: block;
 }
 
 .product-badge {
@@ -125,6 +137,7 @@ nav {
   padding: .3rem .8rem;
   border-radius: 20px;
   font-size: .8rem;
+  z-index: 10;
 }
 
 .product-info {
@@ -137,10 +150,20 @@ nav {
   margin: 1rem 0;
 }
 
+.product-features {
+  padding-left: 0;
+}
+
 .product-features li {
   list-style: none;
   color: var(--gray);
   margin-bottom: .4rem;
+}
+
+.product-features li:before {
+  content: "✓ ";
+  color: var(--primary);
+  margin-right: .5rem;
 }
 
 .btn {
@@ -152,6 +175,12 @@ nav {
   color: white;
   font-weight: bold;
   cursor: pointer;
+  transition: .3s;
+}
+
+.btn:hover {
+  transform: scale(1.02);
+  box-shadow: 0 5px 15px rgba(0, 212, 255, .4);
 }
 
 /* CHAT */
@@ -172,6 +201,7 @@ nav {
   margin-bottom: .8rem;
   padding: .7rem 1rem;
   border-radius: 15px;
+  max-width: 80%;
 }
 
 .user {
@@ -193,6 +223,12 @@ nav {
   padding: .8rem;
   border-radius: 30px;
   border: none;
+  background: rgba(26, 26, 46, .7);
+  color: var(--light);
+}
+
+#userInput:focus {
+  outline: 2px solid var(--primary);
 }
 
 /* FOOTER */
@@ -200,9 +236,8 @@ footer {
   text-align: center;
   padding: 2rem;
   color: var(--gray);
+  margin-top: 4rem;
 }
-
-<style>
 
 /* ===== CART STYLE ===== */
 #cartBtn {
@@ -217,6 +252,11 @@ footer {
   cursor: pointer;
   z-index: 1500;
   box-shadow: 0 10px 25px rgba(0, 212, 255, .4);
+  transition: .3s;
+}
+
+#cartBtn:hover {
+  transform: scale(1.05);
 }
 
 #cartPanel {
@@ -224,12 +264,15 @@ footer {
   bottom: 90px;
   right: 25px;
   width: 320px;
+  max-height: 500px;
+  overflow-y: auto;
   background: rgba(10, 14, 39, .95);
   border: 1px solid rgba(0, 212, 255, .3);
   border-radius: 20px;
   padding: 1.5rem;
   display: none;
   z-index: 1500;
+  backdrop-filter: blur(10px);
 }
 
 .cart-item {
@@ -237,10 +280,31 @@ footer {
   justify-content: space-between;
   margin-bottom: .5rem;
   font-size: .9rem;
+  padding-bottom: .5rem;
+  border-bottom: 1px solid rgba(136, 146, 176, .2);
 }
 
 .cart-total {
   margin: 1rem 0;
   font-size: 1.1rem;
   color: var(--primary);
+  font-weight: bold;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .product-image,
+  .product-card img {
+    height: 200px;
+  }
+
+  #cartPanel {
+    width: 90%;
+    right: 5%;
+  }
 }
