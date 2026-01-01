@@ -23,7 +23,6 @@
       box-sizing: border-box;
     }
 
-    /* ✅ Smooth scroll */
     html {
       scroll-behavior: smooth;
     }
@@ -66,7 +65,6 @@
       }
     }
 
-    /* Page Containers */
     .page-container {
       display: none;
     }
@@ -75,7 +73,6 @@
       display: block;
     }
 
-    /* Header */
     header {
       background: linear-gradient(135deg, rgba(123, 47, 247, 0.1) 0%, rgba(0, 212, 255, 0.1) 100%);
       backdrop-filter: blur(10px);
@@ -115,7 +112,6 @@
       letter-spacing: 1px;
     }
 
-    /* Navigation */
     nav {
       background: rgba(10, 14, 39, 0.7);
       backdrop-filter: blur(30px);
@@ -174,7 +170,6 @@
       box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
     }
 
-    /* ✅ Search bar 3D */
     .nav-right {
       display: flex;
       align-items: center;
@@ -271,7 +266,6 @@
       border: 1px solid rgba(0, 212, 255, 0.25);
     }
 
-    /* Container */
     .container {
       max-width: 1400px;
       margin: 0 auto;
@@ -298,7 +292,6 @@
       border-radius: 2px;
     }
 
-    /* ✅ Category bar (lebih profesional) */
     .category-bar {
       display: flex;
       gap: 1rem;
@@ -329,7 +322,6 @@
       transform: translateY(-2px);
     }
 
-    /* Product Grid */
     .product-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -447,7 +439,6 @@
       box-shadow: 0 10px 30px rgba(0, 212, 255, 0.5);
     }
 
-    /* Contact Section */
     .contact-section {
       background: linear-gradient(135deg, rgba(123, 47, 247, 0.1), rgba(0, 212, 255, 0.1));
       backdrop-filter: blur(10px);
@@ -480,7 +471,6 @@
       box-shadow: 0 15px 30px rgba(0, 212, 255, 0.3);
     }
 
-    /* ✅ Futuristic sheen */
     .contact-card::before {
       content: '';
       position: absolute;
@@ -517,6 +507,7 @@
       color: var(--gray);
       position: relative;
       z-index: 1;
+      word-break: break-word;
     }
 
     .contact-link {
@@ -539,7 +530,6 @@
       box-shadow: 0 10px 25px rgba(0, 212, 255, 0.35);
     }
 
-    /* Chat Section */
     .chat-section {
       background: rgba(26, 26, 46, 0.6);
       backdrop-filter: blur(20px);
@@ -743,7 +733,6 @@
       cursor: not-allowed;
     }
 
-    /* Footer */
     footer {
       background: rgba(10, 14, 39, 0.8);
       backdrop-filter: blur(20px);
@@ -777,7 +766,6 @@
       font-size: 0.9rem;
     }
 
-    /* Login Modal */
     .modal {
       display: none;
       position: fixed;
@@ -882,7 +870,6 @@
       background: rgba(255, 107, 107, 0.3);
     }
 
-    /* Admin Panel */
     .admin-container {
       background: linear-gradient(to right, #f3f4f6, #e5e7eb);
       min-height: 100vh;
@@ -1094,7 +1081,6 @@
       color: #991b1b;
     }
 
-    /* Responsive */
     @media (max-width: 768px) {
       .logo {
         font-size: 2rem;
@@ -1142,7 +1128,6 @@
 <body>
   <div class="bg-animation"></div>
 
-  <!-- Login Modal -->
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2 class="modal-title">🔐 Admin Login</h2>
@@ -1161,7 +1146,6 @@
     </div>
   </div>
 
-  <!-- Main Website -->
   <div id="mainWebsite" class="page-container active">
     <header>
       <h1 class="logo">⚡ SADEWA ELEKTRONIK</h1>
@@ -1177,7 +1161,6 @@
           <li><a href="#about">Tentang Kami</a></li>
         </ul>
 
-        <!-- Search + Meta + Admin -->
         <div class="nav-right">
           <div class="search-wrap" id="searchWrap" aria-label="Cari produk">
             <span class="search-icon">🔎</span>
@@ -1195,7 +1178,6 @@
       <section id="products">
         <h2 class="section-title">Produk Unggulan</h2>
 
-        <!-- ✅ Category Filter (rapi & futuristik) -->
         <div class="category-bar" id="categoryBar">
           <button class="cat-btn active" onclick="filterCategory('all', this)">🌐 Semua</button>
           <button class="cat-btn" onclick="filterCategory('Lampu', this)">💡 Lampu</button>
@@ -1222,8 +1204,8 @@
           <div class="contact-card">
             <div class="contact-icon">📧</div>
             <h3 class="contact-title">Email</h3>
-            <p class="contact-info">info@sadewaelektronik.com</p>
-            <a href="mailto:info@sadewaelektronik.com" class="contact-link">Kirim Email</a>
+            <p class="contact-info">sadewaelektronik1@gmail.com</p>
+            <a href="mailto:sadewaelektronik1@gmail.com" class="contact-link">Kirim Email</a>
           </div>
           <div class="contact-card">
             <div class="contact-icon">📍</div>
@@ -1253,7 +1235,6 @@
       </section>
     </div>
 
-    <!-- ✅ Footer / Tentang Kami (lebih profesional) -->
     <footer id="about">
       <h3 class="logo" style="margin-bottom: 0.75rem;">⚡ Sadewa Elektronik</h3>
 
@@ -1276,7 +1257,6 @@
     </footer>
   </div>
 
-  <!-- Admin Panel -->
   <div id="adminPanel" class="page-container admin-container">
     <div class="admin-header">
       <h1 class="admin-title">⚡ Admin Panel - Sadewa Elektronik</h1>
@@ -1360,7 +1340,6 @@
   </div>
 
   <script>
-    // Admin credentials (default: admin/admin123)
     const ADMIN_CREDENTIALS = {
       username: 'admin',
       password: 'admin123'
@@ -1370,13 +1349,10 @@
     let isLoggedIn = false;
     let selectedIcon = '⚡';
     let uploadedImage = null;
-
-    // ✅ Filter state (search + category digabung)
     let filteredProducts = null;
     let lastSearchQuery = '';
     let activeCategory = 'all';
 
-    // Initialize
     function init() {
       loadProducts();
       initChat();
@@ -1385,7 +1361,6 @@
       updateSearchMeta();
     }
 
-    // Load products
     function loadProducts() {
       const stored = JSON.parse(localStorage.getItem('sadewaProducts') || '[]');
       products = stored;
@@ -1393,12 +1368,10 @@
       renderAdminTable();
     }
 
-    // Save products
     function saveProducts() {
       localStorage.setItem('sadewaProducts', JSON.stringify(products));
     }
 
-    // Login Modal
     function showLoginModal() {
       document.getElementById('loginModal').classList.add('active');
     }
@@ -1434,7 +1407,6 @@
       document.getElementById('mainWebsite').classList.add('active');
     }
 
-    // Icon Selection
     function selectIcon(icon) {
       selectedIcon = icon;
       uploadedImage = null;
@@ -1449,7 +1421,6 @@
       });
     }
 
-    // Image Upload
     function handleImageUpload(e) {
       const file = e.target.files[0];
       if (!file) return;
@@ -1473,7 +1444,6 @@
       reader.readAsDataURL(file);
     }
 
-    // Add Product
     function addProduct(e) {
       e.preventDefault();
 
@@ -1497,7 +1467,6 @@
       alert('✅ Produk berhasil ditambahkan!');
     }
 
-    // Delete Product
     function deleteProduct(id) {
       if (confirm('Yakin ingin menghapus produk ini?')) {
         products = products.filter(p => p.id !== id);
@@ -1507,7 +1476,6 @@
       }
     }
 
-    // Reset Form
     function resetForm() {
       document.getElementById('productName').value = '';
       document.getElementById('productPrice').value = '';
@@ -1523,15 +1491,13 @@
       document.querySelectorAll('.icon-btn').forEach(btn => btn.classList.remove('selected'));
     }
 
-    /* ✅ helper: escape regex dan html (untuk highlight aman) */
-    function escapeRegExp(str) {
-      return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    }
+
     function escapeHTML(str) {
       return String(str).replace(/[&<>"']/g, s => ({
         '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
       }[s]));
     }
+
     function highlightText(text, query) {
       if (!query) return escapeHTML(text);
       const safe = escapeRegExp(query);
@@ -1539,7 +1505,6 @@
       return escapeHTML(text).replace(re, '<mark class="search-hit">$1</mark>');
     }
 
-    // ✅ meta "Menampilkan X dari Y"
     function updateSearchMeta() {
       const meta = document.getElementById('searchMeta');
       if (!meta) return;
@@ -1548,7 +1513,6 @@
       meta.textContent = `Menampilkan ${shown} dari ${total}`;
     }
 
-    // ✅ Terapkan filter gabungan: category + search
     function applyFilters() {
       const q = (lastSearchQuery || '').trim().toLowerCase();
 
@@ -1561,7 +1525,6 @@
         return hay.includes(q);
       });
 
-      // Kalau tidak ada filter sama sekali, set null biar render normal
       const noFilter = (activeCategory === 'all' && !q);
       filteredProducts = noFilter ? null : filteredProducts;
 
@@ -1569,7 +1532,6 @@
       updateSearchMeta();
     }
 
-    // ✅ Category filter
     function filterCategory(cat, btn) {
       activeCategory = cat;
 
@@ -1582,7 +1544,6 @@
       if (prodSection) prodSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    /* ✅✅✅ Inisialisasi Search Bar + efek 3D tilt */
     function initSearchBar() {
       const input = document.getElementById('productSearch');
       const clearBtn = document.getElementById('clearSearchBtn');
@@ -1617,7 +1578,6 @@
       });
     }
 
-    // ✅ Smooth scroll untuk anchor
     function initSmoothScrollJS() {
       document.querySelectorAll('a[href^="#"]').forEach(a => {
         a.addEventListener('click', (e) => {
@@ -1631,7 +1591,6 @@
       });
     }
 
-    // Render Products on Website
     function renderProducts() {
       const grid = document.getElementById('productGrid');
       const list = (filteredProducts ? filteredProducts : products);
@@ -1667,13 +1626,12 @@
             <ul class="product-features">
               ${p.features.split(',').map(f => `<li>${highlightText(f.trim(), (lastSearchQuery || '').trim())}</li>`).join('')}
             </ul>
-            <button class="btn" onclick="alert('Hubungi kami via WhatsApp untuk pemesanan: https://wa.me/628123456789')">Beli Sekarang</button>
+            <button class="btn" onclick="alert('Hubungi kami via WhatsApp untuk pemesanan: https://wa.me/+6285872189172')">Beli Sekarang</button>
           </div>
         </div>
       `).join('');
     }
 
-    // Render Admin Table
     function renderAdminTable() {
       const table = document.getElementById('adminProductTable');
 
@@ -1705,7 +1663,6 @@
       `).join('');
     }
 
-    // Smart AI Chat functionality with Claude API
     function initChat() {
       const chatlog = document.getElementById('chatlog');
       const userInput = document.getElementById('userInput');
@@ -1744,7 +1701,7 @@
                   ${product.stock > 0 ? `✓ ${product.stock} unit` : '✗ Habis'}
                 </span>
               </div>
-              <button class="buy-btn-chat" onclick="window.open('https://wa.me/628123456789?text=Halo, saya tertarik dengan ${encodeURIComponent(product.name)}', '_blank')">
+              <button class="buy-btn-chat" onclick="window.open('https://wa.me/+6285872189172?text=Halo, saya tertarik dengan ${encodeURIComponent(product.name)}', '_blank')">
                 🛒 Pesan via WhatsApp
               </button>
             </div>
@@ -1764,7 +1721,6 @@
         sendBtn.textContent = 'Mengetik...';
 
         try {
-          // Prepare product catalog for AI
           const productInfo = products.length > 0
             ? products.map(p => ({
               nama: p.name,
@@ -1781,8 +1737,8 @@
 INFORMASI TOKO:
 - Nama: Sadewa Elektronik
 - Lokasi: Bojong-pari, West Java, Indonesia
-- WhatsApp: 628123456789
-- Email: info@sadewaelektronik.com
+- WhatsApp: +6285872189172
+- Email: sadewaelektronik1@gmail.com
 - Jam Operasional: Senin-Sabtu 08:00-20:00, Minggu 08:00-20:00
 
 KATALOG PRODUK SAAT INI:
@@ -1827,10 +1783,8 @@ Format jawaban:
           const data = await response.json();
           const aiResponse = data.content[0].text;
 
-          // Show AI text response first
           addMessage('bot', aiResponse);
 
-          // Find and display matching products with images
           const mentionedProducts = products.filter(p =>
             aiResponse.toLowerCase().includes(p.name.toLowerCase()) ||
             text.toLowerCase().includes(p.name.toLowerCase()) ||
@@ -1850,11 +1804,9 @@ Format jawaban:
         } catch (error) {
           console.error('Error:', error);
 
-          // Fallback to smart local search with images
           const query = text.toLowerCase();
           let response = '';
 
-          // Search products
           const matchingProducts = products.filter(p =>
             p.name.toLowerCase().includes(query) ||
             p.category.toLowerCase().includes(query) ||
@@ -1866,7 +1818,6 @@ Format jawaban:
             response = `🔍 Saya menemukan <strong>${matchingProducts.length} produk</strong> yang cocok untuk Anda:`;
             addMessage('bot', response, true);
 
-            // Display product cards with images
             let productCards = '<div style="margin-top: 0.5rem;">';
             matchingProducts.forEach(p => {
               productCards += createProductCard(p);
@@ -1914,8 +1865,8 @@ Format jawaban:
 
           } else if (query.includes('kontak') || query.includes('hubungi')) {
             response = `📞 <strong>Hubungi Kami:</strong><br><br>`;
-            response += `📱 WhatsApp: <a href="https://wa.me/628123456789" target="_blank" style="color: var(--primary);">628123456789</a><br>`;
-            response += `📧 Email: info@sadewaelektronik.com<br>`;
+            response += `📱 WhatsApp: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary);">+6285872189172</a><br>`;
+            response += `📧 Email: sadewaelektronik1@gmail.com<br>`;
             response += `📍 Lokasi: Bojong-pari, West Java<br>`;
             response += `⏰ Senin-Sabtu: 08:00-20:00, Minggu: 08:00-20:00`;
             addMessage('bot', response, true);
@@ -1945,7 +1896,6 @@ Format jawaban:
       });
     }
 
-    // Initialize on load
     init();
   </script>
 </body>
