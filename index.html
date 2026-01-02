@@ -1276,7 +1276,7 @@
       <form onsubmit="addProduct(event)">
         <div class="form-grid">
           <input type="text" class="form-input" id="productName" placeholder="Nama Produk" required>
-          <input type="number" class="form-input" id="productPrice" placeholder="Harga (Rp)" required>
+          <input type="number" class="form-input" id="productPrice" placeholder="Harga (Rp)" min="0" required>
           <select class="form-input" id="productCategory" required>
             <option value="">Pilih Kategori</option>
             <option value="Lampu">Lampu</option>
@@ -1287,7 +1287,7 @@
             <option value="Stopkontak">Stopkontak</option>
             <option value="Lainnya">Lainnya</option>
           </select>
-          <input type="number" class="form-input" id="productStock" placeholder="Stok" required>
+          <input type="number" class="form-input" id="productStock" placeholder="Stok" min="0" required>
         </div>
 
         <textarea class="form-textarea" id="productDesc" placeholder="Deskripsi Produk" required></textarea>
@@ -1312,7 +1312,7 @@
             <p style="color: #6b7280; margin-bottom: 0.5rem;">📷 Klik untuk upload foto produk</p>
             <p style="color: #9ca3af; font-size: 0.85rem;">JPG, PNG, MP4, WebM (Max 200MB)</p>
             <input type="file" id="imageInput" accept="image/*,video/*" style="display: none;"
-              onchange="handleImageUpload(event)">
+              onchange="handleMediaUpload(event)">
             <img id="imagePreview" class="image-preview" style="display: none;">
             <video id="videoPreview" class="video-preview" style="display: none;" controls></video>
           </div>
@@ -1327,6 +1327,17 @@
     </div>
 
     <div class="admin-table">
+      <div id="adminDebugConsole"
+        style="display: none; background: #fee2e2; color: #991b1b; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; font-family: monospace; font-size: 0.8rem; border: 1px solid #fecaca;">
+        <strong>🐞 Debug Info:</strong>
+        <pre id="debugOutput" style="margin-top: 0.5rem; white-space: pre-wrap;"></pre>
+        <button onclick="runAdminSelfTest()"
+          style="margin-top: 0.5rem; background: #991b1b; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer;">Run
+          Self-Test</button>
+        <button onclick="hardResetData()"
+          style="margin-top: 0.5rem; background: #dc2626; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer; font-weight: bold; margin-left: 8px;">🔥
+          RESET ALL DATA (Hapus Semua)</button>
+      </div>
       <table>
         <thead>
           <tr>
@@ -1362,18 +1373,55 @@
     let activeCategory = 'all';
 
     function init() {
-      loadProducts();
-      initChat();
-      initSearchBar();
-      initSmoothScrollJS();
-      updateSearchMeta();
+      try {
+        loadProducts();
+      } catch (e) {
+        reportError('loading data awal', e);
+        products = []; // Safe fallback
+      }
+
+      try {
+        initChat();
+      } catch (e) { console.error('Chat init failed', e); }
+
+      try {
+        initSearchBar();
+        initSmoothScrollJS();
+        updateSearchMeta();
+      } catch (e) { console.error('UI helpers init failed', e); }
+
+      console.log('🏁 Initialization complete!');
     }
 
     function loadProducts() {
-      const stored = JSON.parse(localStorage.getItem('sadewaProducts') || '[]');
-      products = stored;
-      applyFilters();
-      renderAdminTable();
+      try {
+        const raw = localStorage.getItem('sadewaProducts');
+        let stored = JSON.parse(raw || '[]');
+
+        if (!Array.isArray(stored)) {
+          console.error('Data corrupt: not an array', stored);
+          stored = [];
+        }
+
+        // Sanitize data: Ensure every product has required properties
+        products = stored.map(p => ({
+          id: p.id || Date.now() + Math.random(),
+          name: p.name || 'Produk Tanpa Nama',
+          price: parseInt(p.price) || 0,
+          category: p.category || 'Lainnya',
+          stock: parseInt(p.stock) || 0,
+          description: p.description || '',
+          features: p.features || '',
+          media: (typeof p.media === 'string') ? p.media : '⚡'
+        }));
+
+        applyFilters();
+        renderAdminTable();
+      } catch (e) {
+        console.error('CRITICAL: loadProducts failed', e);
+        products = [];
+        throw e;
+      }
     }
 
     function saveProducts() {
@@ -1465,32 +1513,99 @@
       reader.readAsDataURL(file);
     }
 
+    // Global error handler for debugging
+    window.onerror = function (msg, url, line, col, error) {
+      const errorMsg = '🛑 Error: ' + msg + '\nFile: ' + url + '\nLine: ' + line;
+      console.error(errorMsg, error);
+      alert(errorMsg);
+      return false;
+    };
+
+    // Unified error reporter
+    function reportError(task, err) {
+      console.error('Error in ' + task + ':', err);
+      alert('❌ Terjadi kesalahan saat ' + task + ':\n' + err.message);
+    }
+
     function addProduct(e) {
-      e.preventDefault();
+      if (e) e.preventDefault();
+      console.log('addProduct triggered');
 
-      const product = {
-        id: Date.now(),
-        name: document.getElementById('productName').value,
-        price: parseInt(document.getElementById('productPrice').value),
-        category: document.getElementById('productCategory').value,
-        stock: parseInt(document.getElementById('productStock').value),
-        description: document.getElementById('productDesc').value,
-        features: document.getElementById('productFeatures').value,
-        media: document.getElementById('productImage').value
-      };
+      try {
+        const nameInput = document.getElementById('productName');
+        const priceInput = document.getElementById('productPrice');
+        const catInput = document.getElementById('productCategory');
+        const stockInput = document.getElementById('productStock');
+        const descInput = document.getElementById('productDesc');
+        const featInput = document.getElementById('productFeatures');
+        const imgInput = document.getElementById('productImage');
 
-      products.push(product);
-      saveProducts();
+        if (!nameInput || !priceInput || !catInput || !stockInput || !descInput || !featInput || !imgInput) {
+          throw new Error('Salah satu element input tidak ditemukan di halaman!');
+        }
 
-      applyFilters();
-      renderAdminTable();
-      resetForm();
-      alert('✅ Produk berhasil ditambahkan!');
+        const name = nameInput.value.trim();
+        const price = priceInput.value.trim();
+        const category = catInput.value;
+        const stock = stockInput.value.trim();
+        const description = descInput.value.trim();
+        const features = featInput.value.trim();
+        const media = imgInput.value || '⚡';
+
+        // Validation
+        const errors = [];
+        if (!name) errors.push('Nama Produk');
+        if (price === '') errors.push('Harga');
+        if (!category) errors.push('Kategori');
+        if (stock === '') errors.push('Stok');
+        if (!description) errors.push('Deskripsi');
+        if (!features) errors.push('Fitur');
+
+        if (errors.length > 0) {
+          alert('⚠️ Mohon isi semua field:\n• ' + errors.join('\n• '));
+          return;
+        }
+
+        const newProduct = {
+          id: Date.now(),
+          name: name,
+          price: parseInt(price) || 0,
+          category: category,
+          stock: parseInt(stock) || 0,
+          description: description,
+          features: features,
+          media: media
+        };
+
+        products.push(newProduct);
+        saveProducts();
+
+        applyFilters();
+        renderAdminTable();
+        resetForm();
+
+        alert('✅ Sukses! Produk "' + newProduct.name + '" telah disimpan.');
+
+        const table = document.getElementById('adminProductTable');
+        if (table) {
+          table.scrollIntoView({ behavior: 'smooth', block: 'end' });
+        }
+      } catch (err) {
+        reportError('menyimpan produk', err);
+      }
     }
 
     function deleteProduct(id) {
       if (confirm('Yakin ingin menghapus produk ini?')) {
-        products = products.filter(p => p.id !== id);
+        const initialCount = products.length;
+        products = products.filter(p => p.id != id);
+
+        if (products.length === initialCount) {
+          console.warn('Delete failed: No product found with ID', id);
+          // Fallback check: sometimes IDs might be strings in DOM
+          products = products.filter(p => String(p.id) !== String(id));
+        }
+
         saveProducts();
         applyFilters();
         renderAdminTable();
@@ -1547,38 +1662,40 @@
       if (list.length === 0) {
         const q = (lastSearchQuery || '').trim();
         grid.innerHTML = `
-          <p style="text-align: center; color: var(--gray); grid-column: 1 / -1;">
-            ${q
+            <p style="text-align: center; color: var(--gray); grid-column: 1 / -1;">
+              ${q
             ? `Tidak ada produk yang cocok dengan "<strong>${escapeHTML(q)}</strong>" pada kategori "<strong>${escapeHTML(activeCategory)}</strong>".`
-            : `Tidak ada produk pada kategori "<strong>${escapeHTML(activeCategory)}</strong>".`
-          }
-          </p>`;
+            : `Tidak ada produk pada kategori "<strong>${escapeHTML(activeCategory)}</strong>".`}
+            </p>`;
         return;
       }
 
-      grid.innerHTML = list.map(p => `
-        <div class="product-card">
-          <div class="product-image">
-            ${p.media.startsWith('data:image')
-          ? `<img src="${p.media}" alt="${escapeHTML(p.name)}">`
-          : p.media.startsWith('data:video')
-            ? `<video src="${p.media}" controls></video>`
-            : `<div style="font-size: 5rem;">${p.image}</div>`}
-            ${p.stock > 0
-          ? '<div class="product-badge">Tersedia</div>'
-          : '<div class="product-badge" style="background: #ef4444;">Habis</div>'}
+      grid.innerHTML = list.map(p => {
+        const media = p.media || '⚡';
+        return `
+          <div class="product-card">
+            <div class="product-image">
+              ${(typeof media === 'string' && media.startsWith('data:image'))
+            ? `<img src="${media}" alt="${escapeHTML(p.name || '')}">`
+            : (typeof media === 'string' && media.startsWith('data:video'))
+              ? `<video src="${media}" controls></video>`
+              : `<div style="font-size: 5rem;">${escapeHTML(media)}</div>`}
+              ${(p.stock || 0) > 0
+            ? '<div class="product-badge">Tersedia</div>'
+            : '<div class="product-badge" style="background: #ef4444;">Habis</div>'}
+            </div>
+            <div class="product-info">
+              <h3 class="product-title">${highlightText(p.name, (lastSearchQuery || '').trim())}</h3>
+              <p class="product-desc">${highlightText(p.description, (lastSearchQuery || '').trim())}</p>
+              <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
+              <ul class="product-features">
+                ${p.features.split(',').map(f => `<li>${highlightText(f.trim(), (lastSearchQuery || '').trim())}</li>`).join('')}
+              </ul>
+              <button class="btn" onclick="alert('Hubungi kami via WhatsApp untuk pemesanan: https://wa.me/+6285872189172')">Beli Sekarang</button>
+            </div>
           </div>
-          <div class="product-info">
-            <h3 class="product-title">${highlightText(p.name, (lastSearchQuery || '').trim())}</h3>
-            <p class="product-desc">${highlightText(p.description, (lastSearchQuery || '').trim())}</p>
-            <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
-            <ul class="product-features">
-              ${p.features.split(',').map(f => `<li>${highlightText(f.trim(), (lastSearchQuery || '').trim())}</li>`).join('')}
-            </ul>
-            <button class="btn" onclick="alert('Hubungi kami via WhatsApp untuk pemesanan: https://wa.me/+6285872189172')">Beli Sekarang</button>
-          </div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     function renderAdminTable() {
@@ -1589,28 +1706,31 @@
         return;
       }
 
-      table.innerHTML = products.map(p => `
-        <tr>
-          <td>
-            ${p.media.startsWith('data:image')
-          ? `<img src="${p.media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">`
-          : p.media.startsWith('data:video')
-            ? `<video src="${p.media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" controls></video>`
-            : `<div style="font-size: 2rem;">${p.image}</div>`}
-          </td>
-          <td>${p.name}</td>
-          <td>${p.category}</td>
-          <td>Rp ${p.price.toLocaleString('id-ID')}</td>
-          <td>
-            <span class="stock-status ${p.stock > 0 ? 'stock-available' : 'stock-out'}">
-              ${p.stock} unit
-            </span>
-          </td>
-          <td>
-            <button class="admin-button admin-button-danger" onclick="deleteProduct(${p.id})">Hapus</button>
-          </td>
-        </tr>
-      `).join('');
+      table.innerHTML = products.map(p => {
+        const media = p.media || '⚡';
+        return `
+          <tr>
+            <td>
+              ${(typeof media === 'string' && media.startsWith('data:image'))
+            ? `<img src="${media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">`
+            : (typeof media === 'string' && media.startsWith('data:video'))
+              ? `<video src="${media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" controls></video>`
+              : `<div style="font-size: 2rem;">${escapeHTML(media)}</div>`}
+            </td>
+            <td>${p.name}</td>
+            <td>${p.category}</td>
+            <td>Rp ${p.price.toLocaleString('id-ID')}</td>
+            <td>
+              <span class="stock-status ${p.stock > 0 ? 'stock-available' : 'stock-out'}">
+                ${p.stock} unit
+              </span>
+            </td>
+            <td>
+              <button class="admin-button admin-button-danger" onclick="deleteProduct(${p.id})">Hapus</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
     }
 
     function initChat() {
@@ -1633,37 +1753,38 @@
       }
 
       function createProductCard(product) {
-        const imageHTML = product.media.startsWith('data:image')
-          ? `<img src="${product.media}" alt="${product.name}">`
-          : product.media.startsWith('data:video')
-            ? `<video src="${product.media}" controls></video>`
-            : `<div style="font-size: 2rem;">${product.image}</div>`;
+        const media = product.media || '⚡';
+        const imageHTML = (typeof media === 'string' && media.startsWith('data:image'))
+          ? `<img src="${media}" alt="${escapeHTML(product.name || '')}">`
+          : (typeof media === 'string' && media.startsWith('data:video'))
+            ? `<video src="${media}" controls></video>`
+            : `<div style="font-size: 2rem;">${escapeHTML(media)}</div>`;
 
         return `
-          <div class="product-card-chat">
-            <div class="product-image-chat">
-              ${imageHTML}
-            </div>
-            <div class="product-info-chat">
-              <div class="product-name-chat">${product.name}</div>
-              <div class="product-price-chat">Rp ${product.price.toLocaleString('id-ID')}</div>
-              <div class="product-stock-chat">
-                ${product.category}
-                <span class="stock-badge ${product.stock > 0 ? 'available' : 'out'}">
-                  ${product.stock > 0 ? `✓ ${product.stock} unit` : '✗ Habis'}
-                </span>
+            <div class="product-card-chat">
+              <div class="product-image-chat">
+                ${imageHTML}
               </div>
-              <button class="buy-btn-chat" onclick="window.open('https://wa.me/+6285872189172?text=Halo, saya tertarik dengan ${encodeURIComponent(product.name)}', '_blank')">
-                🛒 Pesan via WhatsApp
-              </button>
+              <div class="product-info-chat">
+                <div class="product-name-chat">${product.name}</div>
+                <div class="product-price-chat">Rp ${product.price.toLocaleString('id-ID')}</div>
+                <div class="product-stock-chat">
+                  ${product.category}
+                  <span class="stock-badge ${product.stock > 0 ? 'available' : 'out'}">
+                    ${product.stock > 0 ? `✓ ${product.stock} unit` : '✗ Habis'}
+                  </span>
+                </div>
+                <button class="buy-btn-chat" onclick="window.open('https://wa.me/+6285872189172?text=Halo, saya tertarik dengan ${encodeURIComponent(product.name)}', '_blank')">
+                  🛒 Pesan via WhatsApp
+                </button>
+              </div>
             </div>
-          </div>
-        `;
+          `;
       }
 
       addMessage('bot', '👋 Selamat datang di Sadewa Elektronik! Saya asisten AI yang siap membantu Anda mencari produk, informasi harga, stok, dan spesifikasi. Silakan tanya apapun!');
 
-      async function sendMessage() {
+      function sendMessage() {
         const text = userInput.value.trim();
         if (!text) return;
 
@@ -1672,93 +1793,12 @@
         sendBtn.disabled = true;
         sendBtn.textContent = 'Mengetik...';
 
-        try {
-          const productInfo = products.length > 0
-            ? products.map(p => ({
-              nama: p.name,
-              kategori: p.category,
-              harga: `Rp ${p.price.toLocaleString('id-ID')}`,
-              stok: p.stock,
-              deskripsi: p.description,
-              fitur: p.features
-            }))
-            : [];
-
-          const systemPrompt = `Kamu adalah asisten penjualan profesional di Sadewa Elektronik, toko elektronik di Bojong-pari, West Java, Indonesia.
-          
-INFORMASI TOKO:
-- Nama: Sadewa Elektronik
-- Lokasi: Bojong-pari, West Java, Indonesia
-- WhatsApp: +6285872189172
-- Email: sadewaelektronik1@gmail.com
-- Jam Operasional: Senin-Sabtu 08:00-20:00, Minggu 08:00-20:00
-
-KATALOG PRODUK SAAT INI:
-${productInfo.length > 0 ? JSON.stringify(productInfo, null, 2) : 'Belum ada produk tersedia.'}
-
-TUGASMU:
-1. Jawab pertanyaan tentang produk dengan detail dan ramah
-2. Bantu customer mencari produk yang sesuai kebutuhan
-3. Berikan rekomendasi produk berdasarkan kebutuhan customer
-4. Informasikan harga, stok, dan spesifikasi produk
-5. Jika produk tidak tersedia, sarankan alternatif atau info produk serupa
-6. Selalu sopan, informatif, dan proaktif
-7. Gunakan emoji untuk membuat percakapan lebih menarik
-8. Jika customer ingin membeli, arahkan ke WhatsApp
-9. PENTING: Sebutkan nama produk yang spesifik agar sistem dapat menampilkan gambar produk
-
-Format jawaban:
-- Gunakan bahasa Indonesia yang ramah dan profesional
-- Sebutkan nama produk dengan jelas
-- Berikan informasi lengkap tapi ringkas
-- Akhiri dengan tawaran bantuan lebih lanjut`;
-
-          const response = await fetch('https://api.anthropic.com/v1/messages', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              model: 'claude-sonnet-4-20250514',
-              max_tokens: 1000,
-              system: systemPrompt,
-              messages: [
-                { role: 'user', content: text }
-              ]
-            })
-          });
-
-          if (!response.ok) {
-            throw new Error('Gagal mendapatkan respons dari AI');
-          }
-
-          const data = await response.json();
-          const aiResponse = data.content[0].text;
-
-          addMessage('bot', aiResponse);
-
-          const mentionedProducts = products.filter(p =>
-            aiResponse.toLowerCase().includes(p.name.toLowerCase()) ||
-            text.toLowerCase().includes(p.name.toLowerCase()) ||
-            text.toLowerCase().includes(p.category.toLowerCase())
-          );
-
-          if (mentionedProducts.length > 0) {
-            let productCards = '<div style="margin-top: 0.5rem;">';
-            mentionedProducts.forEach(p => {
-              productCards += createProductCard(p);
-            });
-            productCards += '</div>';
-
-            addMessage('bot', productCards, true);
-          }
-
-        } catch (error) {
-          console.error('Error:', error);
-
+        // Simulate typing delay for better UX
+        setTimeout(() => {
           const query = text.toLowerCase();
           let response = '';
 
+          // Smart product matching
           const matchingProducts = products.filter(p =>
             p.name.toLowerCase().includes(query) ||
             p.category.toLowerCase().includes(query) ||
@@ -1766,8 +1806,19 @@ Format jawaban:
             p.features.toLowerCase().includes(query)
           );
 
-          if (matchingProducts.length > 0) {
-            response = `🔍 Saya menemukan <strong>${matchingProducts.length} produk</strong> yang cocok untuk Anda:`;
+          // Greeting responses
+          if (query.match(/^(hai|halo|hi|hello|selamat|pagi|siang|sore|malam)/)) {
+            response = '👋 Halo! Selamat datang di Sadewa Elektronik. Saya siap membantu Anda menemukan produk elektronik yang tepat. Ada yang bisa saya bantu?';
+            addMessage('bot', response);
+          }
+          // Thank you responses
+          else if (query.match(/(terima kasih|thanks|makasih|thx)/)) {
+            response = '😊 Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi jika ada yang ingin Anda ketahui tentang produk kami!';
+            addMessage('bot', response);
+          }
+          // Product search with results
+          else if (matchingProducts.length > 0) {
+            response = `🔍 Saya menemukan <strong>${matchingProducts.length} produk</strong> yang cocok dengan pencarian Anda:`;
             addMessage('bot', response, true);
 
             let productCards = '<div style="margin-top: 0.5rem;">';
@@ -1778,65 +1829,123 @@ Format jawaban:
 
             addMessage('bot', productCards, true);
 
-          } else if (query.includes('harga') || query.includes('berapa')) {
-            response = '💰 <strong>Daftar Harga Produk:</strong>';
-            addMessage('bot', response, true);
+            // Add helpful follow-up
+            addMessage('bot', '💡 Ingin tahu lebih detail tentang produk tertentu? Atau butuh rekomendasi? Silakan tanya saya!');
+          }
+          // Price inquiry
+          else if (query.includes('harga') || query.includes('berapa')) {
+            if (products.length === 0) {
+              response = '😅 Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
+              addMessage('bot', response);
+            } else {
+              response = '💰 <strong>Berikut daftar harga produk kami:</strong>';
+              addMessage('bot', response, true);
 
-            let productCards = '<div style="margin-top: 0.5rem;">';
-            products.forEach(p => {
-              productCards += createProductCard(p);
-            });
-            productCards += '</div>';
+              let productCards = '<div style="margin-top: 0.5rem;">';
+              products.forEach(p => {
+                productCards += createProductCard(p);
+              });
+              productCards += '</div>';
 
-            addMessage('bot', productCards, true);
-
-          } else if (query.includes('stok') || query.includes('tersedia') || query.includes('ada')) {
+              addMessage('bot', productCards, true);
+            }
+          }
+          // Stock inquiry
+          else if (query.includes('stok') || query.includes('tersedia') || query.includes('ada')) {
             const available = products.filter(p => p.stock > 0);
-            response = `📦 <strong>Produk Tersedia (${available.length} item):</strong>`;
-            addMessage('bot', response, true);
+            if (available.length === 0) {
+              response = '😅 Maaf, saat ini semua produk sedang habis. Silakan hubungi kami untuk informasi restock!';
+              addMessage('bot', response);
+            } else {
+              response = `� <strong>Produk yang tersedia saat ini (${available.length} item):</strong>`;
+              addMessage('bot', response, true);
 
-            let productCards = '<div style="margin-top: 0.5rem;">';
-            available.forEach(p => {
-              productCards += createProductCard(p);
-            });
-            productCards += '</div>';
+              let productCards = '<div style="margin-top: 0.5rem;">';
+              available.forEach(p => {
+                productCards += createProductCard(p);
+              });
+              productCards += '</div>';
 
-            addMessage('bot', productCards, true);
+              addMessage('bot', productCards, true);
+            }
+          }
+          // Catalog request
+          else if (query.includes('semua') || query.includes('katalog') || query.includes('produk') || query.includes('list')) {
+            if (products.length === 0) {
+              response = '😅 Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
+              addMessage('bot', response);
+            } else {
+              response = `� <strong>Katalog Lengkap Sadewa Elektronik (${products.length} produk):</strong>`;
+              addMessage('bot', response, true);
 
-          } else if (query.includes('semua') || query.includes('katalog') || query.includes('produk')) {
-            response = `📋 <strong>Katalog Lengkap (${products.length} produk):</strong>`;
-            addMessage('bot', response, true);
+              let productCards = '<div style="margin-top: 0.5rem;">';
+              products.forEach(p => {
+                productCards += createProductCard(p);
+              });
+              productCards += '</div>';
 
-            let productCards = '<div style="margin-top: 0.5rem;">';
-            products.forEach(p => {
-              productCards += createProductCard(p);
-            });
-            productCards += '</div>';
-
-            addMessage('bot', productCards, true);
-
-          } else if (query.includes('kontak') || query.includes('hubungi')) {
-            response = `📞 <strong>Hubungi Kami:</strong><br><br>`;
-            response += `📱 WhatsApp: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary);">+6285872189172</a><br>`;
-            response += `📧 Email: sadewaelektronik1@gmail.com<br>`;
-            response += `📍 Lokasi: Bojong-pari, West Java<br>`;
-            response += `⏰ Senin-Sabtu: 08:00-20:00, Minggu: 08:00-20:00`;
-            addMessage('bot', response, true);
-
-          } else {
-            response = '😊 Maaf, saya tidak menemukan produk yang spesifik. Berikut yang bisa saya bantu:<br><br>';
-            response += '• 🔍 <strong>Cari produk</strong> - ketik nama atau kategori<br>';
-            response += '• 💰 <strong>Lihat harga</strong> - ketik "harga"<br>';
-            response += '• 📦 <strong>Cek stok</strong> - ketik "stok"<br>';
-            response += '• 📋 <strong>Lihat semua</strong> - ketik "katalog"<br>';
-            response += '• 📞 <strong>Kontak</strong> - ketik "hubungi"<br><br>';
-            response += 'Atau hubungi kami langsung via WhatsApp!';
+              addMessage('bot', productCards, true);
+            }
+          }
+          // Contact inquiry
+          else if (query.includes('kontak') || query.includes('hubungi') || query.includes('alamat') || query.includes('lokasi') || query.includes('telepon') || query.includes('whatsapp')) {
+            response = `� <strong>Hubungi Kami:</strong><br><br>`;
+            response += `📱 WhatsApp: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">+6285872189172</a><br>`;
+            response += `📧 Email: <a href="mailto:sadewaelektronik1@gmail.com" style="color: var(--primary); font-weight: 700;">sadewaelektronik1@gmail.com</a><br>`;
+            response += `📍 Lokasi: Bojong-pari, West Java, Indonesia<br>`;
+            response += `⏰ Jam Operasional:<br>`;
+            response += `&nbsp;&nbsp;&nbsp;&nbsp;Senin - Sabtu: 08:00 - 20:00<br>`;
+            response += `&nbsp;&nbsp;&nbsp;&nbsp;Minggu: 08:00 - 20:00`;
             addMessage('bot', response, true);
           }
-        } finally {
+          // Recommendation request
+          else if (query.includes('rekomendasi') || query.includes('saran') || query.includes('bagus') || query.includes('terbaik')) {
+            if (products.length === 0) {
+              response = '� Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
+              addMessage('bot', response);
+            } else {
+              // Recommend products with stock
+              const available = products.filter(p => p.stock > 0);
+              const toRecommend = available.length > 0 ? available : products;
+
+              response = `⭐ <strong>Rekomendasi Produk Terbaik Kami:</strong>`;
+              addMessage('bot', response, true);
+
+              let productCards = '<div style="margin-top: 0.5rem;">';
+              toRecommend.slice(0, 3).forEach(p => {
+                productCards += createProductCard(p);
+              });
+              productCards += '</div>';
+
+              addMessage('bot', productCards, true);
+              addMessage('bot', '💬 Butuh rekomendasi lebih spesifik? Ceritakan kebutuhan Anda, dan saya akan bantu carikan produk yang paling cocok!');
+            }
+          }
+          // Buying intent
+          else if (query.includes('beli') || query.includes('pesan') || query.includes('order')) {
+            response = `� <strong>Cara Pemesanan:</strong><br><br>`;
+            response += `1. Pilih produk yang Anda inginkan<br>`;
+            response += `2. Klik tombol "Pesan via WhatsApp" pada produk<br>`;
+            response += `3. Atau hubungi langsung: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">+6285872189172</a><br><br>`;
+            response += `Tim kami siap melayani Anda! 😊`;
+            addMessage('bot', response, true);
+          }
+          // Default helpful response
+          else {
+            response = '😊 Maaf, saya tidak menemukan informasi spesifik untuk pertanyaan Anda. Berikut yang bisa saya bantu:<br><br>';
+            response += '• 🔍 <strong>Cari produk</strong> - sebutkan nama atau kategori produk<br>';
+            response += '• 💰 <strong>Lihat harga</strong> - ketik "harga" atau "berapa"<br>';
+            response += '• 📦 <strong>Cek stok</strong> - ketik "stok" atau "tersedia"<br>';
+            response += '• 📋 <strong>Lihat katalog</strong> - ketik "katalog" atau "semua produk"<br>';
+            response += '• ⭐ <strong>Minta rekomendasi</strong> - ketik "rekomendasi"<br>';
+            response += '• 📞 <strong>Info kontak</strong> - ketik "kontak" atau "hubungi"<br><br>';
+            response += '💬 Atau hubungi kami langsung via <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">WhatsApp</a>!';
+            addMessage('bot', response, true);
+          }
+
           sendBtn.disabled = false;
           sendBtn.textContent = 'Kirim';
-        }
+        }, 500); // Small delay to simulate thinking
       }
 
       sendBtn.addEventListener('click', sendMessage);
@@ -1846,6 +1955,115 @@ Format jawaban:
           sendMessage();
         }
       });
+    }
+
+    // Helper function to escape HTML
+    function escapeHTML(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    // Helper function to highlight search text
+    function highlightText(text, query) {
+      if (!query) return escapeHTML(text);
+      const escaped = escapeHTML(text);
+      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+      return escaped.replace(regex, '<mark class="search-hit">$1</mark>');
+    }
+
+    // Filter products by category
+    function filterCategory(category, btn) {
+      activeCategory = category;
+
+      // Update active button
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      applyFilters();
+    }
+
+    // Initialize search bar
+    function initSearchBar() {
+      const searchInput = document.getElementById('productSearch');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      if (!searchInput) return;
+
+      searchInput.addEventListener('input', (e) => {
+        lastSearchQuery = e.target.value;
+        applyFilters();
+      });
+
+      if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+          searchInput.value = '';
+          lastSearchQuery = '';
+          applyFilters();
+        });
+      }
+    }
+
+    // Initialize smooth scrolling
+    function initSmoothScrollJS() {
+      // Smooth scrolling is already handled by CSS scroll-behavior: smooth
+      // This function is here for future enhancements if needed
+    }
+
+    function runAdminSelfTest() {
+      const out = document.getElementById('debugOutput');
+      const consoleDiv = document.getElementById('adminDebugConsole');
+      consoleDiv.style.display = 'block';
+      out.textContent = 'Starting self-test...\n';
+
+      try {
+        out.textContent += '- Checking localStorage... ';
+        localStorage.setItem('test', 'test');
+        localStorage.removeItem('test');
+        out.textContent += 'OK\n';
+
+        out.textContent += '- Checking products array... ';
+        if (Array.isArray(products)) {
+          out.textContent += 'OK (length: ' + products.length + ')\n';
+        } else {
+          out.textContent += 'FAIL (not an array)\n';
+        }
+
+        out.textContent += '- Checking DOM elements... ';
+        const ids = ['productName', 'productPrice', 'productCategory', 'productStock', 'productDesc', 'productFeatures', 'productImage'];
+        ids.forEach(id => {
+          const el = document.getElementById(id);
+          out.textContent += '\n  ' + id + ': ' + (el ? 'Found' : 'MISSING');
+        });
+        out.textContent += '\n';
+
+        out.textContent += '- Testing addProduct bridge... ';
+        if (typeof addProduct === 'function') {
+          out.textContent += 'OK\n';
+        } else {
+          out.textContent += 'FAIL (not a function)\n';
+        }
+
+        out.textContent += 'Self-test complete!\n';
+      } catch (err) {
+        out.textContent += '\n💥 ERROR: ' + err.message + '\n';
+      }
+    }
+
+    // Auto-show debug if error happens
+    const originalReportError = reportError;
+    reportError = function (task, err) {
+      document.getElementById('adminDebugConsole').style.display = 'block';
+      document.getElementById('debugOutput').textContent += '❌ ' + task + ': ' + err.message + '\n';
+      originalReportError(task, err);
+    };
+
+    function hardResetData() {
+      if (confirm('⚠️ PERINGATAN! Ini akan menghapus SEMUA produk yang sudah Anda input secara permanen. Apakah Anda yakin?')) {
+        localStorage.removeItem('sadewaProducts');
+        products = [];
+        location.reload(); // Refresh total untuk membersihkan memory
+      }
     }
 
     init();
