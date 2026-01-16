@@ -1636,7 +1636,14 @@
       const chatlog = document.getElementById('chatlog');
       const userInput = document.getElementById('userInput');
       const sendBtn = document.getElementById('sendBtn');
-
+      const welcomeMessage = `
+    <div class="message bot-message">
+      <b>Sadewa AI:</b><br>
+      Halo! Selamat datang di Sadewa Elektronik. ⚡<br>
+      Ada yang bisa saya bantu? Anda bisa menanyakan produk, harga, atau stok barang kami.
+    </div>
+  `;
+      chatlog.innerHTML = welcomeMessage;
       sendBtn.onclick = () => {
         const queryText = userInput.value.trim().toLowerCase();
         if (!queryText) return;
