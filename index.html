@@ -1138,7 +1138,7 @@
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2 class="modal-title">🔐 Admin Login</h2>
-      <form onsubmit="handleLogin(event)">
+      <form onsubmit="window.handleLogin(event)">
         <div class="form-group">
           <label>Username</label>
           <input type="text" id="loginUsername" required>
@@ -1148,7 +1148,7 @@
           <input type="password" id="loginPassword" required>
         </div>
         <button type="submit" class="btn-login">Login</button>
-        <button type="button" class="btn-cancel" onclick="closeLoginModal()">Batal</button>
+        <button type="button" class="btn-cancel" onclick="window.closeLoginModal()">Batal</button>
       </form>
     </div>
   </div>
@@ -1176,7 +1176,7 @@
           </div>
           <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
 
-          <button class="admin-btn" onclick="showLoginModal()">🔧 Admin Panel</button>
+          <button class="admin-btn" onclick="window.showLoginModal()">🔧 Admin Panel</button>
         </div>
       </div>
     </nav>
@@ -1218,7 +1218,8 @@
             <div class="contact-icon">📍</div>
             <h3 class="contact-title">Lokasi</h3>
             <p class="contact-info">Bojong-pari, West Java, Indonesia</p>
-            <a href="https://maps.app.goo.gl/GF1r9Dp8J8ZhPWfj7" class="contact-link" target="_blank">Lihat Peta</a>
+            <a href="https://maps.app.goo.gl/GF1r9Dp8J8ZhPWfj7" class="contact-link" target="_blank">Lihat
+              Peta</a>
           </div>
           <div class="contact-card">
             <div class="contact-icon">⏰</div>
@@ -1276,7 +1277,8 @@
       <form onsubmit="addProduct(event)">
         <div class="form-grid">
           <input type="text" class="form-input" id="productName" placeholder="Nama Produk" required>
-          <input type="number" class="form-input" id="productPrice" placeholder="Harga (Rp)" min="0" required>
+          <input type="text" class="form-input" id="productPrice" placeholder="Harga (Rp)"
+            oninput="window.formatRupiah(this)" required>
           <select class="form-input" id="productCategory" required>
             <option value="">Pilih Kategori</option>
             <option value="Lampu">Lampu</option>
@@ -1295,7 +1297,8 @@
           required></textarea>
 
         <div>
-          <label style="display: block; margin: 1rem 0 0.5rem; font-weight: 800; color: #374151;">Pilih Icon atau Upload
+          <label style="display: block; margin: 1rem 0 0.5rem; font-weight: 800; color: #374151;">Pilih Icon
+            atau Upload
             Foto:</label>
           <div class="icon-selector" id="iconSelector">
             <button type="button" class="icon-btn" onclick="selectIcon('⚡')">⚡</button>
@@ -1312,7 +1315,7 @@
             <p style="color: #6b7280; margin-bottom: 0.5rem;">📷 Klik untuk upload foto produk</p>
             <p style="color: #9ca3af; font-size: 0.85rem;">JPG, PNG, MP4, WebM (Max 200MB)</p>
             <input type="file" id="imageInput" accept="image/*,video/*" style="display: none;"
-              onchange="handleMediaUpload(event)">
+              onchange="window.handleMediaUpload(event)">
             <img id="imagePreview" class="image-preview" style="display: none;">
             <video id="videoPreview" class="video-preview" style="display: none;" controls></video>
           </div>
@@ -1321,7 +1324,8 @@
 
         <div style="margin-top: 1.5rem;">
           <button type="submit" class="admin-button admin-button-primary">💾 Simpan Produk</button>
-          <button type="button" class="admin-button admin-button-danger" onclick="resetForm()">🔄 Reset</button>
+          <button type="button" class="admin-button admin-button-danger" onclick="resetForm()">🔄
+            Reset</button>
         </div>
       </form>
     </div>
@@ -1358,712 +1362,338 @@
     </div>
   </div>
 
-  <script>
-    const ADMIN_CREDENTIALS = {
-      username: 'admin',
-      password: 'admin123'
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+    // 1. CONFIG FIREBASE (GANTI DENGAN PUNYA ANDA)
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+      apiKey: "AIzaSyDu21X_Cr7RoTMUnMS9oZCAVOS15D3ssyI",
+      authDomain: "sadewa-2.firebaseapp.com",
+      projectId: "sadewa-2",
+      storageBucket: "sadewa-2.firebasestorage.app",
+      messagingSenderId: "325894971034",
+      appId: "1:325894971034:web:f0c3cca5083f53d6008923",
+      measurementId: "G-2M9X5453L4"
     };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+    const prodCol = collection(db, "sadewaProducts");
+
+    // Variabel Global Asli
     let products = [];
-    let isLoggedIn = false;
-    let selectedIcon = '⚡';
-    let uploadedMedia = null;
-    let filteredProducts = null;
     let lastSearchQuery = '';
     let activeCategory = 'all';
+    let filteredProducts = null;
 
+    // 2. INITIALIZATION & REAL-TIME SYNC
     function init() {
-      try {
-        loadProducts();
-      } catch (e) {
-        reportError('loading data awal', e);
-        products = []; // Safe fallback
-      }
-
-      try {
-        initChat();
-      } catch (e) { console.error('Chat init failed', e); }
-
-      try {
-        initSearchBar();
-        initSmoothScrollJS();
-        updateSearchMeta();
-      } catch (e) { console.error('UI helpers init failed', e); }
-
-      console.log('🏁 Initialization complete!');
-    }
-
-    function loadProducts() {
-      try {
-        const raw = localStorage.getItem('sadewaProducts');
-        let stored = JSON.parse(raw || '[]');
-
-        if (!Array.isArray(stored)) {
-          console.error('Data corrupt: not an array', stored);
-          stored = [];
-        }
-
-        // Sanitize data: Ensure every product has required properties
-        products = stored.map(p => ({
-          id: p.id || Date.now() + Math.random(),
-          name: p.name || 'Produk Tanpa Nama',
-          price: parseInt(p.price) || 0,
-          category: p.category || 'Lainnya',
-          stock: parseInt(p.stock) || 0,
-          description: p.description || '',
-          features: p.features || '',
-          media: (typeof p.media === 'string') ? p.media : '⚡'
-        }));
-
+      // Mengambil data real-time dari Firestore
+      onSnapshot(query(prodCol, orderBy("createdAt", "desc")), (snapshot) => {
+        products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
         applyFilters();
         renderAdminTable();
-      } catch (e) {
-        console.error('CRITICAL: loadProducts failed', e);
-        products = [];
-        throw e;
-      }
-    }
-
-    function saveProducts() {
-      localStorage.setItem('sadewaProducts', JSON.stringify(products));
-    }
-
-    function showLoginModal() {
-      document.getElementById('loginModal').classList.add('active');
-    }
-
-    function closeLoginModal() {
-      document.getElementById('loginModal').classList.remove('active');
-      document.getElementById('loginUsername').value = '';
-      document.getElementById('loginPassword').value = '';
-    }
-
-    function handleLogin(e) {
-      e.preventDefault();
-      const username = document.getElementById('loginUsername').value;
-      const password = document.getElementById('loginPassword').value;
-
-      if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
-        isLoggedIn = true;
-        closeLoginModal();
-        showAdminPanel();
-      } else {
-        alert('Username atau password salah!');
-      }
-    }
-
-    function showAdminPanel() {
-      document.getElementById('mainWebsite').classList.remove('active');
-      document.getElementById('adminPanel').classList.add('active');
-    }
-
-    function logoutAdmin() {
-      isLoggedIn = false;
-      document.getElementById('adminPanel').classList.remove('active');
-      document.getElementById('mainWebsite').classList.add('active');
-    }
-
-    function selectIcon(icon) {
-      selectedIcon = icon;
-      uploadedMedia = null;
-      document.getElementById('productImage').value = icon;
-      document.getElementById('imagePreview').style.display = 'none';
-      document.getElementById('videoPreview').style.display = 'none';
-
-      document.querySelectorAll('.icon-btn').forEach(btn => {
-        btn.classList.remove('selected');
-        if (btn.textContent === icon) {
-          btn.classList.add('selected');
-        }
       });
+
+      initSearchBar();
+      initChat();
     }
 
-    function handleMediaUpload(e) {
+    // 3. ADMIN FUNCTIONS (LOGIN & MODAL)
+    // Fungsi untuk membuka modal
+    // Fungsi membuka modal cyberpunk
+    // 1. Fungsi Membuka Modal
+    // 1. Definisikan Kredensial (Jika belum ada)
+    const ADMIN_CREDENTIALS = {
+      username: "admin",
+      password: "admin123" // Ganti sesuai keinginan
+    };
+
+    // 2. Daftarkan ke Window agar bisa dipanggil onclick HTML
+    window.showLoginModal = () => {
+      const modal = document.getElementById('loginModal');
+      if (modal) {
+        modal.classList.add('active');
+        modal.style.display = 'flex'; // Memastikan muncul secara visual
+      }
+    };
+
+    window.closeLoginModal = () => {
+      const modal = document.getElementById('loginModal');
+      if (modal) {
+        modal.classList.remove('active');
+        modal.style.display = 'none'; // Menghilangkan modal
+        // Reset input jika ID nya ada
+        if (document.getElementById('loginUsername')) document.getElementById('loginUsername').value = '';
+        if (document.getElementById('loginPassword')) document.getElementById('loginPassword').value = '';
+      }
+    };
+
+    window.handleLogin = (e) => {
+      if (e) e.preventDefault(); // Mencegah refresh halaman
+
+      const user = document.getElementById('loginUsername').value;
+      const pass = document.getElementById('loginPassword').value;
+
+      if (user === ADMIN_CREDENTIALS.username && pass === ADMIN_CREDENTIALS.password) {
+        window.closeLoginModal();
+        window.showAdminPanel();
+      } else {
+        alert('ACCESS DENIED: Data tidak valid!');
+      }
+    };
+
+    window.showAdminPanel = () => {
+      // Sembunyikan Landing Page
+      const mainWeb = document.getElementById('mainWebsite');
+      mainWeb.classList.remove('active');
+      mainWeb.style.display = 'none';
+
+      // Tampilkan Admin Panel
+      const adminPanel = document.getElementById('adminPanel');
+      adminPanel.classList.add('active');
+      adminPanel.style.display = 'block';
+
+      // Tampilkan Admin-Card secara spesifik
+      const adminCard = document.getElementById('admin-card');
+      if (adminCard) {
+        adminCard.style.display = 'block';
+        adminCard.classList.add('active');
+      }
+    };
+
+    window.logoutAdmin = () => {
+      // Balikkan kondisi
+      document.getElementById('adminPanel').classList.remove('active');
+      document.getElementById('adminPanel').style.display = 'none';
+
+      document.getElementById('mainWebsite').classList.add('active');
+      document.getElementById('mainWebsite').style.display = 'block';
+    };
+    // Fungsi untuk memformat angka menjadi format ribuan saat diketik
+    window.formatRupiah = (element) => {
+      let value = element.value.replace(/\D/g, ""); // Hapus semua karakter selain angka
+      if (value === "") {
+        element.value = "";
+        return;
+      }
+      // Tambahkan titik setiap 3 digit
+      element.value = new Intl.NumberFormat('id-ID').format(value);
+    };
+
+    // Fungsi pembantu untuk mengubah "25.000" kembali jadi 25000 (angka murni)
+    const cleanNumber = (str) => {
+      return parseInt(str.replace(/\./g, "")) || 0;
+    };
+    // 4. DATABASE OPERATIONS (FIRESTORE)
+    window.addProduct = async (e) => {
+      e.preventDefault();
+      try {
+        // Ambil nilai string dari input (misal: "25.000")
+        const rawPrice = document.getElementById('productPrice').value;
+
+        // Fungsi untuk membersihkan titik (25.000 -> 25000)
+        const cleanPrice = parseInt(rawPrice.replace(/\./g, "")) || 0;
+
+        const newProduct = {
+          name: document.getElementById('productName').value,
+          price: cleanPrice, // Gunakan harga yang sudah bersih dari titik
+          category: document.getElementById('productCategory').value,
+          stock: parseInt(document.getElementById('productStock').value),
+          description: document.getElementById('productDesc').value,
+          features: document.getElementById('productFeatures').value,
+          media: document.getElementById('productImage').value || '⚡',
+          createdAt: serverTimestamp()
+        };
+
+        await addDoc(prodCol, newProduct);
+        alert("Produk Berhasil Disimpan di Cloud!");
+
+        // Reset form dan gambar preview
+        e.target.reset();
+        if (document.getElementById('imagePreview')) {
+          document.getElementById('imagePreview').style.display = 'none';
+        }
+      } catch (err) {
+        alert("Gagal Simpan: " + err.message);
+      }
+    };
+
+    window.deleteProduct = async (id) => {
+      if (confirm("Hapus produk ini secara permanen?")) {
+        await deleteDoc(doc(db, "sadewaProducts", id));
+      }
+    };
+
+    // 5. SEARCH & FILTER LOGIC
+    window.applyFilters = () => {
+      const q = lastSearchQuery.trim().toLowerCase();
+      filteredProducts = products.filter(p => {
+        const passCat = (activeCategory === 'all') ? true : (p.category === activeCategory);
+        const passSearch = q ? [p.name, p.description].some(s => s.toLowerCase().includes(q)) : true;
+        return passCat && passSearch;
+      });
+      renderProducts();
+    };
+
+    window.filterCategory = (category, btn) => {
+      activeCategory = category;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      applyFilters();
+    };
+
+    function initSearchBar() {
+      document.getElementById('productSearch').oninput = (e) => {
+        lastSearchQuery = e.target.value;
+        applyFilters();
+      };
+    }
+    window.handleMediaUpload = (e) => {
       const file = e.target.files[0];
       if (!file) return;
 
-      if (file.size > 200 * 1024 * 1024) {
-        alert('Ukuran file maksimal 200MB');
+      // Validasi Ukuran (Opsional: Batasi maksimal 2MB agar Firestore lancar)
+      if (file.size > 2 * 1024 * 1024) {
+        alert("Ukuran file terlalu besar! Maksimal 2MB.");
+        e.target.value = ""; // Reset input
         return;
       }
 
       const reader = new FileReader();
-      reader.onload = function (event) {
-        const fileType = file.type.split('/')[0];
+      reader.onload = (event) => {
+        const base64String = event.target.result;
 
-        if (fileType === 'image') {
-          uploadedMedia = event.target.result;
-          document.getElementById('productImage').value = uploadedMedia;
-          document.getElementById('imagePreview').src = uploadedMedia;
-          document.getElementById('imagePreview').style.display = 'block';
-          document.getElementById('videoPreview').style.display = 'none';
-        } else if (fileType === 'video') {
-          uploadedMedia = event.target.result;
-          document.getElementById('productImage').value = uploadedMedia;
-          document.getElementById('videoPreview').src = uploadedMedia;
-          document.getElementById('videoPreview').style.display = 'block';
-          document.getElementById('imagePreview').style.display = 'none';
+        // 1. Simpan string gambar ke input hidden agar terkirim ke Firestore
+        const hiddenInput = document.getElementById('productImage');
+        if (hiddenInput) {
+          hiddenInput.value = base64String;
         }
 
-        document.querySelectorAll('.icon-btn').forEach(btn => {
-          btn.classList.remove('selected');
-        });
+        // 2. Tampilkan Preview Gambar agar Admin tahu foto sudah masuk
+        const preview = document.getElementById('imagePreview');
+        if (preview) {
+          preview.src = base64String;
+          preview.style.display = 'block';
+        }
+
+        console.log("Gambar berhasil dikonversi ke Base64");
+      };
+
+      reader.onerror = () => {
+        alert("Gagal membaca file!");
       };
 
       reader.readAsDataURL(file);
-    }
-
-    // Global error handler for debugging
-    window.onerror = function (msg, url, line, col, error) {
-      const errorMsg = '🛑 Error: ' + msg + '\nFile: ' + url + '\nLine: ' + line;
-      console.error(errorMsg, error);
-      alert(errorMsg);
-      return false;
     };
-
-    // Unified error reporter
-    function reportError(task, err) {
-      console.error('Error in ' + task + ':', err);
-      alert('❌ Terjadi kesalahan saat ' + task + ':\n' + err.message);
-    }
-
-    function addProduct(e) {
-      if (e) e.preventDefault();
-      console.log('addProduct triggered');
-
-      try {
-        const nameInput = document.getElementById('productName');
-        const priceInput = document.getElementById('productPrice');
-        const catInput = document.getElementById('productCategory');
-        const stockInput = document.getElementById('productStock');
-        const descInput = document.getElementById('productDesc');
-        const featInput = document.getElementById('productFeatures');
-        const imgInput = document.getElementById('productImage');
-
-        if (!nameInput || !priceInput || !catInput || !stockInput || !descInput || !featInput || !imgInput) {
-          throw new Error('Salah satu element input tidak ditemukan di halaman!');
-        }
-
-        const name = nameInput.value.trim();
-        const price = priceInput.value.trim();
-        const category = catInput.value;
-        const stock = stockInput.value.trim();
-        const description = descInput.value.trim();
-        const features = featInput.value.trim();
-        const media = imgInput.value || '⚡';
-
-        // Validation
-        const errors = [];
-        if (!name) errors.push('Nama Produk');
-        if (price === '') errors.push('Harga');
-        if (!category) errors.push('Kategori');
-        if (stock === '') errors.push('Stok');
-        if (!description) errors.push('Deskripsi');
-        if (!features) errors.push('Fitur');
-
-        if (errors.length > 0) {
-          alert('⚠️ Mohon isi semua field:\n• ' + errors.join('\n• '));
-          return;
-        }
-
-        const newProduct = {
-          id: Date.now(),
-          name: name,
-          price: parseInt(price) || 0,
-          category: category,
-          stock: parseInt(stock) || 0,
-          description: description,
-          features: features,
-          media: media
-        };
-
-        products.push(newProduct);
-        saveProducts();
-
-        applyFilters();
-        renderAdminTable();
-        resetForm();
-
-        alert('✅ Sukses! Produk "' + newProduct.name + '" telah disimpan.');
-
-        const table = document.getElementById('adminProductTable');
-        if (table) {
-          table.scrollIntoView({ behavior: 'smooth', block: 'end' });
-        }
-      } catch (err) {
-        reportError('menyimpan produk', err);
-      }
-    }
-
-    function deleteProduct(id) {
-      if (confirm('Yakin ingin menghapus produk ini?')) {
-        const initialCount = products.length;
-        products = products.filter(p => p.id != id);
-
-        if (products.length === initialCount) {
-          console.warn('Delete failed: No product found with ID', id);
-          // Fallback check: sometimes IDs might be strings in DOM
-          products = products.filter(p => String(p.id) !== String(id));
-        }
-
-        saveProducts();
-        applyFilters();
-        renderAdminTable();
-      }
-    }
-
-    function resetForm() {
-      document.getElementById('productName').value = '';
-      document.getElementById('productPrice').value = '';
-      document.getElementById('productCategory').value = '';
-      document.getElementById('productStock').value = '';
-      document.getElementById('productDesc').value = '';
-      document.getElementById('productFeatures').value = '';
-      document.getElementById('imageInput').value = '';
-      document.getElementById('imagePreview').style.display = 'none';
-      document.getElementById('videoPreview').style.display = 'none';
-      selectedIcon = '⚡';
-      uploadedMedia = null;
-      document.getElementById('productImage').value = '⚡';
-      document.querySelectorAll('.icon-btn').forEach(btn => btn.classList.remove('selected'));
-    }
-
-    function applyFilters() {
-      const q = (lastSearchQuery || '').trim().toLowerCase();
-
-      filteredProducts = products.filter(p => {
-        const passCat = (activeCategory === 'all') ? true : (p.category === activeCategory);
-        if (!passCat) return false;
-
-        if (!q) return true;
-        const hay = [p.name, p.category, p.description, p.features].join(' ').toLowerCase();
-        return hay.includes(q);
-      });
-
-      const noFilter = (activeCategory === 'all' && !q);
-      filteredProducts = noFilter ? null : filteredProducts;
-
-      renderProducts();
-      updateSearchMeta();
-    }
-
-    function updateSearchMeta() {
-      const meta = document.getElementById('searchMeta');
-      if (!meta) return;
-      const total = products.length;
-      const shown = (filteredProducts ? filteredProducts.length : total);
-      meta.textContent = `Menampilkan ${shown} dari ${total}`;
-    }
-
-    function renderProducts() {
+    // 6. RENDER UI
+    window.renderProducts = function () {
       const grid = document.getElementById('productGrid');
       const list = (filteredProducts ? filteredProducts : products);
 
       if (list.length === 0) {
-        const q = (lastSearchQuery || '').trim();
-        grid.innerHTML = `
-            <p style="text-align: center; color: var(--gray); grid-column: 1 / -1;">
-              ${q
-            ? `Tidak ada produk yang cocok dengan "<strong>${escapeHTML(q)}</strong>" pada kategori "<strong>${escapeHTML(activeCategory)}</strong>".`
-            : `Tidak ada produk pada kategori "<strong>${escapeHTML(activeCategory)}</strong>".`}
-            </p>`;
+        grid.innerHTML = `<p style="text-align:center; grid-column:1/-1;">Produk tidak ditemukan.</p>`;
         return;
       }
 
       grid.innerHTML = list.map(p => {
-        const media = p.media || '⚡';
+        // LOGIKA PERBAIKAN: Cek apakah media dimulai dengan "data:image" (Base64)
+        const mediaContent = p.media.startsWith('data:image')
+          ? `<img src="${p.media}" style="width:100%; height:100%; object-fit:cover;">`
+          : `<div style="font-size: 5rem; display:flex; align-items:center; justify-content:center; height:100%;">${p.media}</div>`;
+
         return `
-          <div class="product-card">
-            <div class="product-image">
-              ${(typeof media === 'string' && media.startsWith('data:image'))
-            ? `<img src="${media}" alt="${escapeHTML(p.name || '')}">`
-            : (typeof media === 'string' && media.startsWith('data:video'))
-              ? `<video src="${media}" controls></video>`
-              : `<div style="font-size: 5rem;">${escapeHTML(media)}</div>`}
-              ${(p.stock || 0) > 0
-            ? '<div class="product-badge">Tersedia</div>'
-            : '<div class="product-badge" style="background: #ef4444;">Habis</div>'}
-            </div>
-            <div class="product-info">
-              <h3 class="product-title">${highlightText(p.name, (lastSearchQuery || '').trim())}</h3>
-              <p class="product-desc">${highlightText(p.description, (lastSearchQuery || '').trim())}</p>
-              <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
-              <ul class="product-features">
-                ${p.features.split(',').map(f => `<li>${highlightText(f.trim(), (lastSearchQuery || '').trim())}</li>`).join('')}
-              </ul>
-              <button class="btn" onclick="alert('Hubungi kami via WhatsApp untuk pemesanan: https://wa.me/+6285872189172')">Beli Sekarang</button>
-            </div>
-          </div>
-        `;
+      <div class="product-card">
+        <div class="product-image" style="height:200px; background:rgba(0,0,0,0.2); overflow:hidden; display:flex; align-items:center; justify-content:center;">
+          ${mediaContent}
+        </div>
+        <div class="product-info">
+          <h3 class="product-title">${p.name}</h3>
+          <p class="product-desc">${p.description || ''}</p>
+          <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
+          <button class="btn" onclick="window.open('https://wa.me/6285872189172?text=Halo, saya mau beli ${p.name}')">Beli Sekarang</button>
+        </div>
+      </div>
+    `;
       }).join('');
-    }
+    };
 
     function renderAdminTable() {
-      const table = document.getElementById('adminProductTable');
-
-      if (products.length === 0) {
-        table.innerHTML = '<tr><td colspan="6" style="text-align: center; color: #9ca3af;">Belum ada produk</td></tr>';
-        return;
-      }
-
-      table.innerHTML = products.map(p => {
-        const media = p.media || '⚡';
-        return `
-          <tr>
-            <td>
-              ${(typeof media === 'string' && media.startsWith('data:image'))
-            ? `<img src="${media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;">`
-            : (typeof media === 'string' && media.startsWith('data:video'))
-              ? `<video src="${media}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 8px;" controls></video>`
-              : `<div style="font-size: 2rem;">${escapeHTML(media)}</div>`}
-            </td>
-            <td>${p.name}</td>
-            <td>${p.category}</td>
-            <td>Rp ${p.price.toLocaleString('id-ID')}</td>
-            <td>
-              <span class="stock-status ${p.stock > 0 ? 'stock-available' : 'stock-out'}">
-                ${p.stock} unit
-              </span>
-            </td>
-            <td>
-              <button class="admin-button admin-button-danger" onclick="deleteProduct(${p.id})">Hapus</button>
-            </td>
-          </tr>
-        `;
-      }).join('');
+      const tbody = document.getElementById('adminProductTable');
+      tbody.innerHTML = products.map(p => `
+        <tr>
+          <td style="padding:10px">${p.name}</td>
+          <td>${p.category}</td>
+          <td>Rp ${p.price.toLocaleString()}</td>
+          <td>${p.stock}</td>
+          <td><button onclick="deleteProduct('${p.id}')" style="color:red; cursor:pointer;">Hapus</button></td>
+        </tr>
+      `).join('');
     }
-
     function initChat() {
       const chatlog = document.getElementById('chatlog');
       const userInput = document.getElementById('userInput');
       const sendBtn = document.getElementById('sendBtn');
 
-      function addMessage(sender, text, isHTML = false) {
-        const msg = document.createElement('div');
-        msg.className = `message ${sender === 'user' ? 'user-message' : 'bot-message'}`;
+      sendBtn.onclick = () => {
+        const queryText = userInput.value.trim().toLowerCase();
+        if (!queryText) return;
 
-        if (isHTML) {
-          msg.innerHTML = text;
-        } else {
-          msg.textContent = text;
-        }
-
-        chatlog.appendChild(msg);
-        chatlog.scrollTop = chatlog.scrollHeight;
-      }
-
-      function createProductCard(product) {
-        const media = product.media || '⚡';
-        const imageHTML = (typeof media === 'string' && media.startsWith('data:image'))
-          ? `<img src="${media}" alt="${escapeHTML(product.name || '')}">`
-          : (typeof media === 'string' && media.startsWith('data:video'))
-            ? `<video src="${media}" controls></video>`
-            : `<div style="font-size: 2rem;">${escapeHTML(media)}</div>`;
-
-        return `
-            <div class="product-card-chat">
-              <div class="product-image-chat">
-                ${imageHTML}
-              </div>
-              <div class="product-info-chat">
-                <div class="product-name-chat">${product.name}</div>
-                <div class="product-price-chat">Rp ${product.price.toLocaleString('id-ID')}</div>
-                <div class="product-stock-chat">
-                  ${product.category}
-                  <span class="stock-badge ${product.stock > 0 ? 'available' : 'out'}">
-                    ${product.stock > 0 ? `✓ ${product.stock} unit` : '✗ Habis'}
-                  </span>
-                </div>
-                <button class="buy-btn-chat" onclick="window.open('https://wa.me/+6285872189172?text=Halo, saya tertarik dengan ${encodeURIComponent(product.name)}', '_blank')">
-                  🛒 Pesan via WhatsApp
-                </button>
-              </div>
-            </div>
-          `;
-      }
-
-      addMessage('bot', '👋 Selamat datang di Sadewa Elektronik! Saya asisten AI yang siap membantu Anda mencari produk, informasi harga, stok, dan spesifikasi. Silakan tanya apapun!');
-
-      function sendMessage() {
-        const text = userInput.value.trim();
-        if (!text) return;
-
-        addMessage('user', text);
+        // Tampilkan pesan user
+        chatlog.innerHTML += `<div class="message user-message"><b>Anda:</b><br>${userInput.value}</div>`;
         userInput.value = '';
-        sendBtn.disabled = true;
-        sendBtn.textContent = 'Mengetik...';
 
-        // Simulate typing delay for better UX
         setTimeout(() => {
-          const query = text.toLowerCase();
-          let response = '';
+          let reply = "";
 
-          // Smart product matching
-          const matchingProducts = products.filter(p =>
-            p.name.toLowerCase().includes(query) ||
-            p.category.toLowerCase().includes(query) ||
-            p.description.toLowerCase().includes(query) ||
-            p.features.toLowerCase().includes(query)
+          // 1. Cek apakah user menanyakan Kategori (misal: "lampu", "kipas")
+          const categoryMatch = products.filter(p =>
+            queryText.includes(p.category.toLowerCase())
           );
 
-          // Greeting responses
-          if (query.match(/^(hai|halo|hi|hello|selamat|pagi|siang|sore|malam)/)) {
-            response = '👋 Halo! Selamat datang di Sadewa Elektronik. Saya siap membantu Anda menemukan produk elektronik yang tepat. Ada yang bisa saya bantu?';
-            addMessage('bot', response);
-          }
-          // Thank you responses
-          else if (query.match(/(terima kasih|thanks|makasih|thx)/)) {
-            response = '😊 Sama-sama! Senang bisa membantu. Jangan ragu untuk bertanya lagi jika ada yang ingin Anda ketahui tentang produk kami!';
-            addMessage('bot', response);
-          }
-          // Product search with results
-          else if (matchingProducts.length > 0) {
-            response = `🔍 Saya menemukan <strong>${matchingProducts.length} produk</strong> yang cocok dengan pencarian Anda:`;
-            addMessage('bot', response, true);
+          // 2. Cek apakah user menanyakan Nama Produk spesifik
+          const nameMatch = products.find(p =>
+            queryText.includes(p.name.toLowerCase())
+          );
 
-            let productCards = '<div style="margin-top: 0.5rem;">';
-            matchingProducts.forEach(p => {
-              productCards += createProductCard(p);
+          if (categoryMatch.length > 0 && !nameMatch) {
+            // JIKA COCOK KATEGORI: Tampilkan semua barang di kategori tersebut
+            reply = `Berikut adalah produk kami di kategori <b>${categoryMatch[0].category}</b>:<br><br>`;
+
+            categoryMatch.forEach(p => {
+              const media = p.media.startsWith('data:image')
+                ? `<img src="${p.media}" style="width:100%; max-width:150px; border-radius:8px; display:block; margin:5px 0;">`
+                : `<div style="font-size:2rem;">${p.media}</div>`;
+
+              reply += `
+                <div style="border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom:10px; margin-bottom:10px;">
+                    ${media}
+                    <b>${p.name}</b><br>
+                    Harga: Rp ${p.price.toLocaleString()}<br>
+                    Stok: ${p.stock} unit
+                </div>`;
             });
-            productCards += '</div>';
+          } else if (nameMatch) {
+            // JIKA COCOK NAMA: Tampilkan satu barang spesifik (seperti sebelumnya)
+            const media = nameMatch.media.startsWith('data:image')
+              ? `<img src="${nameMatch.media}" style="width:100%; max-width:200px; border-radius:10px; margin-top:10px; display:block;">`
+              : `<div style="font-size:3rem;">${nameMatch.media}</div>`;
 
-            addMessage('bot', productCards, true);
-
-            // Add helpful follow-up
-            addMessage('bot', '💡 Ingin tahu lebih detail tentang produk tertentu? Atau butuh rekomendasi? Silakan tanya saya!');
-          }
-          // Price inquiry
-          else if (query.includes('harga') || query.includes('berapa')) {
-            if (products.length === 0) {
-              response = '😅 Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
-              addMessage('bot', response);
-            } else {
-              response = '💰 <strong>Berikut daftar harga produk kami:</strong>';
-              addMessage('bot', response, true);
-
-              let productCards = '<div style="margin-top: 0.5rem;">';
-              products.forEach(p => {
-                productCards += createProductCard(p);
-              });
-              productCards += '</div>';
-
-              addMessage('bot', productCards, true);
-            }
-          }
-          // Stock inquiry
-          else if (query.includes('stok') || query.includes('tersedia') || query.includes('ada')) {
-            const available = products.filter(p => p.stock > 0);
-            if (available.length === 0) {
-              response = '😅 Maaf, saat ini semua produk sedang habis. Silakan hubungi kami untuk informasi restock!';
-              addMessage('bot', response);
-            } else {
-              response = `� <strong>Produk yang tersedia saat ini (${available.length} item):</strong>`;
-              addMessage('bot', response, true);
-
-              let productCards = '<div style="margin-top: 0.5rem;">';
-              available.forEach(p => {
-                productCards += createProductCard(p);
-              });
-              productCards += '</div>';
-
-              addMessage('bot', productCards, true);
-            }
-          }
-          // Catalog request
-          else if (query.includes('semua') || query.includes('katalog') || query.includes('produk') || query.includes('list')) {
-            if (products.length === 0) {
-              response = '😅 Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
-              addMessage('bot', response);
-            } else {
-              response = `� <strong>Katalog Lengkap Sadewa Elektronik (${products.length} produk):</strong>`;
-              addMessage('bot', response, true);
-
-              let productCards = '<div style="margin-top: 0.5rem;">';
-              products.forEach(p => {
-                productCards += createProductCard(p);
-              });
-              productCards += '</div>';
-
-              addMessage('bot', productCards, true);
-            }
-          }
-          // Contact inquiry
-          else if (query.includes('kontak') || query.includes('hubungi') || query.includes('alamat') || query.includes('lokasi') || query.includes('telepon') || query.includes('whatsapp')) {
-            response = `� <strong>Hubungi Kami:</strong><br><br>`;
-            response += `📱 WhatsApp: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">+6285872189172</a><br>`;
-            response += `📧 Email: <a href="mailto:sadewaelektronik1@gmail.com" style="color: var(--primary); font-weight: 700;">sadewaelektronik1@gmail.com</a><br>`;
-            response += `📍 Lokasi: Bojong-pari, West Java, Indonesia<br>`;
-            response += `⏰ Jam Operasional:<br>`;
-            response += `&nbsp;&nbsp;&nbsp;&nbsp;Senin - Sabtu: 08:00 - 20:00<br>`;
-            response += `&nbsp;&nbsp;&nbsp;&nbsp;Minggu: 08:00 - 20:00`;
-            addMessage('bot', response, true);
-          }
-          // Recommendation request
-          else if (query.includes('rekomendasi') || query.includes('saran') || query.includes('bagus') || query.includes('terbaik')) {
-            if (products.length === 0) {
-              response = '� Maaf, saat ini belum ada produk yang tersedia. Silakan hubungi kami untuk informasi lebih lanjut!';
-              addMessage('bot', response);
-            } else {
-              // Recommend products with stock
-              const available = products.filter(p => p.stock > 0);
-              const toRecommend = available.length > 0 ? available : products;
-
-              response = `⭐ <strong>Rekomendasi Produk Terbaik Kami:</strong>`;
-              addMessage('bot', response, true);
-
-              let productCards = '<div style="margin-top: 0.5rem;">';
-              toRecommend.slice(0, 3).forEach(p => {
-                productCards += createProductCard(p);
-              });
-              productCards += '</div>';
-
-              addMessage('bot', productCards, true);
-              addMessage('bot', '💬 Butuh rekomendasi lebih spesifik? Ceritakan kebutuhan Anda, dan saya akan bantu carikan produk yang paling cocok!');
-            }
-          }
-          // Buying intent
-          else if (query.includes('beli') || query.includes('pesan') || query.includes('order')) {
-            response = `� <strong>Cara Pemesanan:</strong><br><br>`;
-            response += `1. Pilih produk yang Anda inginkan<br>`;
-            response += `2. Klik tombol "Pesan via WhatsApp" pada produk<br>`;
-            response += `3. Atau hubungi langsung: <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">+6285872189172</a><br><br>`;
-            response += `Tim kami siap melayani Anda! 😊`;
-            addMessage('bot', response, true);
-          }
-          // Default helpful response
-          else {
-            response = '😊 Maaf, saya tidak menemukan informasi spesifik untuk pertanyaan Anda. Berikut yang bisa saya bantu:<br><br>';
-            response += '• 🔍 <strong>Cari produk</strong> - sebutkan nama atau kategori produk<br>';
-            response += '• 💰 <strong>Lihat harga</strong> - ketik "harga" atau "berapa"<br>';
-            response += '• 📦 <strong>Cek stok</strong> - ketik "stok" atau "tersedia"<br>';
-            response += '• 📋 <strong>Lihat katalog</strong> - ketik "katalog" atau "semua produk"<br>';
-            response += '• ⭐ <strong>Minta rekomendasi</strong> - ketik "rekomendasi"<br>';
-            response += '• 📞 <strong>Info kontak</strong> - ketik "kontak" atau "hubungi"<br><br>';
-            response += '💬 Atau hubungi kami langsung via <a href="https://wa.me/+6285872189172" target="_blank" style="color: var(--primary); font-weight: 700;">WhatsApp</a>!';
-            addMessage('bot', response, true);
+            reply = `Tentu! Ini detail <b>${nameMatch.name}</b>:<br>${media}<br>
+                 Harga: Rp ${nameMatch.price.toLocaleString()}<br>
+                 Stok: ${nameMatch.stock} unit.`;
+          } else if (queryText.includes("halo") || queryText.includes("hai")) {
+            reply = "Halo! Mau cari produk apa hari ini? Ketik kategori (Lampu/Kipas) atau nama barangnya ya.";
+          } else {
+            reply = "Maaf, saya tidak menemukan produk atau kategori tersebut. Coba ketik 'Lampu' atau 'Kipas'.";
           }
 
-          sendBtn.disabled = false;
-          sendBtn.textContent = 'Kirim';
-        }, 500); // Small delay to simulate thinking
-      }
-
-      sendBtn.addEventListener('click', sendMessage);
-      userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          sendMessage();
-        }
-      });
-    }
-
-    // Helper function to escape HTML
-    function escapeHTML(str) {
-      const div = document.createElement('div');
-      div.textContent = str;
-      return div.innerHTML;
-    }
-
-    // Helper function to highlight search text
-    function highlightText(text, query) {
-      if (!query) return escapeHTML(text);
-      const escaped = escapeHTML(text);
-      const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
-      return escaped.replace(regex, '<mark class="search-hit">$1</mark>');
-    }
-
-    // Filter products by category
-    function filterCategory(category, btn) {
-      activeCategory = category;
-
-      // Update active button
-      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      applyFilters();
-    }
-
-    // Initialize search bar
-    function initSearchBar() {
-      const searchInput = document.getElementById('productSearch');
-      const clearBtn = document.getElementById('clearSearchBtn');
-
-      if (!searchInput) return;
-
-      searchInput.addEventListener('input', (e) => {
-        lastSearchQuery = e.target.value;
-        applyFilters();
-      });
-
-      if (clearBtn) {
-        clearBtn.addEventListener('click', () => {
-          searchInput.value = '';
-          lastSearchQuery = '';
-          applyFilters();
-        });
-      }
-    }
-
-    // Initialize smooth scrolling
-    function initSmoothScrollJS() {
-      // Smooth scrolling is already handled by CSS scroll-behavior: smooth
-      // This function is here for future enhancements if needed
-    }
-
-    function runAdminSelfTest() {
-      const out = document.getElementById('debugOutput');
-      const consoleDiv = document.getElementById('adminDebugConsole');
-      consoleDiv.style.display = 'block';
-      out.textContent = 'Starting self-test...\n';
-
-      try {
-        out.textContent += '- Checking localStorage... ';
-        localStorage.setItem('test', 'test');
-        localStorage.removeItem('test');
-        out.textContent += 'OK\n';
-
-        out.textContent += '- Checking products array... ';
-        if (Array.isArray(products)) {
-          out.textContent += 'OK (length: ' + products.length + ')\n';
-        } else {
-          out.textContent += 'FAIL (not an array)\n';
-        }
-
-        out.textContent += '- Checking DOM elements... ';
-        const ids = ['productName', 'productPrice', 'productCategory', 'productStock', 'productDesc', 'productFeatures', 'productImage'];
-        ids.forEach(id => {
-          const el = document.getElementById(id);
-          out.textContent += '\n  ' + id + ': ' + (el ? 'Found' : 'MISSING');
-        });
-        out.textContent += '\n';
-
-        out.textContent += '- Testing addProduct bridge... ';
-        if (typeof addProduct === 'function') {
-          out.textContent += 'OK\n';
-        } else {
-          out.textContent += 'FAIL (not a function)\n';
-        }
-
-        out.textContent += 'Self-test complete!\n';
-      } catch (err) {
-        out.textContent += '\n💥 ERROR: ' + err.message + '\n';
-      }
-    }
-
-    // Auto-show debug if error happens
-    const originalReportError = reportError;
-    reportError = function (task, err) {
-      document.getElementById('adminDebugConsole').style.display = 'block';
-      document.getElementById('debugOutput').textContent += '❌ ' + task + ': ' + err.message + '\n';
-      originalReportError(task, err);
-    };
-
-    function hardResetData() {
-      if (confirm('⚠️ PERINGATAN! Ini akan menghapus SEMUA produk yang sudah Anda input secara permanen. Apakah Anda yakin?')) {
-        localStorage.removeItem('sadewaProducts');
-        products = [];
-        location.reload(); // Refresh total untuk membersihkan memory
-      }
+          chatlog.innerHTML += `<div class="message bot-message"><b>Sadewa AI:</b><br>${reply}</div>`;
+          chatlog.scrollTop = chatlog.scrollHeight;
+        }, 600);
+      };
     }
 
     init();
