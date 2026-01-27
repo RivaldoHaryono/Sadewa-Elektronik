@@ -300,6 +300,7 @@
       margin: -1rem 0 3rem;
     }
 
+
     .cat-btn {
       padding: 0.6rem 1.5rem;
       border-radius: 999px;
@@ -871,6 +872,437 @@
       background: rgba(255, 107, 107, 0.3);
     }
 
+    /* ===== CART STYLES START ===== */
+    .cart-icon-wrapper {
+      position: relative;
+    }
+
+    .cart-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 12px;
+      border: none;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      white-space: nowrap;
+      font-size: 1rem;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .cart-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0, 212, 255, 0.4);
+    }
+
+    .cart-badge {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background: #ef4444;
+      color: white;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 900;
+      box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+    }
+
+    .cart-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 3000;
+      display: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .cart-modal.active {
+      display: block;
+      opacity: 1;
+    }
+
+    .cart-sidebar {
+      position: fixed;
+      top: 0;
+      right: -450px;
+      width: 100%;
+      max-width: 450px;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(26, 26, 46, 0.98), rgba(10, 14, 39, 0.98));
+      backdrop-filter: blur(20px);
+      border-left: 2px solid rgba(0, 212, 255, 0.3);
+      box-shadow: -5px 0 30px rgba(0, 0, 0, 0.5);
+      transition: right 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+      display: flex;
+      flex-direction: column;
+      z-index: 3001;
+    }
+
+    .cart-modal.active .cart-sidebar {
+      right: 0;
+    }
+
+    .cart-header {
+      padding: 2rem;
+      border-bottom: 1px solid rgba(0, 212, 255, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-title {
+      font-size: 1.8rem;
+      font-weight: 900;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 0.5px;
+    }
+
+    .cart-close {
+      background: rgba(255, 107, 107, 0.2);
+      color: #ff6b6b;
+      border: 1px solid #ff6b6b;
+      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1.2rem;
+      font-weight: 700;
+    }
+
+    .cart-close:hover {
+      background: rgba(255, 107, 107, 0.4);
+      transform: rotate(90deg);
+    }
+
+    .cart-items {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+
+    .cart-items::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .cart-items::-webkit-scrollbar-thumb {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border-radius: 10px;
+    }
+
+    .cart-item {
+      background: rgba(26, 26, 46, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.2);
+      border-radius: 15px;
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+      transition: all 0.3s;
+      animation: slideInCart 0.3s ease-out;
+    }
+
+    @keyframes slideInCart {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .cart-item:hover {
+      border-color: var(--primary);
+      box-shadow: 0 5px 20px rgba(0, 212, 255, 0.2);
+    }
+
+    .cart-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+
+    .cart-item-name {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--light);
+      letter-spacing: 0.3px;
+      flex: 1;
+    }
+
+    .cart-item-remove {
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid #ef4444;
+      border-radius: 8px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-size: 1rem;
+    }
+
+    .cart-item-remove:hover {
+      background: rgba(239, 68, 68, 0.4);
+      transform: scale(1.1);
+    }
+
+    .cart-item-variant {
+      color: var(--gray);
+      font-size: 0.9rem;
+      margin-bottom: 0.75rem;
+      font-weight: 600;
+    }
+
+    .cart-item-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .cart-item-quantity {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: rgba(10, 14, 39, 0.6);
+      padding: 0.5rem 0.75rem;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .qty-btn {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-weight: 900;
+      font-size: 1rem;
+    }
+
+    .qty-btn:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 10px rgba(0, 212, 255, 0.4);
+    }
+
+    .qty-btn:active {
+      transform: scale(0.95);
+    }
+
+    .qty-value {
+      font-weight: 800;
+      color: var(--light);
+      min-width: 30px;
+      text-align: center;
+      font-size: 1.05rem;
+    }
+
+    .cart-item-price {
+      font-size: 1.2rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+    }
+
+    .cart-empty {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: var(--gray);
+    }
+
+    .cart-empty-icon {
+      font-size: 5rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .cart-empty-text {
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .cart-footer {
+      border-top: 1px solid rgba(0, 212, 255, 0.2);
+      padding: 1.5rem 2rem;
+      background: rgba(10, 14, 39, 0.8);
+    }
+
+    .cart-total {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding: 1rem;
+      background: rgba(26, 26, 46, 0.6);
+      border-radius: 12px;
+      border: 1px solid rgba(0, 212, 255, 0.2);
+    }
+
+    .cart-total-label {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--light);
+      letter-spacing: 0.5px;
+    }
+
+    .cart-total-value {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--primary);
+      letter-spacing: 0.3px;
+    }
+
+    .cart-checkout-btn {
+      width: 100%;
+      padding: 1.2rem;
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      font-weight: 900;
+      cursor: pointer;
+      transition: all 0.3s;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      box-shadow: 0 5px 20px rgba(16, 185, 129, 0.3);
+    }
+
+    .cart-checkout-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 8px 30px rgba(16, 185, 129, 0.5);
+    }
+
+    .cart-checkout-btn:active {
+      transform: translateY(-1px);
+    }
+
+    .cart-clear-btn {
+      width: 100%;
+      padding: 0.8rem;
+      background: rgba(239, 68, 68, 0.2);
+      color: #ef4444;
+      border: 1px solid #ef4444;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s;
+      margin-top: 0.75rem;
+      letter-spacing: 0.5px;
+    }
+
+    .cart-clear-btn:hover {
+      background: rgba(239, 68, 68, 0.3);
+    }
+
+    .variant-select {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(10, 14, 39, 0.6);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      border-radius: 12px;
+      color: var(--light);
+      font-size: 0.95rem;
+      outline: none;
+      font-weight: 600;
+      margin-bottom: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .variant-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+    }
+
+    .variant-select option {
+      background: var(--dark);
+      color: var(--light);
+      padding: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+      .cart-sidebar {
+        max-width: 100%;
+      }
+
+      .cart-item {
+        padding: 1rem;
+      }
+
+      .cart-item-name {
+        font-size: 1rem;
+      }
+
+      .cart-total-value {
+        font-size: 1.5rem;
+      }
+    }
+
+    /* ===== CART STYLES END ===== */
+
+    .product-price-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .btn-add-cart {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: rgba(0, 212, 255, 0.15);
+      border: 1px solid rgba(0, 212, 255, 0.3);
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-add-cart:hover {
+      background: var(--primary);
+      color: var(--darker);
+      transform: scale(1.05);
+      box-shadow: 0 0 15px rgba(0, 212, 255, 0.4);
+    }
+
     .admin-container {
       background: linear-gradient(to right, #f3f4f6, #e5e7eb);
       min-height: 100vh;
@@ -1176,6 +1608,14 @@
           </div>
           <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
 
+          <!-- Cart Icon -->
+          <div class="cart-icon-wrapper">
+            <button class="cart-btn" onclick="toggleCart()">
+              🛒
+              <span id="cartBadge" class="cart-badge">0</span>
+            </button>
+          </div>
+
           <button class="admin-btn" onclick="window.showLoginModal()">🔧 Admin Panel</button>
         </div>
       </div>
@@ -1275,11 +1715,43 @@
       <h2>➕ Tambah Produk</h2>
 
       <form onsubmit="addProduct(event)">
+
+        <select class="form-input" id="productCategory" required>
+          <option value="">Pilih Kategori</option>
+          <option value="Lampu">Lampu</option>
+          <option value="Kipas Angin">Kipas Angin</option>
+          <option value="Kabel">Kabel</option>
+          <option value="Saklar">Saklar</option>
+          <option value="Antena">Antena</option>
+          <option value="Stopkontak">Stopkontak</option>
+          <option value="Lainnya">Lainnya</option>
+        </select>
+
+        <!-- Dropdown untuk sub-kategori lampu -->
+        <select class="form-input" id="productSubCategory" required>
+          <option value="">Pilih Watt Lampu</option>
+          <option value="5 Watt">5 Watt</option>
+          <option value="7 Watt">7 Watt</option>
+          <option value="10 Watt">10 Watt</option>
+          <option value="15 Watt">15 Watt</option>
+          <option value="20 Watt">20 Watt</option>
+          <option value="25 Watt">25 Watt</option>
+          <option value="30 Watt">30 Watt</option>
+          <option value="40 Watt">40 Watt</option>
+          <option value="50 Watt">50 Watt</option>
+          <option value="60 Watt">60 Watt</option>
+          <option value="70 Watt">70 Watt</option>
+          <option value="80 Watt">80 Watt</option>
+          <option value="90 Watt">90 Watt</option>
+          <option value="100 Watt">100 Watt</option>
+
+
+        </select>
         <div class="form-grid">
           <input type="text" class="form-input" id="productName" placeholder="Nama Produk" required>
           <input type="text" class="form-input" id="productPrice" placeholder="Harga (Rp)"
             oninput="window.formatRupiah(this)" required>
-          <select class="form-input" id="productCategory" required>
+          <select class="form-input" id="productCategory" required onchange="toggleVariantInput(this)">
             <option value="">Pilih Kategori</option>
             <option value="Lampu">Lampu</option>
             <option value="Kipas Angin">Kipas Angin</option>
@@ -1289,7 +1761,21 @@
             <option value="Stopkontak">Stopkontak</option>
             <option value="Lainnya">Lainnya</option>
           </select>
-          <input type="number" class="form-input" id="productStock" placeholder="Stok" min="0" required>
+          <input type="number" class="form-input" id="productStock" placeholder="Stok Global" min="0" required>
+        </div>
+
+        <div id="variantPriceSection"
+          style="display:none; margin-bottom:1rem; padding:1rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px;">
+          <label style="display:block; font-weight:700; color:#0369a1; margin-bottom:0.5rem;">💰 Harga Per Varian
+            (Opsional)</label>
+          <p style="font-size:0.85rem; color:#0c4a6e; margin-bottom:0.5rem;">
+            Masukkan varian dan harga per baris. Contoh:<br>
+            5 Watt = 15000<br>
+            10 Watt = 25000<br>
+            *Jika diisi, input Harga & Kategori Watt di atas akan otomatis disesuaikan.
+          </p>
+          <textarea class="form-textarea" id="variantPriceInput" rows="4"
+            placeholder="5 Watt=15000&#10;10 Watt=25000"></textarea>
         </div>
 
         <textarea class="form-textarea" id="productDesc" placeholder="Deskripsi Produk" required></textarea>
@@ -1388,6 +1874,223 @@
     let activeCategory = 'all';
     let filteredProducts = null;
 
+    // === CART VARIABLES & FUNCTIONS ===
+    let cartItems = [];
+
+    // Load cart from localStorage
+    function loadCartFromStorage() {
+      const saved = localStorage.getItem('sadewaCart');
+      if (saved) {
+        try {
+          cartItems = JSON.parse(saved);
+          updateCartBadge();
+        } catch (e) {
+          console.error('Error loading cart:', e);
+          cartItems = [];
+        }
+      }
+    }
+
+    // Save cart to localStorage
+    function saveCartToStorage() {
+      localStorage.setItem('sadewaCart', JSON.stringify(cartItems));
+    }
+
+    // Toggle cart modal
+    window.toggleCart = function () {
+      const modal = document.getElementById('cartModal');
+      modal.classList.toggle('active');
+      if (modal.classList.contains('active')) {
+        renderCart();
+      }
+    };
+
+    // Close cart when clicking overlay
+    window.closeCartOnOverlay = function (event) {
+      if (event.target.id === 'cartModal') {
+        toggleCart();
+      }
+    };
+
+    // Get variant options based on category
+    function getVariantOptions(category) {
+      const variantMap = {
+        'Lampu': ['5 Watt', '7 Watt', '10 Watt', '15 Watt', '20 Watt', '25 Watt', '30 Watt', '40 Watt', '50 Watt', '60 Watt', '70 Watt', '80 Watt', '90 Watt', '100 Watt'],
+        'Kabel': ['1.5mm', '2.5mm', '4mm', '6mm', '10mm'],
+        'Kipas Angin': ['12 inch', '16 inch', '18 inch', '20 inch'],
+        'Saklar': ['1 Gang', '2 Gang', '3 Gang', '4 Gang'],
+        'Stopkontak': ['2 Lubang', '3 Lubang', '4 Lubang', 'Universal']
+      };
+      return variantMap[category] || [];
+    }
+
+    // Add to cart
+    window.addToCart = function (productId, fromSelect = false) {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      // Logic Varian: Prioritaskan variantPrices dari DB, fallback ke hardcoded
+      let variantOptions = [];
+      if (product.variantPrices && Object.keys(product.variantPrices).length > 0) {
+        variantOptions = Object.keys(product.variantPrices);
+      } else {
+        variantOptions = getVariantOptions(product.category);
+      }
+
+      let selectedVariant = '';
+      let finalPrice = product.price; // Default ke harga base (min)
+
+      // Cek varian
+      if (variantOptions.length > 0) {
+        const selectEl = document.getElementById('variant-' + productId);
+        if (selectEl) {
+          selectedVariant = selectEl.value;
+          if (!selectedVariant || selectedVariant === '') {
+            alert('Silakan pilih varian terlebih dahulu!');
+            return;
+          }
+
+          // AMBIL HARGA PER VARIAN JIKA ADA
+          if (product.variantPrices && product.variantPrices[selectedVariant]) {
+            finalPrice = product.variantPrices[selectedVariant];
+          }
+        }
+      }
+
+      // Check if item already exists in cart (same product + variant)
+      const existingIndex = cartItems.findIndex(
+        item => item.id === productId && item.variant === selectedVariant
+      );
+
+      if (existingIndex !== -1) {
+        // Increase quantity
+        cartItems[existingIndex].quantity += 1;
+        // Update harga kalau-kalau berubah di admin
+        cartItems[existingIndex].price = finalPrice;
+      } else {
+        // Add new item
+        cartItems.push({
+          id: productId,
+          name: product.name,
+          price: finalPrice, // Gunakan harga final (varian atau base)
+          variant: selectedVariant,
+          quantity: 1,
+          media: product.media
+        });
+      }
+
+      saveCartToStorage();
+      updateCartBadge();
+
+      // Show feedback
+      alert('Produk berhasil ditambahkan ke keranjang!');
+    };
+
+    // Remove from cart
+    window.removeFromCart = function (index) {
+      cartItems.splice(index, 1);
+      saveCartToStorage();
+      updateCartBadge();
+      renderCart();
+    };
+
+    // Update quantity
+    window.updateQuantity = function (index, change) {
+      cartItems[index].quantity += change;
+      if (cartItems[index].quantity <= 0) {
+        removeFromCart(index);
+      } else {
+        saveCartToStorage();
+        renderCart();
+      }
+    };
+
+    // Calculate total
+    function calculateTotal() {
+      return cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    }
+
+    // Update cart badge
+    function updateCartBadge() {
+      const badge = document.getElementById('cartBadge');
+      const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+      if (badge) {
+        badge.textContent = totalItems;
+      }
+    }
+
+    // Render cart items
+    function renderCart() {
+      const container = document.getElementById('cartItemsContainer');
+      const totalEl = document.getElementById('cartTotalValue');
+
+      if (cartItems.length === 0) {
+        container.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🛒</div><p class="cart-empty-text">Keranjang Anda masih kosong</p></div>';
+        totalEl.textContent = 'Rp 0';
+        return;
+      }
+
+      container.innerHTML = cartItems.map((item, index) => {
+        const media = item.media && item.media.startsWith('data:image')
+          ? '<img src="' + item.media + '" style="width:60px; height:60px; object-fit:cover; border-radius:8px; margin-right:12px;">'
+          : '<div style="width:60px; height:60px; display:flex; align-items:center; justify-content:center; font-size:2rem; margin-right:12px;">' + (item.media || '⚡') + '</div>';
+
+        return '<div class="cart-item"><div class="cart-item-header"><div style="display:flex; align-items:center; flex:1;">'
+          + media
+          + '<div><div class="cart-item-name">' + item.name + '</div>'
+          + (item.variant ? '<div class="cart-item-variant">Varian: ' + item.variant + '</div>' : '')
+          + '</div></div><button class="cart-item-remove" onclick="removeFromCart(' + index + ')">🗑️</button></div>'
+          + '<div class="cart-item-footer"><div class="cart-item-quantity">'
+          + '<button class="qty-btn" onclick="updateQuantity(' + index + ', -1)">-</button>'
+          + '<span class="qty-value">' + item.quantity + '</span>'
+          + '<button class="qty-btn" onclick="updateQuantity(' + index + ', 1)">+</button></div>'
+          + '<div class="cart-item-price">Rp ' + (item.price * item.quantity).toLocaleString('id-ID') + '</div></div></div>';
+      }).join('');
+
+      totalEl.textContent = 'Rp ' + calculateTotal().toLocaleString('id-ID');
+    }
+
+    // Clear cart
+    window.clearCart = function () {
+      if (confirm('Yakin ingin mengosongkan keranjang?')) {
+        cartItems = [];
+        saveCartToStorage();
+        updateCartBadge();
+        renderCart();
+      }
+    };
+
+    // Checkout via WhatsApp
+    window.checkoutWhatsApp = function () {
+      if (cartItems.length === 0) {
+        alert('Keranjang Anda masih kosong!');
+        return;
+      }
+
+      let message = '🛒 *Pesanan dari Sadewa Elektronik*\n\n';
+      message += '*Detail Pesanan:*\n';
+
+      cartItems.forEach((item, i) => {
+        message += '\n' + (i + 1) + '. ' + item.name;
+        if (item.variant) {
+          message += ' (' + item.variant + ')';
+        }
+        message += '\n   Jumlah: ' + item.quantity + ' pcs';
+        message += '\n   Harga: Rp ' + (item.price * item.quantity).toLocaleString('id-ID');
+        message += '\n';
+      });
+
+      message += '\n*Total: Rp ' + calculateTotal().toLocaleString('id-ID') + '*\n\n';
+      message += 'Mohon konfirmasi ketersediaan dan estimasi pengiriman. Terima kasih!';
+
+      const phoneNumber = '6285872189172';
+      const encodedMessage = encodeURIComponent(message);
+      const whatsappURL = 'https://wa.me/' + phoneNumber + '?text=' + encodedMessage;
+
+      window.open(whatsappURL, '_blank');
+    };
+
+
     // 2. INITIALIZATION & REAL-TIME SYNC
     function init() {
       // Mengambil data real-time dari Firestore
@@ -1473,40 +2176,157 @@
       document.getElementById('mainWebsite').style.display = 'block';
     };
     // Fungsi untuk memformat angka menjadi format ribuan saat diketik
+    // UPDATED: Mendukung format range "15.000 - 100.000" dengan auto-dots
     window.formatRupiah = (element) => {
-      let value = element.value.replace(/\D/g, ""); // Hapus semua karakter selain angka
-      if (value === "") {
-        element.value = "";
-        return;
+      let value = element.value;
+
+      // 1. Cek apakah ini range (mengandung "-")
+      if (value.includes('-')) {
+        // Pisahkan berdasarkan strip
+        let parts = value.split('-');
+
+        // Bersihkan dan format setiap bagian
+        let formattedParts = parts.map((part, index) => {
+          // Hapus semua karakter non-digit
+          let raw = part.replace(/\D/g, "");
+
+          // Jika kosong (misal baru ngetik "-"), kembalikan string kosong
+          if (!raw) return "";
+
+          // Format angka ribuan
+          return new Intl.NumberFormat('id-ID').format(raw);
+        });
+
+        // Gabungkan kembali dengan separator " - "
+        // Logic trick: kalau bagian kedua masih kosong (misal baru ngetik "20.000-"), 
+        // jangan paksa tambah spasi biar cursor gak lompat aneh, tapi kita handle basic join.
+        if (parts.length > 1) {
+          element.value = formattedParts[0] + " - " + formattedParts[1];
+        } else {
+          element.value = formattedParts[0] + " - ";
+        }
+
+      } else {
+        // Bukan range, format biasa single price
+        let numberString = value.replace(/\D/g, "");
+        if (numberString === "") {
+          element.value = "";
+          return;
+        }
+        element.value = new Intl.NumberFormat('id-ID').format(numberString);
       }
-      // Tambahkan titik setiap 3 digit
-      element.value = new Intl.NumberFormat('id-ID').format(value);
+    };
+
+    // Toggle input varian di form tambah produk
+    window.toggleVariantInput = (select) => {
+      const val = select.value;
+      const section = document.getElementById('variantPriceSection');
+      const subCat = document.getElementById('productSubCategory');
+
+      // Daftar kategori yang butuh varian
+      const needVariant = ['Lampu', 'Kabel', 'Kipas Angin', 'Saklar', 'Stopkontak'];
+
+      if (needVariant.includes(val)) {
+        section.style.display = 'block';
+        // Subkategori jadi opsional jika pakai varian manual
+        subCat.required = false;
+      } else {
+        section.style.display = 'none';
+        subCat.required = false;
+      }
+    };
+
+    window.filterCategory = (category, btn) => {
+      activeCategory = category;
+      document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      if (category === 'Lampu') {
+        // Tampilkan dropdown subkategori jika kategori adalah 'Lampu'
+        document.getElementById('productSubCategory').style.display = 'block';
+      } else {
+        document.getElementById('productSubCategory').style.display = 'none';
+      }
+      applyFilters();
     };
 
     // Fungsi pembantu untuk mengubah "25.000" kembali jadi 25000 (angka murni)
     const cleanNumber = (str) => {
       return parseInt(str.replace(/\./g, "")) || 0;
     };
+
     // 4. DATABASE OPERATIONS (FIRESTORE)
     window.addProduct = async (e) => {
       e.preventDefault();
       try {
-        // Ambil nilai string dari input (misal: "25.000")
         const rawPrice = document.getElementById('productPrice').value;
+        const variantInput = document.getElementById('variantPriceInput').value.trim();
 
-        // Fungsi untuk membersihkan titik (25.000 -> 25000)
-        const cleanPrice = parseInt(rawPrice.replace(/\./g, "")) || 0;
+        let finalPrice = 0;
+        let displayPrice = "";
+        let variantPrices = {}; // { "5 Watt": 15000, "10 Watt": 20000 }
+
+        // 1. Parsing Variant Input jika ada
+        if (variantInput) {
+          const lines = variantInput.split('\n');
+          let minP = Infinity;
+          let maxP = -Infinity;
+
+          lines.forEach(line => {
+            const parts = line.split('=');
+            if (parts.length === 2) {
+              const vName = parts[0].trim();
+              const vPrice = cleanNumber(parts[1].trim());
+              if (vName && vPrice > 0) {
+                variantPrices[vName] = vPrice;
+                if (vPrice < minP) minP = vPrice;
+                if (vPrice > maxP) maxP = vPrice;
+              }
+            }
+          });
+
+          // Jika valid variants found
+          if (Object.keys(variantPrices).length > 0) {
+            finalPrice = minP;
+            if (minP === maxP) {
+              displayPrice = `Rp ${minP.toLocaleString('id-ID')}`;
+            } else {
+              displayPrice = `${minP.toLocaleString('id-ID')} - ${maxP.toLocaleString('id-ID')}`;
+            }
+          }
+        }
+
+        // 2. Fallback ke input harga biasa jika tidak ada varian valid
+        if (Object.keys(variantPrices).length === 0) {
+          if (rawPrice.includes('-')) {
+            const parts = rawPrice.split('-');
+            const firstPart = parts[0].trim();
+            finalPrice = cleanNumber(firstPart);
+            displayPrice = rawPrice;
+          } else {
+            finalPrice = cleanNumber(rawPrice);
+            // displayPrice kosong, nanti render pakai toLocaleString
+          }
+        }
 
         const newProduct = {
           name: document.getElementById('productName').value,
-          price: cleanPrice, // Gunakan harga yang sudah bersih dari titik
+          price: finalPrice,
+          displayPrice: displayPrice,
+          variantPrices: variantPrices,   // Simpan map varian
           category: document.getElementById('productCategory').value,
+          subCategory: document.getElementById('productSubCategory').value,
           stock: parseInt(document.getElementById('productStock').value),
           description: document.getElementById('productDesc').value,
           features: document.getElementById('productFeatures').value,
           media: document.getElementById('productImage').value || '⚡',
           createdAt: serverTimestamp()
         };
+
+        const subCategory = document.getElementById('productSubCategory').value;
+        if (!subCategory && activeCategory === 'Lampu') {
+          alert('Pilih watt untuk Lampu!');
+          return;
+        }
 
         await addDoc(prodCol, newProduct);
         alert("Produk Berhasil Disimpan di Cloud!");
@@ -1536,6 +2356,14 @@
         return passCat && passSearch;
       });
       renderProducts();
+
+      // Update search meta counter
+      const searchMeta = document.getElementById('searchMeta');
+      if (searchMeta) {
+        const total = products.length;
+        const showing = filteredProducts ? filteredProducts.length : total;
+        searchMeta.textContent = `Menampilkan ${showing} dari ${total}`;
+      }
     };
 
     window.filterCategory = (category, btn) => {
@@ -1546,10 +2374,22 @@
     };
 
     function initSearchBar() {
-      document.getElementById('productSearch').oninput = (e) => {
+      const searchInput = document.getElementById('productSearch');
+      const clearBtn = document.getElementById('clearSearchBtn');
+
+      searchInput.oninput = (e) => {
         lastSearchQuery = e.target.value;
         applyFilters();
       };
+
+      // Clear search button
+      if (clearBtn) {
+        clearBtn.onclick = () => {
+          searchInput.value = '';
+          lastSearchQuery = '';
+          applyFilters();
+        };
+      }
     }
     window.handleMediaUpload = (e) => {
       const file = e.target.files[0];
@@ -1604,33 +2444,126 @@
           ? `<img src="${p.media}" style="width:100%; height:100%; object-fit:cover;">`
           : `<div style="font-size: 5rem; display:flex; align-items:center; justify-content:center; height:100%;">${p.media}</div>`;
 
+        // Logic Varian: Prioritaskan variantPrices dari DB, fallback ke hardcoded
+        let variantOptions = [];
+        let hasCustomVariants = false;
+
+        if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
+          variantOptions = Object.keys(p.variantPrices);
+          hasCustomVariants = true;
+        } else {
+          variantOptions = getVariantOptions(p.category);
+        }
+
+        let variantHtml = '';
+        if (variantOptions && variantOptions.length > 0) {
+          // Tambahkan onchange untuk update harga real-time
+          variantHtml = `
+            <select id="variant-${p.id}" class="variant-select" onclick="event.stopPropagation()" onchange="updateProductPrice(this, '${p.id}')">
+              <option value="">-- Pilih Varian --</option>
+              ${variantOptions.map(v => `<option value="${v}">${v}</option>`).join('')}
+            </select>`;
+        }
+
+        // TAMPILKAN HARGA: Gunakan displayPrice jika ada (range), kalau tidak gunakan price biasa
+        const priceToShow = p.displayPrice ? p.displayPrice : `Rp ${p.price.toLocaleString('id-ID')}`;
+
         return `
-      <div class="product-card">
+      <div class="product-card" id="card-${p.id}">
         <div class="product-image" style="height:200px; background:rgba(0,0,0,0.2); overflow:hidden; display:flex; align-items:center; justify-content:center;">
           ${mediaContent}
         </div>
         <div class="product-info">
           <h3 class="product-title">${p.name}</h3>
           <p class="product-desc">${p.description || ''}</p>
-          <div class="product-price">Rp ${p.price.toLocaleString('id-ID')}</div>
-          <button class="btn" onclick="window.open('https://wa.me/6285872189172?text=Halo, saya mau beli ${p.name}')">Beli Sekarang</button>
+          
+          ${variantHtml}
+
+          <div class="product-price-wrapper">
+            <div class="product-price" id="price-${p.id}" style="margin-bottom:0">${priceToShow}</div>
+            <button class="btn-add-cart" onclick="addToCart('${p.id}', true)" title="Tambah ke Keranjang">🛒</button>
+          </div>
+
+          <button class="btn" onclick="buyDirectly('${p.id}')">Beli Sekarang</button>
         </div>
       </div>
     `;
       }).join('');
     };
 
+    // Fungsi Update Harga saat Pilih Varian
+    window.updateProductPrice = (select, pid) => {
+      const val = select.value;
+      const product = products.find(p => p.id === pid);
+      const priceEl = document.getElementById('price-' + pid);
+
+      if (!product || !priceEl) return;
+
+      if (val && product.variantPrices && product.variantPrices[val]) {
+        // Jika varian dipilih dan ada harganya, update teks harga
+        const newPrice = product.variantPrices[val];
+        priceEl.textContent = `Rp ${newPrice.toLocaleString('id-ID')}`;
+        priceEl.style.color = '#00d4ff'; // Highlight
+      } else {
+        // Balik ke harga default (displayPrice atau range awal)
+        const defaultPrice = product.displayPrice ? product.displayPrice : `Rp ${product.price.toLocaleString('id-ID')}`;
+        priceEl.textContent = defaultPrice;
+      }
+    };
+
+    // Note: addToCart needs update too, I will inject the updated addToCart below logic block or I should have done it separately. 
+    // Wait, addToCart is defined way above. I need to redefine it or I can just override it here?
+    // It is cleaner to update the original addToCart function.
+    // However, since I am in "replace_file_content" for renderProducts area, I cannot reach lines 1914 easily in same call.
+    // I will do renderProducts first.
+
+    // Fungsi Direct Buy via WhatsApp dengan Varian
+    window.buyDirectly = (productId) => {
+      const product = products.find(p => p.id === productId);
+      if (!product) return;
+
+      let message = `Halo, saya mau beli *${product.name}*`;
+      let selectedVariant = '';
+
+      // Cek apakah ada dropdown varian di card produk
+      const selectEl = document.getElementById('variant-' + productId);
+      if (selectEl) {
+        selectedVariant = selectEl.value;
+        if (selectedVariant) {
+          message += ` (Varian: ${selectedVariant})`;
+
+          // Tambahkan harga spesifik jika ada
+          if (product.variantPrices && product.variantPrices[selectedVariant]) {
+            const vPrice = product.variantPrices[selectedVariant];
+            message += `\nHarga: Rp ${vPrice.toLocaleString('id-ID')}`;
+          }
+        } else {
+          // Opsional: Jika user belum pilih varian tapi klik Beli, kita bisa ingatkan atau biarkan pesan umum
+          // Untuk praktis, kita biarkan tapi tambahkan note
+          // message += `\n(Mohon info varian yang diinginkan)`;
+        }
+      }
+
+      // Encode dan kirim
+      const phone = '6285872189172';
+      const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+      window.open(url, '_blank');
+    };
+
     function renderAdminTable() {
       const tbody = document.getElementById('adminProductTable');
-      tbody.innerHTML = products.map(p => `
+      tbody.innerHTML = products.map(p => {
+        const priceDisplay = p.displayPrice ? p.displayPrice : `Rp ${p.price.toLocaleString()}`;
+        return `
         <tr>
           <td style="padding:10px">${p.name}</td>
           <td>${p.category}</td>
-          <td>Rp ${p.price.toLocaleString()}</td>
+          <td>${priceDisplay}</td>
           <td>${p.stock}</td>
           <td><button onclick="deleteProduct('${p.id}')" style="color:red; cursor:pointer;">Hapus</button></td>
         </tr>
-      `).join('');
+      `;
+      }).join('');
     }
     function initChat() {
       const chatlog = document.getElementById('chatlog');
@@ -1644,7 +2577,9 @@
     </div>
   `;
       chatlog.innerHTML = welcomeMessage;
-      sendBtn.onclick = () => {
+
+      // Fungsi untuk mengirim pesan
+      const sendMessage = () => {
         const queryText = userInput.value.trim().toLowerCase();
         if (!queryText) return;
 
@@ -1701,10 +2636,53 @@
           chatlog.scrollTop = chatlog.scrollHeight;
         }, 600);
       };
+
+      // Event listener untuk tombol kirim
+      sendBtn.onclick = sendMessage;
+
+      // Event listener untuk Enter key
+      userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          sendMessage();
+        }
+      });
     }
 
     init();
   </script>
+
+  <!-- Cart Modal -->
+  <div id="cartModal" class="cart-modal" onclick="closeCartOnOverlay(event)">
+    <div class="cart-sidebar">
+      <!-- Header -->
+      <div class="cart-header">
+        <h2 class="cart-title">🛒 Keranjang Belanja</h2>
+        <button class="cart-close" onclick="toggleCart()">✕</button>
+      </div>
+
+      <!-- Items Container -->
+      <div class="cart-items" id="cartItemsContainer">
+        <!--Cart items will be rendered here dynamically -->
+        <div class="cart-empty">
+          <div class="cart-empty-icon">🛒</div>
+          <p class="cart-empty-text">Keranjang Anda masih kosong</p>
+        </div>
+      </div>
+
+      <!-- Footer with Total and Checkout -->
+      <div class="cart-footer">
+        <div class="cart-total">
+          <span class="cart-total-label">Total:</span>
+          <span class="cart-total-value" id="cartTotalValue">Rp 0</span>
+        </div>
+        <button class="cart-checkout-btn" id="checkoutBtn" onclick="checkoutWhatsApp()">
+          💬 Checkout via WhatsApp
+        </button>
+        <button class="cart-clear-btn" onclick="clearCart()">Kosongkan Keranjang</button>
+      </div>
+    </div>
+  </div>
+
 </body>
 
 </html>
