@@ -1765,17 +1765,21 @@
         </div>
 
         <div id="variantPriceSection"
-          style="display:none; margin-bottom:1rem; padding:1rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:8px;">
-          <label style="display:block; font-weight:700; color:#0369a1; margin-bottom:0.5rem;">💰 Harga Per Varian
-            (Opsional)</label>
-          <p style="font-size:0.85rem; color:#0c4a6e; margin-bottom:0.5rem;">
-            Masukkan varian dan harga per baris. Contoh:<br>
-            5 Watt = 15000<br>
-            10 Watt = 25000<br>
-            *Jika diisi, input Harga & Kategori Watt di atas akan otomatis disesuaikan.
+          style="display:none; margin-bottom:1rem; padding:1.5rem; background:#f0f9ff; border:1px solid #bae6fd; border-radius:12px;">
+          <label style="display:block; font-weight:800; color:#0369a1; margin-bottom:0.5rem; font-size:1.1rem;">� Varian
+            Produk Detail</label>
+          <p style="font-size:0.9rem; color:#0c4a6e; margin-bottom:1rem;">
+            Tambahkan varian (Contoh: 5 Watt, 10 Watt) beserta harga dan foto spesifik masing-masing.
           </p>
-          <textarea class="form-textarea" id="variantPriceInput" rows="4"
-            placeholder="5 Watt=15000&#10;10 Watt=25000"></textarea>
+
+          <div id="variantContainer">
+            <!-- Dynamic Variant Items will be added here -->
+          </div>
+
+          <button type="button" onclick="addVariantRow()"
+            style="background:#0ea5e9; color:white; border:none; padding:0.5rem 1rem; border-radius:8px; font-weight:700; cursor:pointer; margin-top:0.5rem;">
+            + Tambah Varian
+          </button>
         </div>
 
         <textarea class="form-textarea" id="productDesc" placeholder="Deskripsi Produk" required></textarea>
@@ -2110,8 +2114,8 @@
     // 1. Fungsi Membuka Modal
     // 1. Definisikan Kredensial (Jika belum ada)
     const ADMIN_CREDENTIALS = {
-      username: "admin",
-      password: "admin123" // Ganti sesuai keinginan
+      username: "sadewa",
+      password: "sadewa990" // Ganti sesuai keinginan
     };
 
     // 2. Daftarkan ke Window agar bisa dipanggil onclick HTML
@@ -2255,37 +2259,126 @@
     };
 
     // 4. DATABASE OPERATIONS (FIRESTORE)
+    // Helper untuk Dynamic Variants
+    window.addVariantRow = () => {
+      const container = document.getElementById('variantContainer');
+      const id = Date.now();
+      const div = document.createElement('div');
+      div.className = 'variant-row';
+      div.id = `v-row-${id}`;
+      div.style.cssText = 'display:flex; gap:0.5rem; align-items:flex-end; margin-bottom:0.75rem; background:white; padding:0.75rem; border-radius:8px; border:1px solid #bae6fd;';
+
+      div.innerHTML = `
+        <div style="flex:1;">
+          <label style="font-size:0.75rem; color:#64748b; font-weight:700;">Nama Varian</label>
+          <input type="text" class="form-input v-name" placeholder="Contoh: 5 Watt" style="width:100%; font-size:0.9rem;">
+        </div>
+        <div style="flex:1;">
+          <label style="font-size:0.75rem; color:#64748b; font-weight:700;">Harga (Rp)</label>
+          <input type="text" class="form-input v-price" placeholder="15.000" oninput="window.formatRupiah(this)" style="width:100%; font-size:0.9rem;">
+        </div>
+        <div style="width:40px;">
+             <label style="font-size:0.75rem; color:#64748b; font-weight:700; text-align:center; display:block;">Foto</label>
+             <div onclick="document.getElementById('v-img-${id}').click()" style="width:40px; height:40px; background:#f1f5f9; border:1px dashed #cbd5e1; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; overflow:hidden;" title="Upload Foto Varian">
+                <img id="v-preview-${id}" style="width:100%; height:100%; object-fit:cover; display:none;">
+                <span id="v-icon-${id}" style="font-size:1.2rem;">📷</span>
+             </div>
+             <input type="file" id="v-img-${id}" accept="image/*" style="display:none;" onchange="window.handleVariantImage(this, '${id}')">
+             <input type="hidden" class="v-media-data" id="v-data-${id}">
+        </div>
+        <button type="button" onclick="removeVariantRow('${id}')" style="background:#ef4444; color:white; border:none; padding:0.5rem; border-radius:6px; cursor:pointer; height:40px; width:40px; display:flex; align-items:center; justify-content:center;">✕</button>
+      `;
+      container.appendChild(div);
+    };
+
+    window.removeVariantRow = (id) => {
+      document.getElementById(`v-row-${id}`).remove();
+    };
+
+    window.handleVariantImage = (input, id) => {
+      const file = input.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const res = e.target.result;
+        document.getElementById(`v-data-${id}`).value = res;
+        const preview = document.getElementById(`v-preview-${id}`);
+        preview.src = res;
+        preview.style.display = 'block';
+        document.getElementById(`v-icon-${id}`).style.display = 'none';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.resetForm = () => {
+      // 1. Reset standard form input
+      const form = document.querySelector('form[onsubmit="addProduct(event)"]');
+      if (form) form.reset();
+
+      // 2. Clear Dynamic Variants
+      const container = document.getElementById('variantContainer');
+      if (container) container.innerHTML = '';
+
+      // 3. Hide Previews
+      const imgPreview = document.getElementById('imagePreview');
+      if (imgPreview) {
+        imgPreview.src = '';
+        imgPreview.style.display = 'none';
+      }
+
+      const vidPreview = document.getElementById('videoPreview');
+      if (vidPreview) {
+        vidPreview.src = '';
+        vidPreview.style.display = 'none';
+      }
+
+      // 4. Reset hidden inputs
+      const hiddenImg = document.getElementById('productImage');
+      if (hiddenImg) hiddenImg.value = '⚡';
+
+      const section = document.getElementById('variantPriceSection');
+      if (section) section.style.display = 'none';
+    };
+
     window.addProduct = async (e) => {
       e.preventDefault();
       try {
         const rawPrice = document.getElementById('productPrice').value;
-        const variantInput = document.getElementById('variantPriceInput').value.trim();
 
         let finalPrice = 0;
         let displayPrice = "";
-        let variantPrices = {}; // { "5 Watt": 15000, "10 Watt": 20000 }
+        let variantPrices = {}; // Legacy support
+        let variants = []; // Structure baru: Array of objects
 
-        // 1. Parsing Variant Input jika ada
-        if (variantInput) {
-          const lines = variantInput.split('\n');
+        // 1. Collect Variants
+        const variantRows = document.querySelectorAll('#variantContainer .variant-row');
+        if (variantRows.length > 0) {
           let minP = Infinity;
           let maxP = -Infinity;
 
-          lines.forEach(line => {
-            const parts = line.split('=');
-            if (parts.length === 2) {
-              const vName = parts[0].trim();
-              const vPrice = cleanNumber(parts[1].trim());
-              if (vName && vPrice > 0) {
-                variantPrices[vName] = vPrice;
-                if (vPrice < minP) minP = vPrice;
-                if (vPrice > maxP) maxP = vPrice;
-              }
+          variantRows.forEach(row => {
+            const name = row.querySelector('.v-name').value.trim();
+            const priceStr = row.querySelector('.v-price').value;
+            const price = cleanNumber(priceStr);
+            const media = row.querySelector('.v-media-data').value;
+
+            if (name && price > 0) {
+              variants.push({
+                name: name,
+                price: price,
+                media: media || "" // Bisa kosong, nanti fallback ke main image
+              });
+
+              // Isi variantPrices map untuk backward compability logic lama
+              variantPrices[name] = price;
+
+              if (price < minP) minP = price;
+              if (price > maxP) maxP = price;
             }
           });
 
-          // Jika valid variants found
-          if (Object.keys(variantPrices).length > 0) {
+          if (variants.length > 0) {
             finalPrice = minP;
             if (minP === maxP) {
               displayPrice = `Rp ${minP.toLocaleString('id-ID')}`;
@@ -2296,7 +2389,7 @@
         }
 
         // 2. Fallback ke input harga biasa jika tidak ada varian valid
-        if (Object.keys(variantPrices).length === 0) {
+        if (variants.length === 0) {
           if (rawPrice.includes('-')) {
             const parts = rawPrice.split('-');
             const firstPart = parts[0].trim();
@@ -2304,7 +2397,6 @@
             displayPrice = rawPrice;
           } else {
             finalPrice = cleanNumber(rawPrice);
-            // displayPrice kosong, nanti render pakai toLocaleString
           }
         }
 
@@ -2312,7 +2404,8 @@
           name: document.getElementById('productName').value,
           price: finalPrice,
           displayPrice: displayPrice,
-          variantPrices: variantPrices,   // Simpan map varian
+          variantPrices: variantPrices, // Tetap simpan
+          variants: variants,           // Simpan structure baru
           category: document.getElementById('productCategory').value,
           subCategory: document.getElementById('productSubCategory').value,
           stock: parseInt(document.getElementById('productStock').value),
@@ -2323,8 +2416,9 @@
         };
 
         const subCategory = document.getElementById('productSubCategory').value;
-        if (!subCategory && activeCategory === 'Lampu') {
-          alert('Pilih watt untuk Lampu!');
+        // Logic subcategory bisa di-skip kalau varian sudah ada
+        if (!subCategory && activeCategory === 'Lampu' && variants.length === 0) {
+          alert('Pilih watt untuk Lampu atau tambah varian manual!');
           return;
         }
 
@@ -2333,6 +2427,7 @@
 
         // Reset form dan gambar preview
         e.target.reset();
+        document.getElementById('variantContainer').innerHTML = ''; // Clear variants
         if (document.getElementById('imagePreview')) {
           document.getElementById('imagePreview').style.display = 'none';
         }
@@ -2429,6 +2524,7 @@
       reader.readAsDataURL(file);
     };
     // 6. RENDER UI
+    // 6. RENDER UI
     window.renderProducts = function () {
       const grid = document.getElementById('productGrid');
       const list = (filteredProducts ? filteredProducts : products);
@@ -2439,39 +2535,48 @@
       }
 
       grid.innerHTML = list.map(p => {
-        // LOGIKA PERBAIKAN: Cek apakah media dimulai dengan "data:image" (Base64)
-        const mediaContent = p.media.startsWith('data:image')
-          ? `<img src="${p.media}" style="width:100%; height:100%; object-fit:cover;">`
-          : `<div style="font-size: 5rem; display:flex; align-items:center; justify-content:center; height:100%;">${p.media}</div>`;
+        // Initials
+        const mediaContentStr = (p.media && p.media.startsWith('data:image'))
+          ? `<img src="${p.media}" id="img-${p.id}" style="width:100%; height:100%; object-fit:cover;">`
+          : `<div id="img-${p.id}" style="font-size: 5rem; display:flex; align-items:center; justify-content:center; height:100%;">${p.media || '⚡'}</div>`;
 
-        // Logic Varian: Prioritaskan variantPrices dari DB, fallback ke hardcoded
-        let variantOptions = [];
-        let hasCustomVariants = false;
-
-        if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
-          variantOptions = Object.keys(p.variantPrices);
-          hasCustomVariants = true;
-        } else {
-          variantOptions = getVariantOptions(p.category);
-        }
-
+        // Logic Varian
         let variantHtml = '';
-        if (variantOptions && variantOptions.length > 0) {
-          // Tambahkan onchange untuk update harga real-time
+        let hasVariants = false;
+
+        // Cek struktur baru 'variants' (Array) atau fallback ke 'variantPrices' (Map)
+        if (p.variants && p.variants.length > 0) {
+          hasVariants = true;
           variantHtml = `
-            <select id="variant-${p.id}" class="variant-select" onclick="event.stopPropagation()" onchange="updateProductPrice(this, '${p.id}')">
+            <select id="variant-${p.id}" class="variant-select" onclick="event.stopPropagation()" onchange="window.updateProductVariant(this, '${p.id}')">
               <option value="">-- Pilih Varian --</option>
-              ${variantOptions.map(v => `<option value="${v}">${v}</option>`).join('')}
+              ${p.variants.map(v => `<option value="${v.name}">${v.name}</option>`).join('')}
             </select>`;
+        } else if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
+          hasVariants = true;
+          variantHtml = `
+            <select id="variant-${p.id}" class="variant-select" onclick="event.stopPropagation()" onchange="window.updateProductVariant(this, '${p.id}')">
+              <option value="">-- Pilih Varian --</option>
+              ${Object.keys(p.variantPrices).map(k => `<option value="${k}">${k}</option>`).join('')}
+            </select>`;
+        } else {
+          // Fallback auto-generate options for specific categories if no manual variants
+          const autoOpts = getVariantOptions(p.category);
+          if (autoOpts && autoOpts.length > 0) {
+            variantHtml = `
+                <select id="variant-${p.id}" class="variant-select" onclick="event.stopPropagation()" onchange="window.updateProductVariant(this, '${p.id}')">
+                  <option value="">-- Pilih Varian --</option>
+                  ${autoOpts.map(k => `<option value="${k}">${k}</option>`).join('')}
+                </select>`;
+          }
         }
 
-        // TAMPILKAN HARGA: Gunakan displayPrice jika ada (range), kalau tidak gunakan price biasa
         const priceToShow = p.displayPrice ? p.displayPrice : `Rp ${p.price.toLocaleString('id-ID')}`;
 
         return `
       <div class="product-card" id="card-${p.id}">
         <div class="product-image" style="height:200px; background:rgba(0,0,0,0.2); overflow:hidden; display:flex; align-items:center; justify-content:center;">
-          ${mediaContent}
+          ${mediaContentStr}
         </div>
         <div class="product-info">
           <h3 class="product-title">${p.name}</h3>
@@ -2491,23 +2596,61 @@
       }).join('');
     };
 
-    // Fungsi Update Harga saat Pilih Varian
-    window.updateProductPrice = (select, pid) => {
+    // Fungsi Update Harga & Gambar saat Pilih Varian
+    window.updateProductVariant = (select, pid) => {
       const val = select.value;
       const product = products.find(p => p.id === pid);
+      if (!product) return;
+
       const priceEl = document.getElementById('price-' + pid);
+      const imgEl = document.getElementById('img-' + pid); // Element gambar (img tag atau div)
 
-      if (!product || !priceEl) return;
+      // 1. Cari data varian yang dipilih
+      let vData = null;
+      if (product.variants && product.variants.length > 0) {
+        vData = product.variants.find(v => v.name === val);
+      }
 
-      if (val && product.variantPrices && product.variantPrices[val]) {
-        // Jika varian dipilih dan ada harganya, update teks harga
+      // 2. Update Harga
+      if (vData) {
+        // Case: Struktur data baru (Array)
+        priceEl.textContent = `Rp ${vData.price.toLocaleString('id-ID')}`;
+        priceEl.style.color = '#00d4ff';
+
+        // Update Gambar jika ada spesifik image untuk varian ini
+        if (vData.media && vData.media.startsWith('data:image') && imgEl.tagName === 'IMG') {
+          imgEl.src = vData.media;
+        } else if (vData.media && vData.media.startsWith('data:image') && imgEl.tagName === 'DIV') {
+          // Kalau awalnya icon (DIV), ganti jadi IMG
+          const parent = imgEl.parentElement;
+          parent.innerHTML = `<img src="${vData.media}" id="img-${pid}" style="width:100%; height:100%; object-fit:cover;">`;
+        } else {
+          // Revert ke gambar utama jika varian tidak punya gambar khusus
+          // Atau jika awalnya product.media adalah image
+          if (product.media && product.media.startsWith('data:image') && imgEl.tagName === 'IMG') {
+            imgEl.src = product.media;
+          }
+        }
+
+      } else if (product.variantPrices && product.variantPrices[val]) {
+        // Case: Legacy data (Map)
         const newPrice = product.variantPrices[val];
         priceEl.textContent = `Rp ${newPrice.toLocaleString('id-ID')}`;
-        priceEl.style.color = '#00d4ff'; // Highlight
+        priceEl.style.color = '#00d4ff';
       } else {
-        // Balik ke harga default (displayPrice atau range awal)
+        // Reset (Pilih Varian / Kosong)
         const defaultPrice = product.displayPrice ? product.displayPrice : `Rp ${product.price.toLocaleString('id-ID')}`;
         priceEl.textContent = defaultPrice;
+        priceEl.style.color = 'var(--primary)';
+
+        // Reset Image to default
+        if (product.media && product.media.startsWith('data:image')) {
+          if (imgEl.tagName === 'IMG') imgEl.src = product.media;
+          else {
+            const parent = imgEl.parentElement;
+            parent.innerHTML = `<img src="${product.media}" id="img-${pid}" style="width:100%; height:100%; object-fit:cover;">`;
+          }
+        }
       }
     };
 
