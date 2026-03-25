@@ -8,7 +8,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="theme-color" content="#050816">
-  <link rel="stylesheet" href="favicon.ico">
+  <!-- favicon.ico as stylesheet removed (invalid) -->
   <title>Sadewa Elektronik - The First Cidahu Center Electronics</title>
   <link rel="icon" href="./icon/Logo.png" type="image/x-icon">
   <meta name="description" content="Toko Elektronik terpercaya di Cidahu">
@@ -3342,10 +3342,17 @@
       transition: all .25s
     }
 
-    .admin-btn-primary:hover {
+    .admin-btn-primary:hover:not(:disabled) {
       transform: translateY(-2px);
       box-shadow: 0 6px 20px rgba(201, 168, 76, .4);
       filter: brightness(1.08)
+    }
+
+    .admin-btn-primary:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none
     }
 
     .admin-btn-secondary {
@@ -4495,7 +4502,9 @@
           <div class="contact-card">
             <div class="contact-icon">📧</div>
             <h3 class="contact-title">Email</h3>
-            <p class="contact-info">sadewaelektronik1@gmail.com</p><a href="mailto:sadewaelektronik1@gmail.com"
+            <p class="contact-info"><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
+                data-cfemail="740715101103151118111f00061b1a1d1f45341319151d185a171b19">[email&#160;protected]</a></p><a
+              href="/cdn-cgi/l/email-protection#e7948683829086828b828c939588898e8cd6a7808a868e8bc984888a"
               class="contact-link">Kirim Email</a>
           </div>
           <div class="contact-card">
@@ -4616,6 +4625,22 @@
                 onchange="previewMainImage(this)">
               <button type="button" class="admin-btn-secondary" style="width:100%;margin-top:.4rem;"
                 onclick="document.getElementById('adminMainImage').click()">📁 Pilih Gambar Utama</button>
+            </div>
+            <div class="admin-form-group">
+              <label>🎥 Video Produk (Opsional)</label>
+              <div class="product-img-preview-box" id="mainVideoPreviewBox"
+                style="background:rgba(0,0,0,0.3);cursor:pointer;"
+                onclick="document.getElementById('adminMainVideo').click()">
+                <div class="placeholder-text">🎬<br>Klik untuk upload video<br><span
+                    style="font-size:0.7rem;color:var(--gray);">Maks 500MB</span></div>
+              </div>
+              <input type="file" id="adminMainVideo" accept="video/*" style="display:none"
+                onchange="previewMainVideo(this)">
+              <button type="button" class="admin-btn-secondary" style="width:100%;margin-top:.4rem;"
+                onclick="document.getElementById('adminMainVideo').click()">🎬 Pilih Video Produk</button>
+              <button type="button" class="admin-btn-secondary"
+                style="width:100%;margin-top:.3rem;color:#ef4444;border-color:rgba(239,68,68,0.3);"
+                onclick="clearMainVideo()" id="clearVideoBtn" style="display:none;">✕ Hapus Video</button>
             </div>
             <div class="admin-form-group"><label>Harga Dasar (Rp) *</label><input type="number" id="adminPrice"
                 placeholder="15000" min="0"></div>
@@ -5109,6 +5134,7 @@
   <!-- =========================================
        SCRIPTS
   ========================================= -->
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
   <script>
     // ──────────────────────────────────────────
     // WELCOME MODAL
@@ -5147,9 +5173,10 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
     import {
-      getFirestore, collection, onSnapshot, query, orderBy,
+      getFirestore, collection, onSnapshot, query, orderBy, enableIndexedDbPersistence,
       doc, addDoc, updateDoc, deleteDoc, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyDu21X_Cr7RoTMUnMS9oZCAVOS15D3ssyI",
@@ -5162,7 +5189,11 @@
     };
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
+    const auth = getAuth(app);
     const prodCol = collection(db, "sadewaProducts");
+
+    // Enable offline persistence
+    try { enableIndexedDbPersistence(db); } catch (err) { if (err.code !== 'failed-precondition' && err.code !== 'unimplemented') { console.error('Persistence error:', err); } }
 
     // ── State ──
     let products = [];
@@ -5171,14 +5202,24 @@
     let filteredProducts = null;
     let cartItems = [];
     let adminAuthenticated = false;
+    let currentUser = null;
 
-    // Admin credentials
-    const ADMIN_USER = 'admin';
-    const ADMIN_PASS = 'sadewa2024';
+    // Admin credentials (for fallback local auth)
+    const ADMIN_USER = 'sadewa';
+    const ADMIN_PASS = 'sadewa990';
+
+    // Firebase Auth State Listener
+    onAuthStateChanged(auth, (user) => {
+      currentUser = user;
+      if (user && adminAuthenticated) {
+        console.log('✅ Firebase user authenticated:', user.uid);
+      }
+    });
 
     // Variant images storage (key: variantName, value: base64)
     let variantImages = {};
     let mainImageBase64 = '';
+    let mainVideoBase64 = '';
     let variantCounter = 0;
 
     // ══════════════════════════════════════
@@ -5216,13 +5257,20 @@
         variantOptions = Object.keys(product.variantPrices);
       else variantOptions = getVariantOptions(product.category);
 
+      // Tambahkan opsi video ke variantOptions jika ada
+      const hasVideoOpt = product.video && product.video.startsWith('data:video');
+      const allOptions = hasVideoOpt ? ['🎬 Video Produk', ...variantOptions] : variantOptions;
+
       let selectedVariant = '', finalPrice = product.price;
-      if (variantOptions.length > 0) {
+      if (allOptions.length > 0) {
         const selectEl = document.getElementById('variant-' + productId);
         if (selectEl) {
           selectedVariant = selectEl.value;
           if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; }
-          if (product.variantPrices && product.variantPrices[selectedVariant]) finalPrice = product.variantPrices[selectedVariant];
+          // Video tidak mengubah harga
+          if (selectedVariant !== '🎬 Video Produk' && product.variantPrices && product.variantPrices[selectedVariant]) {
+            finalPrice = product.variantPrices[selectedVariant];
+          }
         }
       }
       // Get variant-specific image if available
@@ -5278,7 +5326,11 @@
       document.getElementById('ewalletTransferAmount').textContent = 'Rp ' + calculateTotal().toLocaleString('id-ID');
       document.getElementById('paymentModal').classList.add('active');
     };
-    window.closePaymentModal = function () { document.getElementById('paymentModal').classList.remove('active'); };
+    window.closePaymentModal = function () {
+      document.getElementById('paymentModal').classList.remove('active');
+      window.isBuyNowMode = false;
+      window.tempBuyNowCart = [];
+    };
     window.switchPaymentTab = function (tab, clickedEl) {
       document.querySelectorAll('.payment-tab').forEach(t => t.classList.remove('active'));
       if (clickedEl) clickedEl.classList.add('active');
@@ -5327,9 +5379,9 @@
     };
     function sendPaymentToWhatsApp() {
       let message = '💳 *KONFIRMASI PEMBAYARAN*\n━━━━━━━━━━━━━━━━━━━━\n\n*Detail Pesanan:*\n';
-      const items = window.isBuyNowMode ? window.tempBuyNowCart : cartItems;
+      const items = window.isBuyNowMode ? (window.tempBuyNowCart || []) : cartItems;
       items.forEach((item, i) => { message += `${i + 1}. ${item.name}`; if (item.variant) message += ` (${item.variant})`; message += `\n   ${item.quantity} pcs × Rp ${item.price.toLocaleString('id-ID')}\n   Subtotal: Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n\n`; });
-      const total = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+      const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
       message += `━━━━━━━━━━━━━━━━━━━━\n*Total: Rp ${total.toLocaleString('id-ID')}*\n\n*Metode Pembayaran:*\n`;
       if (selectedPaymentMethod === 'card') message += `💳 ${selectedPaymentProvider.toUpperCase()} - **** ${document.getElementById('cardNumber').value.slice(-4)}\nNama: ${document.getElementById('cardName').value}\n`;
       else if (selectedPaymentMethod === 'bank') message += `🏦 Transfer ${bankAccounts[selectedPaymentProvider]?.name || ''}\nNama: ${document.getElementById('senderName').value}\n`;
@@ -5338,7 +5390,13 @@
       message += '\n━━━━━━━━━━━━━━━━━━━━\n🙏 Terima kasih berbelanja di Sadewa Elektronik!';
       window.open(`https://wa.me/6285872189172?text=${encodeURIComponent(message)}`, '_blank');
     }
-    window.checkoutWithPayment = function () { toggleCart(); openPaymentModal(); };
+    window.checkoutWithPayment = function () {
+      if (cartItems.length === 0) { alert('Keranjang Anda masih kosong!'); return; }
+      window.isBuyNowMode = false;
+      window.tempBuyNowCart = [];
+      toggleCart();
+      openPaymentModal();
+    };
     window.toggleHelpModal = function () { document.getElementById('helpModal').classList.toggle('active'); };
     document.addEventListener('click', function (e) { const m = document.getElementById('helpModal'); if (e.target === m) m.classList.remove('active'); });
 
@@ -5359,7 +5417,13 @@
     window.filterCategory = (category, btn) => {
       activeCategory = category;
       document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+      if (btn) btn.classList.add('active');
+      // Jika dipanggil dari hero section, cari tombol kategori yang sesuai
+      if (!btn) {
+        document.querySelectorAll('.cat-btn').forEach(b => {
+          if (b.textContent.toLowerCase().includes(category.toLowerCase())) b.classList.add('active');
+        });
+      }
       applyFilters();
     };
     window.applyFilters = () => {
@@ -5370,7 +5434,8 @@
         return passCat && passSearch;
       });
       renderProducts();
-      const sm = document.getElementById('searchMeta'); if (sm) sm.textContent = `Menampilkan ${filteredProducts.length} dari ${products.length}`;
+      const sm = document.getElementById('searchMeta');
+      if (sm) sm.textContent = `Menampilkan ${filteredProducts.length} dari ${products.length}`;
     };
     function initSearchBar() {
       const si = document.getElementById('productSearch'), cb = document.getElementById('clearSearchBtn');
@@ -5383,20 +5448,52 @@
       const list = filteredProducts ? filteredProducts : products;
       if (list.length === 0) { grid.innerHTML = `<p style="text-align:center;grid-column:1/-1;color:var(--gray);">Produk tidak ditemukan.</p>`; return; }
       grid.innerHTML = list.map(p => {
-        // Determine media to show — can be base64 image or emoji
-        const mediaContent = (p.media && p.media.startsWith('data:image'))
-          ? `<img src="${p.media}" style="width:100%;height:100%;object-fit:cover;">`
-          : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:height:100%;">${p.media || '⚡'}</div>`;
+        let mediaContent;
+        let videoIndicator = '';
+        if (p.media && p.media.startsWith('data:image')) {
+          mediaContent = `<img src="${p.media}" style="width:100%;height:100%;object-fit:cover;">`;
+          if (p.video && p.video.startsWith('data:video')) {
+            videoIndicator = '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;">🎬 Video</div>';
+          }
+        } else if (p.video && p.video.startsWith('data:video')) {
+          // Show video with controls
+          mediaContent = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
+            <source src="${p.video}" type="video/mp4">
+            Browser tidak support video HTML5
+          </video>`;
+        } else {
+          mediaContent = `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${p.media || '⚡'}</div>`;
+        }
+
+        let videoButton = '';
+        // Video button removed - now using variant dropdown
 
         let variantHtml = '';
-        if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
-          variantHtml = `<select id="variant-${p.id}" class="variant-select" onchange="updateProductImage('${p.id}',this.value)"><option value="">-- Pilih Varian --</option>${Object.keys(p.variantPrices).map(k => `<option value="${k}">${k}</option>`).join('')}</select>`;
-        } else {
-          const autoOpts = getVariantOptions(p.category);
-          if (autoOpts.length > 0) variantHtml = `<select id="variant-${p.id}" class="variant-select"><option value="">-- Pilih Varian --</option>${autoOpts.map(k => `<option value="${k}">${k}</option>`).join('')}</select>`;
+        let variantOptions = [];
+
+        // Add video option if product has video
+        if (p.video && p.video.startsWith('data:video')) {
+          variantOptions.push('🎬 Video Produk');
         }
+
+        // Add existing variant prices
+        if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
+          variantOptions.push(...Object.keys(p.variantPrices));
+        } else {
+          // Add auto-generated variants
+          const autoOpts = getVariantOptions(p.category);
+          if (autoOpts.length > 0) {
+            variantOptions.push(...autoOpts);
+          }
+        }
+
+        // Create dropdown if we have options
+        if (variantOptions.length > 0) {
+          variantHtml = `<select id="variant-${p.id}" class="variant-select" onchange="updateProductImage('${p.id}',this.value)"><option value="">-- Pilih Varian --</option>${variantOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>`;
+        }
+
         const priceToShow = p.displayPrice ? p.displayPrice : `Rp ${p.price.toLocaleString('id-ID')}`;
-        return `<div class="product-card"><div class="product-image" id="productImg-${p.id}" style="height:200px;overflow:hidden;">${mediaContent}</div><div class="product-info"><h3 class="product-title">${p.name}</h3><p class="product-desc">${p.description || ''}</p>${variantHtml}<div class="product-price-wrapper"><div class="product-price" id="productPrice-${p.id}" style="margin-bottom:0">${priceToShow}</div><button class="btn-add-cart" onclick="addToCart('${p.id}')" title="Tambah ke Keranjang">🛒</button></div><button class="btn" onclick="buyDirectly('${p.id}')">Beli Sekarang</button></div></div>`;
+        return `<div class="product-card"><div class="product-image" id="productImg-${p.id}" style="height:200px;overflow:hidden;position:relative;">${mediaContent}${videoIndicator}</div><div class="product-info"><h3 class="product-title">${p.name}</h3><p class="product-desc">${p.description || ''}</p>${variantHtml}<div class="product-price-wrapper"><div class="product-price" id="productPrice-${p.id}" style="margin-bottom:0">${priceToShow}</div><button class="btn-add-cart" onclick="addToCart('${p.id}')" title="Tambah ke Keranjang">🛒</button></div><button class="btn" onclick="buyDirectly('${p.id}')">Beli Sekarang</button></div></div>`;
       }).join('');
     };
 
@@ -5406,12 +5503,39 @@
       if (!product) return;
       const imgBox = document.getElementById('productImg-' + productId);
       const priceEl = document.getElementById('productPrice-' + productId);
+
+      // Special handling for video option
+      if (variantName === '🎬 Video Produk' && product.video && product.video.startsWith('data:video')) {
+        imgBox.innerHTML = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
+          <source src="${product.video}" type="video/mp4">
+          Browser tidak support video HTML5
+        </video>`;
+        // Reset price when video is selected (no price change for video)
+        if (priceEl) {
+          priceEl.textContent = product.displayPrice || ('Rp ' + product.price.toLocaleString('id-ID'));
+        }
+        return;
+      }
+
       if (variantName && product.variantImages && product.variantImages[variantName]) {
         imgBox.innerHTML = `<img src="${product.variantImages[variantName]}" style="width:100%;height:100%;object-fit:cover;">`;
-      } else if (product.media) {
-        imgBox.innerHTML = product.media.startsWith('data:image')
-          ? `<img src="${product.media}" style="width:100%;height:100%;object-fit:cover;">`
-          : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${product.media}</div>`;
+      } else {
+        // Same priority as renderProducts: image > video > emoji
+        let videoIndicator = '';
+        if (product.media && product.media.startsWith('data:image')) {
+          imgBox.innerHTML = `<img src="${product.media}" style="width:100%;height:100%;object-fit:cover;">`;
+          if (product.video && product.video.startsWith('data:video')) {
+            videoIndicator = '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;">🎬 Video</div>';
+            imgBox.innerHTML += videoIndicator;
+          }
+        } else if (product.video && product.video.startsWith('data:video')) {
+          imgBox.innerHTML = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
+            <source src="${product.video}" type="video/mp4">
+            Browser tidak support video HTML5
+          </video>`;
+        } else {
+          imgBox.innerHTML = `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${product.media || '⚡'}</div>`;
+        }
       }
       if (priceEl && variantName && product.variantPrices && product.variantPrices[variantName]) {
         priceEl.textContent = 'Rp ' + product.variantPrices[variantName].toLocaleString('id-ID');
@@ -5420,19 +5544,45 @@
       }
     };
 
-    window.buyDirectly = (productId) => {
+    // ═══════════════════════════════════════
+    // BELI SEKARANG (buyDirectly)
+    // ═══════════════════════════════════════
+    window.buyDirectly = function (productId) {
       const product = products.find(p => p.id === productId);
       if (!product) return;
-      let variantOptions = product.variantPrices && Object.keys(product.variantPrices).length > 0 ? Object.keys(product.variantPrices) : getVariantOptions(product.category);
+      let variantOptions = [];
+      // Add video option if product has video
+      if (product.video && product.video.startsWith('data:video')) {
+        variantOptions.push('🎬 Video Produk');
+      }
+      // Add existing variant prices
+      if (product.variantPrices && Object.keys(product.variantPrices).length > 0) {
+        variantOptions.push(...Object.keys(product.variantPrices));
+      } else {
+        // Add auto-generated variants
+        const autoOpts = getVariantOptions(product.category);
+        if (autoOpts.length > 0) {
+          variantOptions.push(...autoOpts);
+        }
+      }
       let selectedVariant = '', finalPrice = product.price;
       if (variantOptions.length > 0) {
         const selectEl = document.getElementById('variant-' + productId);
-        if (selectEl) { selectedVariant = selectEl.value; if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; } if (product.variantPrices && product.variantPrices[selectedVariant]) finalPrice = product.variantPrices[selectedVariant]; }
+        if (selectEl) {
+          selectedVariant = selectEl.value;
+          if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; }
+          if (product.variantPrices && product.variantPrices[selectedVariant]) finalPrice = product.variantPrices[selectedVariant];
+        }
       }
       let itemMedia = product.media;
-      if (selectedVariant && product.variantImages && product.variantImages[selectedVariant]) itemMedia = product.variantImages[selectedVariant];
+      if (selectedVariant && product.variantImages && product.variantImages[selectedVariant]) {
+        itemMedia = product.variantImages[selectedVariant];
+      } else if (selectedVariant === '🎬 Video Produk' && product.video) {
+        itemMedia = product.video;
+      }
       const tempCartItem = { id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia };
-      window.tempBuyNowCart = [tempCartItem]; window.isBuyNowMode = true;
+      window.tempBuyNowCart = [tempCartItem];
+      window.isBuyNowMode = true;
       document.getElementById('paymentOrderItems').innerHTML = `<div class="order-item"><span>${tempCartItem.name} ${tempCartItem.variant ? '(' + tempCartItem.variant + ')' : ''} x1</span><span>Rp ${tempCartItem.price.toLocaleString('id-ID')}</span></div>`;
       document.getElementById('paymentTotal').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
       document.getElementById('transferAmount').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
@@ -5443,30 +5593,108 @@
     // ══════════════════════════════════════
     // ADMIN LOGIN / LOGOUT
     // ══════════════════════════════════════
-    window.showLoginModal = () => { document.getElementById('loginModal').classList.add('active'); };
+    window.showLoginModal = () => {
+      document.getElementById('loginModal').classList.add('active');
+      // Clear form untuk security
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      localStorage.removeItem('sadewaAdminUser');
+      localStorage.removeItem('sadewaAdminPass');
+      // Focus ke username field
+      setTimeout(() => { document.getElementById('loginUsername').focus(); }, 300);
+    };
     window.closeLoginModal = () => {
       document.getElementById('loginModal').classList.remove('active');
-      document.getElementById('loginUsername').value = ''; document.getElementById('loginPassword').value = '';
+      document.getElementById('loginUsername').value = '';
+      document.getElementById('loginPassword').value = '';
+      // Clear localStorage untuk security
+      localStorage.removeItem('sadewaAdminUser');
+      localStorage.removeItem('sadewaAdminPass');
     };
-    window.handleLogin = () => {
+    window.handleLogin = async () => {
       const user = document.getElementById('loginUsername').value.trim();
       const pass = document.getElementById('loginPassword').value;
-      if (user === ADMIN_USER && pass === ADMIN_PASS) {
-        adminAuthenticated = true;
-        closeLoginModal();
-        document.getElementById('mainWebsite').classList.remove('active');
-        document.getElementById('adminPage').classList.add('active');
-        renderAdminProductList();
-        updateAdminStats();
-      } else {
-        alert('Username atau password salah!');
+      const loginBtn = document.querySelector('.btn-login') || document.querySelector('[onclick*="handleLogin"]');
+
+      if (!user || !pass) {
+        alert('⚠️ Silakan isi username dan password!');
+        return;
+      }
+
+      // Show loading
+      if (loginBtn) {
+        loginBtn.disabled = true;
+        loginBtn.textContent = '⏳ Memverifikasi...';
+      }
+
+      try {
+        // Try Firebase Authentication first
+        const email = user.toLowerCase() + '@sadewa-admin.local';
+        const userCredential = await signInWithEmailAndPassword(auth, email, pass).catch(err => {
+          // If Firebase auth fails, use local auth (fallback)
+          const fallbackCodes = [
+            'auth/user-not-found', 'auth/invalid-credential',
+            'auth/wrong-password', 'auth/invalid-email',
+            'auth/network-request-failed', 'auth/too-many-requests'
+          ];
+          if (fallbackCodes.includes(err.code) || err.code?.startsWith('auth/')) {
+            if (user === ADMIN_USER && pass === ADMIN_PASS) {
+              return { user: { uid: 'local-admin', email: email } };
+            }
+          }
+          throw err;
+        });
+
+        if (userCredential && userCredential.user) {
+          currentUser = userCredential.user;
+          adminAuthenticated = true;
+          closeLoginModal();
+          document.getElementById('mainWebsite').classList.remove('active');
+          document.getElementById('adminPage').classList.add('active');
+          renderAdminProductList();
+          updateAdminStats();
+          console.log('✅ Login berhasil:', currentUser.uid);
+        }
+      } catch (error) {
+        console.error('❌ Login error:', error.code, error.message);
+
+        // Fallback to local auth
+        if (user === ADMIN_USER && pass === ADMIN_PASS) {
+          currentUser = { uid: 'local-admin', email: user };
+          adminAuthenticated = true;
+          closeLoginModal();
+          document.getElementById('mainWebsite').classList.remove('active');
+          document.getElementById('adminPage').classList.add('active');
+          renderAdminProductList();
+          updateAdminStats();
+          showAdminNotif('✅ Login berhasil (local mode)');
+        } else {
+          showAdminNotif('❌ Username atau password salah!', true);
+        }
+      } finally {
+        if (loginBtn) {
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Masuk';
+        }
       }
     };
-    window.adminLogout = () => {
-      adminAuthenticated = false;
-      document.getElementById('adminPage').classList.remove('active');
-      document.getElementById('mainWebsite').classList.add('active');
-      resetAdminForm();
+    window.adminLogout = async () => {
+      try {
+        if (currentUser && currentUser.uid !== 'local-admin') {
+          await signOut(auth);
+        }
+        currentUser = null;
+        adminAuthenticated = false;
+        document.getElementById('adminPage').classList.remove('active');
+        document.getElementById('mainWebsite').classList.add('active');
+        resetAdminForm();
+        showAdminNotif('👋 Logout berhasil');
+      } catch (error) {
+        console.error('Logout error:', error);
+        adminAuthenticated = false;
+        document.getElementById('adminPage').classList.remove('active');
+        document.getElementById('mainWebsite').classList.add('active');
+      }
     };
     window.goToWebsite = () => {
       document.getElementById('adminPage').classList.remove('active');
@@ -5565,13 +5793,41 @@
 
     window.previewVariantImage = function (id, input) {
       if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      // Validasi ukuran file
+      if (file.size > MAX_FILE_SIZE) {
+        showAdminNotif('❌ Ukuran file terlalu besar! Maksimal 5MB.', true);
+        input.value = '';
+        return;
+      }
+
+      // Validasi tipe file
+      if (!file.type.startsWith('image/')) {
+        showAdminNotif('❌ File harus berupa gambar!', true);
+        input.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = function (e) {
-        variantImages[id] = e.target.result;
         const prev = document.getElementById('vimgpreview_' + id);
-        if (prev) prev.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+        if (prev) {
+          prev.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:rgba(0,212,255,0.1);">⏳</div>';
+        }
+
+        window.compressImage(e.target.result, function (compressed) {
+          variantImages[id] = compressed;
+          const prevBox = document.getElementById('vimgpreview_' + id);
+          if (prevBox) prevBox.innerHTML = `<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;border-radius:6px;">`;
+          showAdminNotif('✅ Gambar varian berhasil dimuat!');
+        });
       };
-      reader.readAsDataURL(input.files[0]);
+      reader.onerror = function () {
+        showAdminNotif('❌ Gagal membaca file!', true);
+        input.value = '';
+      };
+      reader.readAsDataURL(file);
     };
 
     window.clearVariantImage = function (id) {
@@ -5603,17 +5859,134 @@
     }
 
     // ══════════════════════════════════════
+    // ADMIN: IMAGE & VIDEO COMPRESSION & VALIDATION
+    // ══════════════════════════════════════
+    const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB
+    const MAX_IMAGE_WIDTH = 1024;
+    const MAX_IMAGE_HEIGHT = 1024;
+
+    window.compressImage = function (base64String, callback, maxWidth = MAX_IMAGE_WIDTH, maxHeight = MAX_IMAGE_HEIGHT) {
+      const img = new Image();
+      img.onload = function () {
+        const canvas = document.createElement('canvas');
+        let width = img.width, height = img.height;
+        if (width > height) {
+          if (width > maxWidth) { height = Math.round(height * maxWidth / width); width = maxWidth; }
+        } else {
+          if (height > maxHeight) { width = Math.round(width * maxHeight / height); height = maxHeight; }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        let compressedBase64 = canvas.toDataURL('image/jpeg', 0.85);
+        if (compressedBase64.length > MAX_FILE_SIZE) {
+          compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+        }
+        callback(compressedBase64);
+      };
+      img.onerror = function () { callback(base64String); };
+      img.src = base64String;
+    };
+
+    // ══════════════════════════════════════
     // ADMIN: IMAGE PREVIEW
     // ══════════════════════════════════════
     window.previewMainImage = function (input) {
       if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      // Validasi ukuran file
+      if (file.size > MAX_FILE_SIZE) {
+        showAdminNotif('❌ Ukuran file terlalu besar! Maksimal 5MB. File Anda: ' + (file.size / (1024 * 1024)).toFixed(2) + 'MB', true);
+        input.value = '';
+        return;
+      }
+
+      // Validasi tipe file
+      if (!file.type.startsWith('image/')) {
+        showAdminNotif('❌ File harus berupa gambar! Tipe: ' + file.type, true);
+        input.value = '';
+        return;
+      }
+
       const reader = new FileReader();
       reader.onload = function (e) {
-        mainImageBase64 = e.target.result;
         const box = document.getElementById('mainImgPreviewBox');
-        box.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+        box.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:rgba(0,212,255,0.1);"><div style="text-align:center;"><div style="font-size:1.5rem;margin-bottom:0.5rem;">⏳</div><div style="font-size:0.8rem;color:var(--gray);">Kompresi...</div></div></div>';
+
+        window.compressImage(e.target.result, function (compressed) {
+          mainImageBase64 = compressed;
+          const previewBox = document.getElementById('mainImgPreviewBox');
+          const originalSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+          const compressedSizeMB = (compressed.length / (1024 * 1024)).toFixed(2);
+          previewBox.innerHTML = `<img src="${compressed}" style="width:100%;height:100%;object-fit:cover;">`;
+          showAdminNotif(`✅ Gambar berhasil dimuat! (${originalSizeMB}MB → ${compressedSizeMB}MB)`);
+        });
       };
-      reader.readAsDataURL(input.files[0]);
+      reader.onerror = function () {
+        showAdminNotif('❌ Gagal membaca file!', true);
+        input.value = '';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    // ══════════════════════════════════════
+    // ADMIN: VIDEO PREVIEW
+    // ══════════════════════════════════════
+    window.previewMainVideo = function (input) {
+      if (!input.files || !input.files[0]) return;
+      const file = input.files[0];
+
+      // Validasi ukuran file
+      if (file.size > MAX_FILE_SIZE) {
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const maxMB = (MAX_FILE_SIZE / (1024 * 1024)).toFixed(0);
+        showAdminNotif(`❌ Ukuran file terlalu besar! Maksimal ${maxMB}MB. File Anda: ${sizeMB}MB`, true);
+        input.value = '';
+        return;
+      }
+
+      // Validasi tipe file
+      if (!file.type.startsWith('video/')) {
+        showAdminNotif('❌ File harus berupa video! Tipe: ' + file.type, true);
+        input.value = '';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        mainVideoBase64 = e.target.result;
+        const box = document.getElementById('mainVideoPreviewBox');
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+
+        // Preview sebagai video player mini
+        box.innerHTML = `<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+          <video style="width:100%;height:100%;object-fit:contain;background:#000;" controls>
+            <source src="${e.target.result}" type="${file.type}">
+            Browser tidak support video
+          </video>
+          <div style="position:absolute;top:5px;right:5px;background:rgba(0,0,0,0.7);color:#fff;padding:3px 8px;border-radius:4px;font-size:0.75rem;">
+            ${sizeMB}MB
+          </div>
+        </div>`;
+
+        document.getElementById('clearVideoBtn').style.display = 'block';
+        showAdminNotif(`✅ Video berhasil dimuat! (${sizeMB}MB)`);
+      };
+      reader.onerror = function () {
+        showAdminNotif('❌ Gagal membaca video!', true);
+        input.value = '';
+      };
+      reader.readAsDataURL(file);
+    };
+
+    window.clearMainVideo = function () {
+      mainVideoBase64 = '';
+      document.getElementById('mainVideoPreviewBox').innerHTML = '<div class="placeholder-text">🎬<br>Klik untuk upload video<br><span style="font-size:0.7rem;color:var(--gray);">Maks 500MB</span></div>';
+      document.getElementById('adminMainVideo').value = '';
+      document.getElementById('clearVideoBtn').style.display = 'none';
+      showAdminNotif('🗑️ Video dihapus');
     };
 
     // ══════════════════════════════════════
@@ -5628,10 +6001,12 @@
       const displayPrice = document.getElementById('adminDisplayPrice').value.trim();
       const emoji = document.getElementById('adminEmoji').value.trim();
       const editId = document.getElementById('editProductId').value;
+      const saveBtn = document.querySelector('[onclick="saveProduct()"]');
 
       if (!name) { showAdminNotif('❌ Nama produk wajib diisi!', true); return; }
       if (!category) { showAdminNotif('❌ Kategori wajib dipilih!', true); return; }
       if (!price || price <= 0) { showAdminNotif('❌ Harga harus lebih dari 0!', true); return; }
+      if (!adminAuthenticated) { showAdminNotif('❌ Anda harus login sebagai admin terlebih dahulu!', true); return; }
 
       const hasVar = document.getElementById('hasVariants').checked;
       let variantPrices = {}, variantImgsData = {};
@@ -5648,24 +6023,58 @@
       const data = {
         name, category, price, stock, description: desc,
         displayPrice: displayPrice || '', media,
+        video: mainVideoBase64 || '', // Add video field
         variantPrices: hasVar ? variantPrices : {},
         variantImages: hasVar ? variantImgsData : {},
-        updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
+        lastModifiedBy: currentUser?.uid || 'system'
       };
 
       try {
+        // Show loading state
+        if (saveBtn) {
+          saveBtn.disabled = true;
+          saveBtn.textContent = '⏳ Menyimpan...';
+        }
+
         if (editId) {
           await updateDoc(doc(db, 'sadewaProducts', editId), data);
           showAdminNotif('✅ Produk berhasil diperbarui!');
         } else {
           data.createdAt = serverTimestamp();
+          data.createdBy = currentUser?.uid || 'system';
           await addDoc(prodCol, data);
           showAdminNotif('✅ Produk berhasil ditambahkan!');
         }
         resetAdminForm();
       } catch (e) {
-        console.error(e);
-        showAdminNotif('❌ Gagal menyimpan: ' + e.message, true);
+        console.error('Error saving product:', e.code, e.message);
+
+        let errorMsg = '❌ Gagal menyimpan produk!\n\n';
+        if (e.code === 'permission-denied') {
+          errorMsg += '🔒 PERMISSION ERROR:\n\n';
+          errorMsg += 'Solusi:\n';
+          errorMsg += '1. Buka Firebase Console > Firestore\n';
+          errorMsg += '2. Tab "Rules" > Publish permissions\n';
+          errorMsg += '3. Paste rules dari file:\n   FIRESTORE_RULES_QUICK_FIX.txt\n';
+          errorMsg += '4. Tunggu 1-2 menit\n';
+          errorMsg += '5. Refresh website & coba lagi\n\n';
+          errorMsg += 'Lihat: QUICK_FIX_PERMISSION.md';
+        } else if (e.code === 'unavailable') {
+          errorMsg += '📡 Koneksi ke server bermasalah:\n- Periksa internet Anda\n- Tunggu sebentar & coba lagi\n- Data akan disimpan otomatis saat online';
+        } else if (e.code === 'unauthenticated') {
+          errorMsg += '👤 Anda belum terotentikasi:\n- Logout & login ulang\n- Gunakan username/password yang benar';
+        } else {
+          errorMsg += e.message || 'Error tidak diketahui';
+        }
+
+        showAdminNotif(errorMsg, true);
+      } finally {
+        // Reset button state
+        if (saveBtn) {
+          saveBtn.disabled = false;
+          saveBtn.textContent = '💾 Simpan Produk';
+        }
       }
     };
 
@@ -5696,6 +6105,26 @@
         mainImageBase64 = '';
         document.getElementById('adminEmoji').value = p.media || '';
         document.getElementById('mainImgPreviewBox').innerHTML = `<div class="placeholder-text">🖼️<br>Klik untuk upload gambar</div>`;
+      }
+
+      // Load video if exists
+      if (p.video && p.video.startsWith('data:video')) {
+        mainVideoBase64 = p.video;
+        const videoFile = new File([p.video], 'video.mp4', { type: 'video/mp4' });
+        const videoSize = (p.video.length / (1024 * 1024)).toFixed(2);
+        document.getElementById('mainVideoPreviewBox').innerHTML = `
+          <video controls style="width:100%;height:100%;border-radius:6px;">
+            <source src="${p.video}" type="video/mp4">
+            Browser tidak support video HTML5
+          </video>
+          <div style="margin-top:0.3rem;font-size:0.8rem;color:var(--gray);">📹 ${videoSize}MB</div>
+        `;
+        document.getElementById('clearVideoBtn').style.display = 'block';
+      } else {
+        mainVideoBase64 = '';
+        document.getElementById('mainVideoPreviewBox').innerHTML = '<div class="placeholder-text">🎬<br>Klik untuk upload video<br><span style="font-size:0.7rem;color:var(--gray);">Maks 500MB</span></div>';
+        document.getElementById('adminMainVideo').value = '';
+        document.getElementById('clearVideoBtn').style.display = 'none';
       }
 
       // Variants
@@ -5754,12 +6183,25 @@
     // ADMIN: DELETE PRODUCT
     // ══════════════════════════════════════
     window.deleteProduct = async function (productId, productName) {
+      if (!adminAuthenticated) { showAdminNotif('❌ Anda harus login sebagai admin!', true); return; }
       if (!confirm(`Hapus produk "${productName}"?\n\nTindakan ini tidak dapat dibatalkan.`)) return;
       try {
         await deleteDoc(doc(db, 'sadewaProducts', productId));
         showAdminNotif('🗑️ Produk berhasil dihapus!');
       } catch (e) {
-        showAdminNotif('❌ Gagal menghapus: ' + e.message, true);
+        console.error('Delete error:', e.code, e.message);
+        let errorMsg = '❌ Gagal menghapus produk!\n\n';
+        if (e.code === 'permission-denied') {
+          errorMsg += '🔒 PERMISSION ERROR:\n\n';
+          errorMsg += 'Setup Firestore Rules:\n';
+          errorMsg += 'Firebase Console > Firestore > Rules\n';
+          errorMsg += 'Paste dari: FIRESTORE_RULES_QUICK_FIX.txt\n';
+          errorMsg += 'Lalu Publish\n\n';
+          errorMsg += 'Lihat: QUICK_FIX_PERMISSION.md';
+        } else {
+          errorMsg += e.message || 'Error tidak diketahui';
+        }
+        showAdminNotif(errorMsg, true);
       }
     };
 
@@ -5780,16 +6222,29 @@
       document.getElementById('variantList').innerHTML = '';
       document.getElementById('mainImgPreviewBox').innerHTML = '<div class="placeholder-text">🖼️<br>Klik untuk upload gambar</div>';
       document.getElementById('adminMainImage').value = '';
+      document.getElementById('mainVideoPreviewBox').innerHTML = '<div class="placeholder-text">🎬<br>Klik untuk upload video<br><span style="font-size:0.7rem;color:var(--gray);">Maks 500MB</span></div>';
+      document.getElementById('adminMainVideo').value = '';
+      document.getElementById('clearVideoBtn').style.display = 'none';
       document.getElementById('formCardTitle').textContent = '➕ Tambah Produk Baru';
       document.getElementById('formResetBtn').style.display = 'none';
       mainImageBase64 = '';
+      mainVideoBase64 = '';
       variantImages = {};
       variantCounter = 0;
       if (!silent) showAdminNotif('🔄 Form direset.');
     };
 
     window.handleCategoryChange = function () {
-      // Could auto-suggest variants based on category
+      // Auto-suggest emoji based on category
+      const catEmojiMap = {
+        'Lampu': '💡', 'Kipas Angin': '💨', 'Kabel': '🔌',
+        'Saklar': '🎛️', 'Antena': '📡', 'Stopkontak': '🔋', 'Lainnya': '📦'
+      };
+      const cat = document.getElementById('adminCategory').value;
+      const emojiInput = document.getElementById('adminEmoji');
+      if (cat && catEmojiMap[cat] && !emojiInput.value) {
+        emojiInput.value = catEmojiMap[cat];
+      }
     };
 
     // ══════════════════════════════════════
