@@ -4518,8 +4518,8 @@
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2 class="modal-title">🔐 Admin Login</h2>
-      <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="admin"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••">
+      <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="admin" autocomplete="off" spellcheck="false"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="off" spellcheck="false">
       </div>
       <button class="btn-login" onclick="handleLogin()">Masuk</button>
       <button class="btn-cancel" onclick="closeLoginModal()">Batal</button>
@@ -4638,6 +4638,7 @@
         <a href="#home" class="nav-logo">⚡ SADEWA</a>
         <ul>
           <li><a href="#products">Produk</a></li>
+          <li><a href="#video-tour">Video Tour</a></li>
           <li><a href="#contact">Kontak</a></li>
           <li><a href="#chat">AI Assistant</a></li>
           <li><a href="#about">Tentang Kami</a></li>
@@ -4668,6 +4669,16 @@
         </div>
         <div class="product-grid" id="productGrid"></div>
         <div class="pagination" id="paginationContainer"></div>
+      </section>
+
+      <section id="video-tour" class="video-section">
+        <h2 class="section-title">Video Tour Toko</h2>
+        <div class="video-container">
+          <video id="mainVideo" controls playsinline webkit-playsinline poster="./icon/Logo-Square.png">
+            <source src="video/sadewa-tour.mp4" type="video/mp4">
+            Maaf, browser Anda tidak mendukung pemutaran video.
+          </video>
+        </div>
       </section>
       <section id="contact" class="contact-section">
         <h2 class="section-title">Hubungi Kami</h2>
@@ -5960,6 +5971,11 @@
             if (userCredential && userCredential.user) {
               currentUser = userCredential.user;
               adminAuthenticated = true;
+              
+              // Clear credentials immediately for security
+              document.getElementById('loginUsername').value = '';
+              document.getElementById('loginPassword').value = '';
+              
               closeLoginModal();
               document.getElementById('mainWebsite').classList.remove('active');
               document.getElementById('adminPage').classList.add('active');
@@ -5974,6 +5990,11 @@
             if (user === ADMIN_USER && pass === ADMIN_PASS) {
               currentUser = { uid: 'local-admin', email: user };
               adminAuthenticated = true;
+              
+              // Clear credentials immediately for security
+              document.getElementById('loginUsername').value = '';
+              document.getElementById('loginPassword').value = '';
+              
               closeLoginModal();
               document.getElementById('mainWebsite').classList.remove('active');
               document.getElementById('adminPage').classList.add('active');
