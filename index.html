@@ -4518,8 +4518,10 @@
   <div id="loginModal" class="modal">
     <div class="modal-content">
       <h2 class="modal-title">🔐 Admin Login</h2>
-      <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="admin" autocomplete="off" spellcheck="false"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••" autocomplete="off" spellcheck="false">
+      <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="admin"
+          autocomplete="off" spellcheck="false"></div>
+      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"
+          autocomplete="off" spellcheck="false">
       </div>
       <button class="btn-login" onclick="handleLogin()">Masuk</button>
       <button class="btn-cancel" onclick="closeLoginModal()">Batal</button>
@@ -4638,7 +4640,6 @@
         <a href="#home" class="nav-logo">⚡ SADEWA</a>
         <ul>
           <li><a href="#products">Produk</a></li>
-          <li><a href="#video-tour">Video Tour</a></li>
           <li><a href="#contact">Kontak</a></li>
           <li><a href="#chat">AI Assistant</a></li>
           <li><a href="#about">Tentang Kami</a></li>
@@ -4669,16 +4670,6 @@
         </div>
         <div class="product-grid" id="productGrid"></div>
         <div class="pagination" id="paginationContainer"></div>
-      </section>
-
-      <section id="video-tour" class="video-section">
-        <h2 class="section-title">Video Tour Toko</h2>
-        <div class="video-container">
-          <video id="mainVideo" controls playsinline webkit-playsinline poster="./icon/Logo-Square.png">
-            <source src="video/sadewa-tour.mp4" type="video/mp4">
-            Maaf, browser Anda tidak mendukung pemutaran video.
-          </video>
-        </div>
       </section>
       <section id="contact" class="contact-section">
         <h2 class="section-title">Hubungi Kami</h2>
@@ -4950,6 +4941,9 @@
       </div>
     </div>
   </div>
+  </div>
+
+  <!-- PRODUCT DETAIL MODAL (SHOPEE STYLE) -->
 
   <div id="paymentModal" class="payment-modal">
     <div class="payment-container" id="checkoutContainer">
@@ -5450,43 +5444,7 @@
           return variantMap[category] || [];
         }
 
-        window.addToCart = function (productId) {
-          const product = products.find(p => p.id === productId);
-          if (!product) return;
-          let variantOptions = [];
-          if (product.variantPrices && Object.keys(product.variantPrices).length > 0)
-            variantOptions = Object.keys(product.variantPrices);
-          else variantOptions = getVariantOptions(product.category);
-
-          // Tambahkan opsi video ke variantOptions jika ada
-          const hasVideoOpt = product.video && product.video.startsWith('data:video');
-          const allOptions = hasVideoOpt ? ['🎬 Video Produk', ...variantOptions] : variantOptions;
-
-          let selectedVariant = '', finalPrice = product.price;
-          if (allOptions.length > 0) {
-            const selectEl = document.getElementById('variant-' + productId);
-            if (selectEl) {
-              selectedVariant = selectEl.value;
-              if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; }
-              // Video tidak mengubah harga
-              if (selectedVariant !== '🎬 Video Produk' && product.variantPrices && product.variantPrices[selectedVariant]) {
-                finalPrice = product.variantPrices[selectedVariant];
-              }
-            }
-          }
-          // Get variant-specific image if available
-          let itemMedia = product.media;
-          if (selectedVariant && product.variantImages && product.variantImages[selectedVariant]) {
-            itemMedia = product.variantImages[selectedVariant];
-          }
-
-          const existingIndex = cartItems.findIndex(item => item.id === productId && item.variant === selectedVariant);
-          if (existingIndex !== -1) { cartItems[existingIndex].quantity += 1; cartItems[existingIndex].price = finalPrice; }
-          else cartItems.push({ id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia });
-
-          saveCartToStorage(); updateCartBadge();
-          alert('Produk berhasil ditambahkan ke keranjang!');
-        };
+        // Function merged and moved to line 5902 onwards
 
         window.removeFromCart = function (index) { cartItems.splice(index, 1); saveCartToStorage(); updateCartBadge(); renderCart(); };
         window.updateQuantity = function (index, change) {
@@ -5517,7 +5475,7 @@
         // PAYMENT
         // ══════════════════════════════════════
         let selectedPaymentMethod = 'card', selectedPaymentProvider = 'visa';
-        const bankAccounts = { bri: { number: '8888999900', name: 'BRI' } };
+        const bankAccounts = { bri: { number: '3456-01-001829-50-2', name: 'AI JULAEHA' } };
 
         window.openPaymentModal = function () {
           if (cartItems.length === 0) { alert('Keranjang Anda masih kosong!'); return; }
@@ -5719,49 +5677,27 @@
           const paginatedList = list.slice(startIndex, startIndex + itemsPerPage);
 
           grid.innerHTML = paginatedList.map(p => {
-            let mediaContent;
-            let videoIndicator = '';
-            if (p.media && p.media.startsWith('data:image')) {
-              mediaContent = `<img src="${p.media}" style="width:100%;height:100%;object-fit:cover;">`;
-              if (p.video && p.video.startsWith('data:video')) {
-                videoIndicator = '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;">🎬 Video</div>';
-              }
-            } else if (p.video && p.video.startsWith('data:video')) {
-              // Show video with controls
-              mediaContent = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
-            <source src="${p.video}" type="video/mp4">
-            Browser tidak support video HTML5
-          </video>`;
-            } else {
-              mediaContent = `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${p.media || '⚡'}</div>`;
-            }
-
-            let variantHtml = '';
-            let variantOptions = [];
-
-            // Add video option if product has video
-            if (p.video && p.video.startsWith('data:video')) {
-              variantOptions.push('🎬 Video Produk');
-            }
-
-            // Add existing variant prices
-            if (p.variantPrices && Object.keys(p.variantPrices).length > 0) {
-              variantOptions.push(...Object.keys(p.variantPrices));
-            } else {
-              // Add auto-generated variants
-              const autoOpts = getVariantOptions(p.category);
-              if (autoOpts.length > 0) {
-                variantOptions.push(...autoOpts);
-              }
-            }
-
-            // Create dropdown if we have options
-            if (variantOptions.length > 0) {
-              variantHtml = `<select id="variant-${p.id}" class="variant-select" onchange="updateProductImage('${p.id}',this.value)"><option value="">-- Pilih Varian --</option>${variantOptions.map(opt => `<option value="${opt}">${opt}</option>`).join('')}</select>`;
-            }
+            let mediaContent = p.media && p.media.startsWith('data:image')
+              ? `<img src="${p.media}" style="width:100%;height:100%;object-fit:cover;">`
+              : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${p.media || '⚡'}</div>`;
 
             const priceToShow = p.displayPrice ? p.displayPrice : `Rp ${p.price.toLocaleString('id-ID')}`;
-            return `<div class="product-card"><div class="product-image" id="productImg-${p.id}" style="height:200px;overflow:hidden;position:relative;">${mediaContent}${videoIndicator}</div><div class="product-info"><h3 class="product-title">${p.name}</h3><p class="product-desc">${p.description || ''}</p>${variantHtml}<div class="product-price-wrapper"><div class="product-price" id="productPrice-${p.id}" style="margin-bottom:0">${priceToShow}</div><button class="btn-add-cart" onclick="addToCart('${p.id}')" title="Tambah ke Keranjang">🛒</button></div><button class="btn" onclick="buyDirectly('${p.id}')">Beli Sekarang</button></div></div>`;
+
+            return `<div class="product-card">
+              <div class="product-image" id="productImg-${p.id}" style="height:200px;overflow:hidden;position:relative;">
+                ${mediaContent}
+                ${p.video && p.video.startsWith('data:video') ? '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;z-index:5;">🎬 Video</div>' : ''}
+              </div>
+              <div class="product-info">
+                <h3 class="product-title">${p.name}</h3>
+                <p class="product-desc">${p.description ? (p.description.substring(0, 60) + '...') : ''}</p>
+                <div class="product-price-wrapper">
+                  <div class="product-price" id="productPrice-${p.id}" style="margin-bottom:0">${priceToShow}</div>
+                  <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${p.id}')" title="Tambah ke Keranjang">🛒</button>
+                </div>
+                <button class="btn" onclick="event.stopPropagation(); buyDirectly('${p.id}')">Beli Sekarang</button>
+              </div>
+            </div>`;
           }).join('');
 
           renderPagination(list.length);
@@ -5775,13 +5711,9 @@
           const startItem = (currentPage - 1) * itemsPerPage + 1;
           const endItem = Math.min(currentPage * itemsPerPage, totalItems);
 
-          // Info baris atas dengan styling tambahan
           let html = `<div class="pagination-info">Menampilkan <span>${startItem}–${endItem}</span> dari <span>${totalItems}</span> &nbsp;·&nbsp; Hal <span>${currentPage}</span>/<span>${totalPages}</span></div>`;
-
-          // Tombol prev
           html += `<button class="page-btn" ${currentPage === 1 ? 'disabled' : ''} onclick="goToPage(${currentPage - 1})" title="Halaman sebelumnya">&#8249;</button>`;
 
-          // Buat array halaman dengan ellipsis yang bersih (tidak duplikat)
           const pages = [];
           if (totalPages <= 7) {
             for (let i = 1; i <= totalPages; i++) pages.push(i);
@@ -5795,18 +5727,12 @@
             pages.push(totalPages);
           }
 
-          // Render tiap halaman / ellipsis
           pages.forEach(p => {
-            if (p === '...') {
-              html += `<span class="page-ellipsis">&middot;&middot;&middot;</span>`;
-            } else {
-              html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
-            }
+            if (p === '...') html += `<span class="page-ellipsis">&middot;&middot;&middot;</span>`;
+            else html += `<button class="page-btn ${p === currentPage ? 'active' : ''}" onclick="goToPage(${p})">${p}</button>`;
           });
 
-          // Tombol next
           html += `<button class="page-btn" ${currentPage === totalPages ? 'disabled' : ''} onclick="goToPage(${currentPage + 1})" title="Halaman berikutnya">&#8250;</button>`;
-
           container.innerHTML = html;
         }
 
@@ -5820,89 +5746,96 @@
           }
         };
 
-        // Update product image + price when variant changes
-        window.updateProductImage = function (productId, variantName) {
+
+        window.updateProductImage = function (productId, variantName) { };
+
+
+        window.addToCart = function (productId, variantFromModal) {
           const product = products.find(p => p.id === productId);
           if (!product) return;
-          const imgBox = document.getElementById('productImg-' + productId);
-          const priceEl = document.getElementById('productPrice-' + productId);
 
-          // Special handling for video option
-          if (variantName === '🎬 Video Produk' && product.video && product.video.startsWith('data:video')) {
-            imgBox.innerHTML = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
-          <source src="${product.video}" type="video/mp4">
-          Browser tidak support video HTML5
-        </video>`;
-            // Reset price when video is selected (no price change for video)
-            if (priceEl) {
-              priceEl.textContent = product.displayPrice || ('Rp ' + product.price.toLocaleString('id-ID'));
-            }
-            return;
-          }
-
-          if (variantName && product.variantImages && product.variantImages[variantName]) {
-            imgBox.innerHTML = `<img src="${product.variantImages[variantName]}" style="width:100%;height:100%;object-fit:cover;">`;
-          } else {
-            // Same priority as renderProducts: image > video > emoji
-            let videoIndicator = '';
-            if (product.media && product.media.startsWith('data:image')) {
-              imgBox.innerHTML = `<img src="${product.media}" style="width:100%;height:100%;object-fit:cover;">`;
-              if (product.video && product.video.startsWith('data:video')) {
-                videoIndicator = '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;">🎬 Video</div>';
-                imgBox.innerHTML += videoIndicator;
-              }
-            } else if (product.video && product.video.startsWith('data:video')) {
-              imgBox.innerHTML = `<video controls style="width:100%;height:100%;object-fit:cover;background:#000;">
-            <source src="${product.video}" type="video/mp4">
-            Browser tidak support video HTML5
-          </video>`;
-            } else {
-              imgBox.innerHTML = `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${product.media || '⚡'}</div>`;
-            }
-          }
-          if (priceEl && variantName && product.variantPrices && product.variantPrices[variantName]) {
-            priceEl.textContent = 'Rp ' + product.variantPrices[variantName].toLocaleString('id-ID');
-          } else if (priceEl) {
-            priceEl.textContent = product.displayPrice || ('Rp ' + product.price.toLocaleString('id-ID'));
-          }
-        };
-
-        // ═══════════════════════════════════════
-        // BELI SEKARANG (buyDirectly)
-        // ═══════════════════════════════════════
-        window.buyDirectly = function (productId) {
-          const product = products.find(p => p.id === productId);
-          if (!product) return;
           let variantOptions = [];
-          // Add video option if product has video
-          if (product.video && product.video.startsWith('data:video')) {
-            variantOptions.push('🎬 Video Produk');
-          }
-          // Add existing variant prices
-          if (product.variantPrices && Object.keys(product.variantPrices).length > 0) {
-            variantOptions.push(...Object.keys(product.variantPrices));
-          } else {
-            // Add auto-generated variants
+          if (product.video && product.video.startsWith('data:video')) variantOptions.push('🎬 Video Produk');
+          if (product.variantPrices && Object.keys(product.variantPrices).length > 0) variantOptions.push(...Object.keys(product.variantPrices));
+          else {
             const autoOpts = getVariantOptions(product.category);
-            if (autoOpts.length > 0) {
-              variantOptions.push(...autoOpts);
-            }
+            if (autoOpts.length > 0) variantOptions.push(...autoOpts);
           }
-          let selectedVariant = '', finalPrice = product.price;
-          if (variantOptions.length > 0) {
+
+          let selectedVariant = variantFromModal || '';
+          if (!selectedVariant && variantOptions.length > 0) {
             const selectEl = document.getElementById('variant-' + productId);
             if (selectEl) {
               selectedVariant = selectEl.value;
               if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; }
-              if (product.variantPrices && product.variantPrices[selectedVariant]) finalPrice = product.variantPrices[selectedVariant];
+            } else {
+              // Varian pertama sebagai default jika modal dihapus
+              selectedVariant = variantOptions[0];
             }
           }
+
+          let finalPrice = product.price;
+          if (selectedVariant && product.variantPrices && product.variantPrices[selectedVariant]) {
+            finalPrice = product.variantPrices[selectedVariant];
+          }
+
           let itemMedia = product.media;
           if (selectedVariant && product.variantImages && product.variantImages[selectedVariant]) {
             itemMedia = product.variantImages[selectedVariant];
           } else if (selectedVariant === '🎬 Video Produk' && product.video) {
             itemMedia = product.video;
           }
+
+          const existingIndex = cartItems.findIndex(item => item.id === productId && item.variant === selectedVariant);
+          if (existingIndex > -1) {
+            cartItems[existingIndex].quantity += 1;
+            cartItems[existingIndex].price = finalPrice; // Update price in case it changed
+          } else {
+            cartItems.push({ id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia });
+          }
+
+          saveCartToStorage();
+          updateCartBadge();
+          renderCart();
+          alert(`✅ ${product.name} ditambahkan ke keranjang`);
+        };
+
+        window.buyDirectly = function (productId, variantFromModal) {
+          const product = products.find(p => p.id === productId);
+          if (!product) return;
+
+          let variantOptions = [];
+          if (product.video && product.video.startsWith('data:video')) variantOptions.push('🎬 Video Produk');
+          if (product.variantPrices && Object.keys(product.variantPrices).length > 0) variantOptions.push(...Object.keys(product.variantPrices));
+          else {
+            const autoOpts = getVariantOptions(product.category);
+            if (autoOpts.length > 0) variantOptions.push(...autoOpts);
+          }
+
+          let selectedVariant = variantFromModal || '';
+          if (!selectedVariant && variantOptions.length > 0) {
+            const selectEl = document.getElementById('variant-' + productId);
+            if (selectEl) {
+              selectedVariant = selectEl.value;
+              if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return; }
+            } else {
+              // Varian pertama sebagai default jika modal dihapus
+              selectedVariant = variantOptions[0];
+            }
+          }
+
+          let finalPrice = product.price;
+          if (selectedVariant && product.variantPrices && product.variantPrices[selectedVariant]) {
+            finalPrice = product.variantPrices[selectedVariant];
+          }
+
+          let itemMedia = product.media;
+          if (selectedVariant && product.variantImages && product.variantImages[selectedVariant]) {
+            itemMedia = product.variantImages[selectedVariant];
+          } else if (selectedVariant === '🎬 Video Produk' && product.video) {
+            itemMedia = product.video;
+          }
+
           const tempCartItem = { id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia };
           window.tempBuyNowCart = [tempCartItem];
           window.isBuyNowMode = true;
@@ -5971,11 +5904,11 @@
             if (userCredential && userCredential.user) {
               currentUser = userCredential.user;
               adminAuthenticated = true;
-              
+
               // Clear credentials immediately for security
               document.getElementById('loginUsername').value = '';
               document.getElementById('loginPassword').value = '';
-              
+
               closeLoginModal();
               document.getElementById('mainWebsite').classList.remove('active');
               document.getElementById('adminPage').classList.add('active');
@@ -5990,11 +5923,11 @@
             if (user === ADMIN_USER && pass === ADMIN_PASS) {
               currentUser = { uid: 'local-admin', email: user };
               adminAuthenticated = true;
-              
+
               // Clear credentials immediately for security
               document.getElementById('loginUsername').value = '';
               document.getElementById('loginPassword').value = '';
-              
+
               closeLoginModal();
               document.getElementById('mainWebsite').classList.remove('active');
               document.getElementById('adminPage').classList.add('active');
@@ -6699,6 +6632,7 @@
           else initChatbot();
         })();
       </script>
+      <div id="toastNotif" class="toast-notification"></div>
 </body>
 
 </html>
