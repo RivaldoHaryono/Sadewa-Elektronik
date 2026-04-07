@@ -6795,14 +6795,6 @@
           afterPaymentSuccessChat(order.items, order.total, order.method);
           window.isBuyNowMode = false; window.tempBuyNowCart = [];
           window._pendingOrder = null;
-          // Langsung buka chat window setelah pembayaran via chat
-          const chatBtnEl = document.getElementById('chatBubbleBtn');
-          if (chatBtnEl) chatBtnEl.style.display = 'flex';
-          setTimeout(function () {
-            if (typeof _buyerChatOpen !== 'undefined' && !_buyerChatOpen) {
-              if (typeof toggleBuyerChat === 'function') toggleBuyerChat();
-            }
-          }, 400);
         };
         function sendPaymentToWhatsApp() {
           // Get shipping details
@@ -7948,7 +7940,8 @@
             _listenBuyerMsgs(sid);
             const chatBtn = document.getElementById('chatBubbleBtn');
             if (chatBtn) chatBtn.style.display = 'flex';
-            setTimeout(() => { if (!_buyerChatOpen) toggleBuyerChat(); }, 800);
+            if (!_buyerChatOpen) toggleBuyerChat();
+            setTimeout(_scrollBcw, 100);
           } catch (e) { console.error('afterPaymentSuccessChat:', e); }
         };
 
