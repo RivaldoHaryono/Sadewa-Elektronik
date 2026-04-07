@@ -4323,6 +4323,1189 @@
         }
       }
     }
+
+    /* ────────────────────────────────────────
+       BUYER CHAT COMPONENTS
+    ──────────────────────────────────────── */
+    .chat-bubble-btn {
+      position: fixed;
+      bottom: 90px;
+      right: 18px;
+      width: 56px;
+      height: 56px;
+      background: linear-gradient(135deg, #C9A84C, #1A2744);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 8px 28px rgba(201, 168, 76, .45);
+      z-index: 990;
+      border: none;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1);
+      animation: chatBubblePop .6s 1.5s cubic-bezier(.34, 1.56, .64, 1) both;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    @keyframes chatBubblePop {
+      from {
+        opacity: 0;
+        transform: scale(0)
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1)
+      }
+    }
+
+    .chat-bubble-btn:hover {
+      transform: scale(1.12) rotate(-5deg)
+    }
+
+    .chat-bubble-btn .cb-icon {
+      font-size: 1.4rem
+    }
+
+    .chat-bubble-unread {
+      position: absolute;
+      top: -4px;
+      right: -4px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 50%;
+      width: 20px;
+      height: 20px;
+      font-size: .68rem;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #050816
+    }
+
+    .chat-bubble-unread.visible {
+      display: flex
+    }
+
+    .buyer-chat-window {
+      position: fixed;
+      bottom: 158px;
+      right: 18px;
+      width: 360px;
+      max-height: 520px;
+      background: linear-gradient(145deg, rgba(15, 20, 50, .98), rgba(5, 8, 22, .99));
+      border: 1px solid rgba(201, 168, 76, .28);
+      border-radius: 20px;
+      display: flex;
+      flex-direction: column;
+      z-index: 988;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .7), 0 0 0 1px rgba(0, 212, 255, .08);
+      opacity: 0;
+      transform: translateY(24px) scale(.95);
+      pointer-events: none;
+      transition: all .3s cubic-bezier(.34, 1.56, .64, 1)
+    }
+
+    .buyer-chat-window.open {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+      pointer-events: all
+    }
+
+    .bcw-header {
+      background: linear-gradient(135deg, rgba(201, 168, 76, .18), rgba(26, 39, 68, .4));
+      border-bottom: 1px solid rgba(201, 168, 76, .18);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-shrink: 0
+    }
+
+    .bcw-avatar {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #C9A84C, #1A2744);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0
+    }
+
+    .bcw-store-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .bcw-store-name {
+      font-weight: 700;
+      font-size: .92rem;
+      color: #F5F0E8
+    }
+
+    .bcw-store-status {
+      font-size: .72rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px
+    }
+
+    .bcw-store-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: #10b981;
+      border-radius: 50%;
+      display: inline-block
+    }
+
+    .bcw-close {
+      background: rgba(255, 255, 255, .08);
+      border: none;
+      color: rgba(245, 240, 232, .6);
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s
+    }
+
+    .bcw-close:hover {
+      background: rgba(239, 68, 68, .2);
+      color: #ef4444
+    }
+
+    .bcw-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 14px 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      scroll-behavior: smooth
+    }
+
+    .bcw-messages::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .bcw-messages::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, .3);
+      border-radius: 4px
+    }
+
+    .bcw-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 82%;
+      animation: bcwMsgIn .25s ease
+    }
+
+    @keyframes bcwMsgIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .bcw-msg.sent {
+      align-self: flex-end;
+      align-items: flex-end
+    }
+
+    .bcw-msg.recv {
+      align-self: flex-start;
+      align-items: flex-start
+    }
+
+    .bcw-bubble {
+      padding: 9px 13px;
+      border-radius: 14px;
+      font-size: .875rem;
+      line-height: 1.5;
+      word-break: break-word
+    }
+
+    .bcw-msg.sent .bcw-bubble {
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      color: #0B1120;
+      border-bottom-right-radius: 4px
+    }
+
+    .bcw-msg.recv .bcw-bubble {
+      background: rgba(26, 40, 68, .85);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: #F5F0E8;
+      border-bottom-left-radius: 4px
+    }
+
+    .bcw-time {
+      font-size: .65rem;
+      color: rgba(245, 240, 232, .35);
+      margin-top: 3px;
+      padding: 0 3px
+    }
+
+    .bcw-order-card {
+      background: rgba(0, 212, 255, .06);
+      border: 1px solid rgba(0, 212, 255, .2);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 4px;
+      font-size: .8rem
+    }
+
+    .bcw-order-card-title {
+      color: #C9A84C;
+      font-weight: 700;
+      font-size: .82rem;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .bcw-order-card-item {
+      color: rgba(245, 240, 232, .75);
+      padding: 2px 0
+    }
+
+    .bcw-order-card-total {
+      color: #C9A84C;
+      font-weight: 700;
+      border-top: 1px dashed rgba(255, 255, 255, .1);
+      margin-top: 6px;
+      padding-top: 6px
+    }
+
+    .bcw-order-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(16, 185, 129, .15);
+      border: 1px solid rgba(16, 185, 129, .3);
+      color: #10b981;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      margin-top: 6px
+    }
+
+    .bcw-input-area {
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      padding: 10px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+      background: rgba(5, 8, 22, .6)
+    }
+
+    .bcw-input {
+      flex: 1;
+      background: rgba(26, 40, 68, .7);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 12px;
+      padding: 9px 13px;
+      color: #F5F0E8;
+      font-size: .875rem;
+      outline: none;
+      resize: none;
+      max-height: 90px;
+      min-height: 38px;
+      font-family: inherit;
+      transition: border-color .2s;
+      line-height: 1.4;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .bcw-input:focus {
+      border-color: rgba(201, 168, 76, .4)
+    }
+
+    .bcw-input::placeholder {
+      color: rgba(245, 240, 232, .35)
+    }
+
+    .bcw-send {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      border: none;
+      border-radius: 12px;
+      color: #0B1120;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .bcw-send:hover {
+      transform: scale(1.08);
+      filter: brightness(1.1)
+    }
+
+    .bcw-send:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .chat-date-sep {
+      text-align: center;
+      font-size: .7rem;
+      color: rgba(245, 240, 232, .3);
+      padding: 4px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .chat-date-sep::before,
+    .chat-date-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .06)
+    }
+
+    /* ────────────────────────────────────────
+       ADMIN CHAT PANEL
+    ──────────────────────────────────────── */
+    .admin-chat-panel {
+      display: none;
+      height: calc(100vh - 72px);
+      background: var(--surface)
+    }
+
+    .admin-chat-panel.active {
+      display: flex
+    }
+
+    .acp-sidebar {
+      width: 320px;
+      flex-shrink: 0;
+      border-right: 1px solid rgba(255, 255, 255, .07);
+      display: flex;
+      flex-direction: column;
+      background: rgba(10, 14, 39, .6)
+    }
+
+    .acp-sidebar-header {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .07)
+    }
+
+    .acp-sidebar-title {
+      font-weight: 700;
+      color: #C9A84C;
+      font-size: 1rem;
+      margin-bottom: 10px
+    }
+
+    .acp-search {
+      width: 100%;
+      background: rgba(255, 255, 255, .05);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 10px;
+      padding: 8px 12px;
+      color: #F5F0E8;
+      font-size: .875rem;
+      outline: none
+    }
+
+    .acp-search::placeholder {
+      color: rgba(245, 240, 232, .4)
+    }
+
+    .acp-search:focus {
+      border-color: rgba(201, 168, 76, .3)
+    }
+
+    .acp-conv-list {
+      flex: 1;
+      overflow-y: auto
+    }
+
+    .acp-conv-list::-webkit-scrollbar {
+      width: 4px
+    }
+
+    .acp-conv-list::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, .2);
+      border-radius: 4px
+    }
+
+    .acp-conv-item {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .04);
+      cursor: pointer;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      transition: background .2s
+    }
+
+    .acp-conv-item:hover {
+      background: rgba(201, 168, 76, .05)
+    }
+
+    .acp-conv-item.active {
+      background: rgba(201, 168, 76, .1);
+      border-left: 3px solid #C9A84C
+    }
+
+    .acp-conv-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #1A2744, #0a0e27);
+      border: 2px solid rgba(201, 168, 76, .25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      position: relative;
+      color: #C9A84C;
+      font-weight: 700
+    }
+
+    .acp-conv-online {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid #0a0e27
+    }
+
+    .acp-conv-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .acp-conv-name {
+      font-weight: 700;
+      font-size: .88rem;
+      color: #F5F0E8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .acp-conv-preview {
+      font-size: .78rem;
+      color: rgba(245, 240, 232, .45);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px
+    }
+
+    .acp-conv-meta {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 4px;
+      flex-shrink: 0
+    }
+
+    .acp-conv-time {
+      font-size: .68rem;
+      color: rgba(245, 240, 232, .35)
+    }
+
+    .acp-conv-badge {
+      background: #ef4444;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: .68rem;
+      font-weight: 900;
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .acp-chat-area {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden
+    }
+
+    .acp-chat-header {
+      background: rgba(10, 14, 39, .8);
+      border-bottom: 1px solid rgba(255, 255, 255, .07);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0
+    }
+
+    .acp-chat-customer-name {
+      font-weight: 700;
+      color: #F5F0E8;
+      font-size: .96rem
+    }
+
+    .acp-chat-customer-sub {
+      font-size: .76rem;
+      color: rgba(245, 240, 232, .45);
+      margin-top: 2px
+    }
+
+    .acp-chat-actions {
+      margin-left: auto;
+      display: flex;
+      gap: 8px
+    }
+
+    .acp-action-btn {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: rgba(245, 240, 232, .7);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center
+    }
+
+    .acp-action-btn:hover {
+      background: rgba(201, 168, 76, .15);
+      border-color: rgba(201, 168, 76, .3);
+      color: #C9A84C
+    }
+
+    .acp-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scroll-behavior: smooth
+    }
+
+    .acp-messages::-webkit-scrollbar {
+      width: 6px
+    }
+
+    .acp-messages::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, .2);
+      border-radius: 4px
+    }
+
+    .acp-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 68%;
+      animation: bcwMsgIn .25s ease
+    }
+
+    .acp-msg.sent {
+      align-self: flex-end;
+      align-items: flex-end
+    }
+
+    .acp-msg.recv {
+      align-self: flex-start;
+      align-items: flex-start
+    }
+
+    .acp-msg .bcw-bubble {
+      font-size: .9rem
+    }
+
+    .acp-msg.sent .bcw-bubble {
+      background: linear-gradient(135deg, #1A2744, #0d1830);
+      color: #F5F0E8;
+      border: 1px solid rgba(201, 168, 76, .2);
+      border-bottom-right-radius: 4px
+    }
+
+    .acp-msg.recv .bcw-bubble {
+      background: rgba(26, 40, 68, .6);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: #F5F0E8;
+      border-bottom-left-radius: 4px
+    }
+
+    .acp-msg .bcw-time {
+      font-size: .68rem;
+      color: rgba(245, 240, 232, .3);
+      margin-top: 3px
+    }
+
+    .acp-quick-replies {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 8px 20px 0
+    }
+
+    .acp-qr-chip {
+      background: rgba(201, 168, 76, .1);
+      border: 1px solid rgba(201, 168, 76, .25);
+      color: #C9A84C;
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: .76rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap
+    }
+
+    .acp-qr-chip:hover {
+      background: rgba(201, 168, 76, .2);
+      border-color: rgba(201, 168, 76, .45)
+    }
+
+    .acp-input-area {
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      padding: 12px 20px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      flex-shrink: 0;
+      background: rgba(5, 8, 22, .5)
+    }
+
+    .acp-input {
+      flex: 1;
+      background: rgba(26, 40, 68, .7);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 14px;
+      padding: 10px 16px;
+      color: #F5F0E8;
+      font-size: .9rem;
+      outline: none;
+      resize: none;
+      max-height: 100px;
+      min-height: 42px;
+      font-family: inherit;
+      line-height: 1.4;
+      transition: border-color .2s;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .acp-input:focus {
+      border-color: rgba(201, 168, 76, .4)
+    }
+
+    .acp-input::placeholder {
+      color: rgba(245, 240, 232, .35)
+    }
+
+    .acp-send {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      border: none;
+      border-radius: 12px;
+      color: #0B1120;
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .acp-send:hover {
+      transform: scale(1.08)
+    }
+
+    .acp-send:disabled {
+      opacity: .5;
+      cursor: not-allowed
+    }
+
+    .acp-empty-state {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      color: rgba(245, 240, 232, .35);
+      padding: 2rem
+    }
+
+    .acp-empty-icon {
+      font-size: 3rem;
+      opacity: .5
+    }
+
+    .admin-tab-btn {
+      position: relative;
+      padding: .65rem 1.25rem;
+      background: rgba(255, 255, 255, .05);
+      color: rgba(245, 240, 232, .6);
+      border: 1px solid rgba(255, 255, 255, .07);
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .25s;
+      font-size: .85rem;
+      white-space: nowrap;
+      font-family: inherit
+    }
+
+    .admin-tab-btn:hover {
+      background: rgba(201, 168, 76, .1);
+      border-color: rgba(201, 168, 76, .25);
+      color: #C9A84C
+    }
+
+    .admin-tab-badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      background: #ef4444;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      font-size: .65rem;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .admin-tab-badge.visible {
+      display: flex
+    }
+
+    @media (max-width: 600px) {
+      .buyer-chat-window {
+        width: calc(100vw - 20px);
+        right: 10px;
+        bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+        max-height: 60vh;
+        max-height: 60svh;
+        border-radius: 16px;
+      }
+
+      .chat-bubble-btn {
+        right: 14px;
+        bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+        width: 50px;
+        height: 50px;
+      }
+
+      .acp-sidebar {
+        width: 100%;
+        max-width: 100%;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, .07);
+        max-height: 40vh;
+        max-height: 40svh;
+      }
+
+      .admin-chat-panel {
+        flex-direction: column;
+        height: calc(100vh - 60px);
+        height: calc(100dvh - 60px);
+      }
+
+      .acp-chat-area {
+        min-height: 0;
+      }
+
+      .acp-conv-item {
+        padding: 10px 12px;
+      }
+
+      .acp-input {
+        font-size: 16px; /* prevent iOS zoom on focus */
+        min-height: 44px;
+      }
+
+      .acp-send {
+        width: 44px;
+        height: 44px;
+      }
+
+      .bcw-input {
+        font-size: 16px; /* prevent iOS zoom on focus */
+        min-height: 44px;
+      }
+
+      .bcw-send {
+        width: 44px;
+        height: 44px;
+      }
+
+      .channel-choice-box {
+        width: calc(100vw - 32px);
+        padding: 1.5rem 1.25rem;
+        border-radius: 16px;
+        max-height: 85vh;
+        max-height: 85svh;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .channel-option-btn {
+        padding: .875rem 1rem;
+        gap: 12px;
+        min-height: 44px;
+      }
+
+      .channel-option-icon {
+        width: 42px;
+        height: 42px;
+        font-size: 1.3rem;
+      }
+
+      .channel-option-name {
+        font-size: .88rem;
+      }
+
+      .channel-choice-cancel {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
+
+    /* Very small phones (iPhone SE, Galaxy S series small) */
+    @media (max-width: 375px) {
+      .buyer-chat-window {
+        width: calc(100vw - 12px);
+        right: 6px;
+        max-height: 55vh;
+        max-height: 55svh;
+      }
+
+      .chat-bubble-btn {
+        right: 10px;
+        width: 46px;
+        height: 46px;
+      }
+
+      .chat-bubble-btn .cb-icon {
+        font-size: 1.2rem;
+      }
+
+      .bcw-header {
+        padding: 10px 12px;
+      }
+
+      .bcw-store-name {
+        font-size: .85rem;
+      }
+
+      .bcw-messages {
+        padding: 10px 10px 4px;
+      }
+
+      .bcw-input-area {
+        padding: 8px 10px;
+      }
+
+      .channel-choice-box {
+        width: calc(100vw - 20px);
+        padding: 1.25rem 1rem;
+      }
+
+      .channel-option-icon {
+        width: 38px;
+        height: 38px;
+        font-size: 1.1rem;
+        border-radius: 10px;
+      }
+
+      .channel-option-btn {
+        gap: 10px;
+        padding: .75rem .875rem;
+      }
+    }
+
+    /* Tablets (600px to 900px) */
+    @media (min-width: 601px) and (max-width: 900px) {
+      .buyer-chat-window {
+        width: 360px;
+        bottom: 90px;
+        right: 18px;
+      }
+
+      .admin-chat-panel {
+        height: calc(100vh - 72px);
+      }
+
+      .acp-sidebar {
+        width: 280px;
+      }
+    }
+
+    /* Desktop — hover only on pointer devices */
+    @media (hover: hover) and (pointer: fine) {
+      .channel-option-btn:hover {
+        border-color: rgba(201, 168, 76, .4);
+        background: rgba(201, 168, 76, .08);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(201, 168, 76, .15);
+      }
+
+      .chat-bubble-btn:hover {
+        transform: scale(1.12) rotate(-5deg);
+      }
+
+      .bcw-send:hover {
+        transform: scale(1.08);
+        filter: brightness(1.1);
+      }
+
+      .acp-conv-item:hover {
+        background: rgba(201, 168, 76, .05);
+      }
+
+      .acp-qr-chip:hover {
+        background: rgba(201, 168, 76, .2);
+        border-color: rgba(201, 168, 76, .45);
+      }
+    }
+
+    /* Remove hover effects for touch devices */
+    @media (hover: none) {
+      .channel-option-btn:hover {
+        transform: none;
+        box-shadow: none;
+      }
+
+      .chat-bubble-btn:hover {
+        transform: none;
+      }
+
+      .channel-option-btn:active {
+        background: rgba(201, 168, 76, .12);
+        border-color: rgba(201, 168, 76, .3);
+      }
+
+      .chat-bubble-btn:active {
+        transform: scale(.92);
+      }
+
+      .bcw-send:active {
+        transform: scale(.92);
+      }
+
+      .acp-send:active {
+        transform: scale(.92);
+      }
+
+      .acp-qr-chip:active {
+        background: rgba(201, 168, 76, .25);
+      }
+    }
+
+    /* iOS safe area for chat bubble */
+    @supports (padding-bottom: env(safe-area-inset-bottom)) {
+      @media (max-width: 600px) {
+        .chat-bubble-btn {
+          bottom: calc(74px + env(safe-area-inset-bottom));
+        }
+
+        .buyer-chat-window {
+          bottom: calc(138px + env(safe-area-inset-bottom));
+        }
+
+        .bcw-input-area {
+          padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .acp-input-area {
+          padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+        }
+
+        .channel-choice-overlay {
+          padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px);
+        }
+      }
+    }
+
+    /* ────────────────────────────────────────
+       ORDER CHANNEL CHOICE MODAL
+    ──────────────────────────────────────── */
+    .channel-choice-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      animation: channelFadeIn .25s ease;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .channel-choice-overlay.active {
+      display: flex;
+    }
+
+    @keyframes channelFadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .channel-choice-box {
+      background: linear-gradient(145deg, rgba(15, 20, 50, .98), rgba(5, 8, 22, .99));
+      border: 1px solid rgba(201, 168, 76, .3);
+      border-radius: 20px;
+      padding: 2rem 1.75rem;
+      max-width: 400px;
+      width: 90vw;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, .6), 0 0 0 1px rgba(0, 212, 255, .08);
+      animation: channelSlideUp .3s cubic-bezier(.34, 1.56, .64, 1);
+    }
+
+    @keyframes channelSlideUp {
+      from { opacity: 0; transform: translateY(30px) scale(.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .channel-choice-title {
+      text-align: center;
+      font-weight: 800;
+      font-size: 1.05rem;
+      color: #F5F0E8;
+      margin-bottom: .5rem;
+    }
+
+    .channel-choice-desc {
+      text-align: center;
+      font-size: .82rem;
+      color: rgba(245, 240, 232, .5);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+
+    .channel-choice-options {
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+    }
+
+    .channel-option-btn {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 1rem 1.25rem;
+      border-radius: 14px;
+      border: 1.5px solid rgba(255, 255, 255, .08);
+      background: rgba(26, 40, 68, .5);
+      cursor: pointer;
+      transition: all .25s;
+      text-decoration: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .channel-option-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .channel-option-icon.wa {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+    }
+
+    .channel-option-icon.chat {
+      background: linear-gradient(135deg, #C9A84C, #1A2744);
+    }
+
+    .channel-option-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .channel-option-name {
+      font-weight: 700;
+      font-size: .92rem;
+      color: #F5F0E8;
+    }
+
+    .channel-option-sub {
+      font-size: .76rem;
+      color: rgba(245, 240, 232, .45);
+      margin-top: 2px;
+    }
+
+    .channel-option-arrow {
+      color: rgba(245, 240, 232, .3);
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+
+    .channel-choice-cancel {
+      display: block;
+      margin: 1rem auto 0;
+      background: none;
+      border: none;
+      color: rgba(245, 240, 232, .4);
+      font-size: .82rem;
+      cursor: pointer;
+      padding: .5rem 1rem;
+      font-family: inherit;
+      transition: color .2s;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    .channel-choice-cancel:hover {
+      color: #ef4444;
+    }
   </style>
 </head>
 
@@ -5369,7 +6552,8 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
           getFirestore, collection, onSnapshot, query, orderBy, enableIndexedDbPersistence,
-          doc, addDoc, updateDoc, deleteDoc, serverTimestamp
+          doc, addDoc, updateDoc, deleteDoc, serverTimestamp,
+          setDoc, increment, getDocs, where
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
         import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
@@ -5575,12 +6759,50 @@
           }
           setTimeout(() => {
             if (!isValid) { alert(message); btn.disabled = false; btn.textContent = 'Konfirmasi Pembayaran'; return; }
-            sendPaymentToWhatsApp();
-            if (!window.isBuyNowMode) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
-            closePaymentModal();
+            // Simpan data order sebelum modal ditutup
+            window._pendingOrder = {
+              items: window.isBuyNowMode ? (window.tempBuyNowCart || []) : [...cartItems],
+              method: selectedPaymentMethod,
+              isBuyNow: window.isBuyNowMode
+            };
+            window._pendingOrder.total = window._pendingOrder.items.reduce((s, i) => s + (i.price * i.quantity), 0);
             btn.disabled = false; btn.textContent = 'Konfirmasi Pembayaran';
-            window.isBuyNowMode = false; window.tempBuyNowCart = [];
+            // Tampilkan modal pilihan channel
+            showChannelChoice();
           }, 500);
+        };
+
+        // ── Channel choice modal ──
+        window.showChannelChoice = function () {
+          document.getElementById('channelChoiceOverlay').classList.add('active');
+        };
+        window.closeChannelChoice = function () {
+          document.getElementById('channelChoiceOverlay').classList.remove('active');
+        };
+        window.sendViaWhatsApp = function () {
+          closeChannelChoice();
+          sendPaymentToWhatsApp();
+          if (!window._pendingOrder.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
+          closePaymentModal();
+          window.isBuyNowMode = false; window.tempBuyNowCart = [];
+          window._pendingOrder = null;
+        };
+        window.sendViaChat = function () {
+          closeChannelChoice();
+          const order = window._pendingOrder;
+          if (!order.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
+          closePaymentModal();
+          afterPaymentSuccessChat(order.items, order.total, order.method);
+          window.isBuyNowMode = false; window.tempBuyNowCart = [];
+          window._pendingOrder = null;
+          // Langsung buka chat window setelah pembayaran via chat
+          const chatBtnEl = document.getElementById('chatBubbleBtn');
+          if (chatBtnEl) chatBtnEl.style.display = 'flex';
+          setTimeout(function () {
+            if (typeof _buyerChatOpen !== 'undefined' && !_buyerChatOpen) {
+              if (typeof toggleBuyerChat === 'function') toggleBuyerChat();
+            }
+          }, 400);
         };
         function sendPaymentToWhatsApp() {
           // Get shipping details
@@ -5636,6 +6858,7 @@
           });
           initSearchBar();
           loadCartFromStorage();
+          initChat();
         }
 
         window.filterCategory = (category, btn) => {
@@ -6538,6 +7761,391 @@
           setTimeout(() => notif.classList.remove('show'), 3000);
         }
 
+        // ═══════════════════════════════════════════════════════
+        // SADEWA CHAT SYSTEM v2.0
+        // ═══════════════════════════════════════════════════════
+
+        // ── Chat State ──
+        let _buyerSessionId = null;
+        let _buyerChatOpen = false;
+        let _acpActiveConvId = null;
+        let _allConvs = [];
+        let _adminChatUnread = 0;
+        let _buyerUnread = 0;
+        let _adminMsgUnsub = null;
+
+        // ── Chat Helpers ──
+        function _getBuyerSession() {
+          if (!_buyerSessionId) {
+            _buyerSessionId = localStorage.getItem('sadewaChatSession');
+            if (!_buyerSessionId) {
+              _buyerSessionId = 'buyer_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+              localStorage.setItem('sadewaChatSession', _buyerSessionId);
+            }
+          }
+          return _buyerSessionId;
+        }
+        function _getBuyerName() { return localStorage.getItem('sadewaBuyerName') || 'Pelanggan'; }
+        function _setBuyerName(n) { if (n) localStorage.setItem('sadewaBuyerName', n); }
+
+        function _fmtTime(ts) {
+          if (!ts) return '';
+          const d = ts.toDate ? ts.toDate() : new Date(ts);
+          const now = new Date(), diff = now - d;
+          if (diff < 60000) return 'Baru saja';
+          if (diff < 3600000) return Math.floor(diff / 60000) + ' mnt';
+          if (d.toDateString() === now.toDateString())
+            return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+          return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+        }
+        function _fmtShort(ts) {
+          if (!ts) return '';
+          const d = ts.toDate ? ts.toDate() : new Date(ts);
+          return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+        }
+        function _esc(t) {
+          return String(t || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+        }
+
+        function _buildOrderCard(order) {
+          const items = (order.items || []).map(i =>
+            `<div class="bcw-order-card-item">• ${_esc(i.name)}${i.variant ? ` (${_esc(i.variant)})` : ''} ×${i.qty} — Rp ${Number(i.price).toLocaleString('id-ID')}</div>`
+          ).join('');
+          return `<div class="bcw-order-card">
+            <div class="bcw-order-card-title">🧾 Detail Pesanan</div>
+            ${items}
+            <div class="bcw-order-card-total">Total: Rp ${Number(order.total).toLocaleString('id-ID')}</div>
+            <div class="bcw-order-status">✅ Pesanan Dikonfirmasi</div>
+          </div>`;
+        }
+
+        // ── Buyer: Toggle ──
+        window.toggleBuyerChat = function () {
+          _buyerChatOpen = !_buyerChatOpen;
+          const win = document.getElementById('buyerChatWindow');
+          if (_buyerChatOpen) {
+            win.classList.add('open');
+            _buyerUnread = 0;
+            _updateBuyerBadge();
+            _scrollBcw();
+            _markBuyerRead();
+          } else {
+            win.classList.remove('open');
+          }
+        };
+
+        function _updateBuyerBadge() {
+          const b = document.getElementById('chatBubbleUnread');
+          if (!b) return;
+          if (_buyerUnread > 0) { b.textContent = _buyerUnread; b.classList.add('visible'); }
+          else b.classList.remove('visible');
+        }
+
+        function _scrollBcw() {
+          setTimeout(() => { const m = document.getElementById('bcwMessages'); if (m) m.scrollTop = m.scrollHeight; }, 60);
+        }
+
+        window.autoResizeBcw = function (el) {
+          el.style.height = 'auto';
+          el.style.height = Math.min(el.scrollHeight, 90) + 'px';
+        };
+        window.handleBcwKey = function (e) {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuyerMessage(); }
+        };
+
+        // ── Buyer: Listen messages ──
+        function _listenBuyerMsgs(sid) {
+          const q2 = query(collection(db, 'sadewaChats', sid, 'messages'), orderBy('createdAt', 'asc'));
+          onSnapshot(q2, snap => {
+            const container = document.getElementById('bcwMessages');
+            if (!container) return;
+            container.innerHTML = '';
+            snap.docs.forEach(d => _appendBuyerMsg(d.data(), container));
+            if (_buyerChatOpen) {
+              _scrollBcw();
+              _markBuyerRead();
+            } else {
+              _buyerUnread = snap.docs.filter(d => d.data().sender === 'seller' && !d.data().readByBuyer).length;
+              _updateBuyerBadge();
+            }
+          });
+        }
+
+        function _appendBuyerMsg(msg, container) {
+          const sent = msg.sender === 'buyer';
+          const div = document.createElement('div');
+          div.className = 'bcw-msg ' + (sent ? 'sent' : 'recv');
+          const content = msg.orderCard ? _buildOrderCard(msg.orderCard)
+            : `<div class="bcw-bubble">${_esc(msg.text)}</div>`;
+          div.innerHTML = content + `<div class="bcw-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtShort(msg.createdAt)}</div>`;
+          container.appendChild(div);
+        }
+
+        async function _markBuyerRead() {
+          const sid = _getBuyerSession();
+          try {
+            const snap = await getDocs(query(collection(db, 'sadewaChats', sid, 'messages'),
+              where('sender', '==', 'seller'), where('readByBuyer', '==', false)));
+            snap.docs.forEach(async d => {
+              await updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true });
+            });
+          } catch (e) { }
+        }
+
+        // ── Buyer: Send message ──
+        window.sendBuyerMessage = async function () {
+          const input = document.getElementById('bcwInput');
+          const text = (input?.value || '').trim();
+          if (!text) return;
+          const btn = document.getElementById('bcwSendBtn');
+          if (btn) btn.disabled = true;
+          input.value = ''; input.style.height = 'auto';
+          const sid = _getBuyerSession();
+          const name = _getBuyerName();
+          try {
+            await setDoc(doc(db, 'sadewaChats', sid), {
+              sessionId: sid, buyerName: name,
+              lastMessage: text, lastMessageAt: serverTimestamp(),
+              adminUnread: increment(1), updatedAt: serverTimestamp(),
+            }, { merge: true });
+            await addDoc(collection(db, 'sadewaChats', sid, 'messages'), {
+              text, sender: 'buyer', senderName: name,
+              createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true,
+            });
+          } catch (e) { console.error('sendBuyerMsg:', e); }
+          finally { if (btn) btn.disabled = false; input?.focus(); }
+        };
+
+        // ── Send order card after payment ──
+        window.afterPaymentSuccessChat = async function (items, total, method) {
+          try {
+            const sid = _getBuyerSession();
+            const name = document.getElementById('shipName')?.value?.trim() || _getBuyerName();
+            const phone = document.getElementById('shipPhone')?.value?.trim() || '';
+            const addr = document.getElementById('shipAddress')?.value?.trim() || '';
+            _setBuyerName(name);
+
+            await setDoc(doc(db, 'sadewaChats', sid), {
+              sessionId: sid, buyerName: name, buyerPhone: phone,
+              lastMessage: '🧾 Pesanan baru dikonfirmasi',
+              lastMessageAt: serverTimestamp(),
+              adminUnread: increment(2), updatedAt: serverTimestamp(),
+            }, { merge: true });
+
+            await addDoc(collection(db, 'sadewaChats', sid, 'messages'), {
+              sender: 'buyer', senderName: name,
+              orderCard: { items: items.map(i => ({ name: i.name, variant: i.variant || '', qty: i.quantity, price: i.price })), total, method },
+              text: '🧾 Pesanan baru dikonfirmasi',
+              createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true,
+            });
+
+            await addDoc(collection(db, 'sadewaChats', sid, 'messages'), {
+              text: `📍 Alamat: ${name}\n📱 HP: ${phone}\n🏠 ${addr}`,
+              sender: 'buyer', senderName: name,
+              createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true,
+            });
+
+            _listenBuyerMsgs(sid);
+            const chatBtn = document.getElementById('chatBubbleBtn');
+            if (chatBtn) chatBtn.style.display = 'flex';
+            setTimeout(() => { if (!_buyerChatOpen) toggleBuyerChat(); }, 800);
+          } catch (e) { console.error('afterPaymentSuccessChat:', e); }
+        };
+
+        // ═══════════════════════════════════════════════════════
+        // ADMIN CHAT
+        // ═══════════════════════════════════════════════════════
+
+        function _initAdminChat() {
+          const q3 = query(collection(db, 'sadewaChats'), orderBy('updatedAt', 'desc'));
+          onSnapshot(q3, snap => {
+            _allConvs = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+            _renderConvList(_allConvs);
+            _adminChatUnread = _allConvs.reduce((s, c) => s + (c.adminUnread || 0), 0);
+            _updateAdminBadge();
+          });
+        }
+
+        function _updateAdminBadge() {
+          const b = document.getElementById('adminChatTabBadge');
+          if (!b) return;
+          if (_adminChatUnread > 0) { b.textContent = _adminChatUnread > 99 ? '99+' : _adminChatUnread; b.classList.add('visible'); }
+          else b.classList.remove('visible');
+        }
+
+        window.filterConversations = function () {
+          const q4 = (document.getElementById('acpSearch')?.value || '').toLowerCase();
+          _renderConvList(q4 ? _allConvs.filter(c => (c.buyerName || '').toLowerCase().includes(q4) || (c.lastMessage || '').toLowerCase().includes(q4)) : _allConvs);
+        };
+
+        function _renderConvList(convs) {
+          const list = document.getElementById('acpConvList');
+          if (!list) return;
+          if (!convs || !convs.length) {
+            list.innerHTML = `<div class="acp-empty-state"><div class="acp-empty-icon">💬</div><p style="font-size:.875rem;">Belum ada percakapan</p></div>`;
+            return;
+          }
+          list.innerHTML = convs.map(c => {
+            const active = c.id === _acpActiveConvId, unread = c.adminUnread || 0;
+            const init2 = (c.buyerName || 'P')[0].toUpperCase();
+            return `<div class="acp-conv-item${active ? ' active' : ''}" onclick="openAdminConv('${c.id}')">
+              <div class="acp-conv-avatar">${init2}</div>
+              <div class="acp-conv-info">
+                <div class="acp-conv-name">${_esc(c.buyerName || 'Pelanggan')}</div>
+                <div class="acp-conv-preview">${_esc((c.lastMessage || '').substring(0, 45))}</div>
+              </div>
+              <div class="acp-conv-meta">
+                <div class="acp-conv-time">${_fmtTime(c.lastMessageAt)}</div>
+                ${unread > 0 ? `<div class="acp-conv-badge">${unread}</div>` : ''}
+              </div>
+            </div>`;
+          }).join('');
+        }
+
+        window.openAdminConv = async function (cid) {
+          _acpActiveConvId = cid;
+          _renderConvList(_allConvs);
+          const conv = _allConvs.find(c => c.id === cid) || {};
+          const area = document.getElementById('acpChatArea');
+          if (!area) return;
+          const waLink = conv.buyerPhone
+            ? `<a href="https://wa.me/62${(conv.buyerPhone || '').replace(/^0/, '').replace(/\D/g, '')}" target="_blank" class="acp-action-btn">💬 WA</a>` : '';
+          area.innerHTML = `
+            <div class="acp-chat-header">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1A2744,#0a0e27);border:2px solid rgba(201,168,76,.25);display:flex;align-items:center;justify-content:center;color:#C9A84C;font-weight:700;flex-shrink:0;">
+                ${(conv.buyerName || 'P')[0].toUpperCase()}
+              </div>
+              <div>
+                <div class="acp-chat-customer-name">${_esc(conv.buyerName || 'Pelanggan')}</div>
+                <div class="acp-chat-customer-sub">${conv.buyerPhone ? '📱 ' + conv.buyerPhone : 'Tanpa nomor'}</div>
+              </div>
+              <div class="acp-chat-actions">${waLink}</div>
+            </div>
+            <div class="acp-quick-replies">
+              <div class="acp-qr-chip" onclick="acpQR('Halo! Pesanan Anda sudah kami terima ✅')">✅ Terima pesanan</div>
+              <div class="acp-qr-chip" onclick="acpQR('Pesanan sedang kami proses 🔄')">🔄 Diproses</div>
+              <div class="acp-qr-chip" onclick="acpQR('Pesanan sudah dikirim 🚚 Mohon ditunggu ya!')">🚚 Dikirim</div>
+              <div class="acp-qr-chip" onclick="acpQR('Terima kasih sudah berbelanja di Sadewa Elektronik! 🙏')">🙏 Terima kasih</div>
+              <div class="acp-qr-chip" onclick="acpQR('Mohon maaf, stok sedang kosong. Kami akan kabari jika tersedia 📦')">📦 Stok habis</div>
+            </div>
+            <div class="acp-messages" id="acpMessages"></div>
+            <div class="acp-input-area">
+              <textarea class="acp-input" id="acpInput" placeholder="Balas pesan..." rows="1"
+                onkeydown="handleAcpKey(event)" oninput="autoResizeAcp(this)"></textarea>
+              <button class="acp-send" id="acpSendBtn" onclick="sendAdminMessage()">➤</button>
+            </div>`;
+          try { await updateDoc(doc(db, 'sadewaChats', cid), { adminUnread: 0 }); } catch (e) { }
+          if (_adminMsgUnsub) _adminMsgUnsub();
+          const mq = query(collection(db, 'sadewaChats', cid, 'messages'), orderBy('createdAt', 'asc'));
+          _adminMsgUnsub = onSnapshot(mq, snap => {
+            const container = document.getElementById('acpMessages');
+            if (!container) return;
+            container.innerHTML = '';
+            let lastDate = '';
+            snap.docs.forEach(d => {
+              const msg = d.data(), sent = msg.sender === 'seller';
+              const msgDate = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+              if (msgDate && msgDate !== lastDate) {
+                lastDate = msgDate;
+                const sep = document.createElement('div');
+                sep.className = 'chat-date-sep'; sep.textContent = msgDate;
+                container.appendChild(sep);
+              }
+              const div = document.createElement('div');
+              div.className = 'acp-msg ' + (sent ? 'sent' : 'recv');
+              const content = msg.orderCard ? _buildOrderCard(msg.orderCard)
+                : `<div class="bcw-bubble">${_esc(msg.text)}</div>`;
+              div.innerHTML = content + `<div class="bcw-time">${sent ? 'Admin' : _esc(msg.senderName || 'Pelanggan')} · ${_fmtShort(msg.createdAt)}</div>`;
+              container.appendChild(div);
+            });
+            container.scrollTop = container.scrollHeight;
+            snap.docs.forEach(async d => {
+              if (d.data().sender === 'buyer' && !d.data().readByAdmin)
+                await updateDoc(doc(db, 'sadewaChats', cid, 'messages', d.id), { readByAdmin: true }).catch(() => { });
+            });
+          });
+        };
+
+        window.acpQR = function (text) {
+          const inp = document.getElementById('acpInput');
+          if (inp) { inp.value = text; inp.focus(); }
+        };
+        window.autoResizeAcp = function (el) {
+          el.style.height = 'auto'; el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+        };
+        window.handleAcpKey = function (e) {
+          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendAdminMessage(); }
+        };
+
+        window.sendAdminMessage = async function () {
+          if (!_acpActiveConvId) return;
+          const inp = document.getElementById('acpInput');
+          const text = (inp?.value || '').trim();
+          if (!text) return;
+          const btn2 = document.getElementById('acpSendBtn');
+          if (btn2) btn2.disabled = true;
+          inp.value = ''; inp.style.height = 'auto';
+          try {
+            await addDoc(collection(db, 'sadewaChats', _acpActiveConvId, 'messages'), {
+              text, sender: 'seller', senderName: 'Sadewa Elektronik',
+              createdAt: serverTimestamp(), readByAdmin: true, readByBuyer: false,
+            });
+            await updateDoc(doc(db, 'sadewaChats', _acpActiveConvId), {
+              lastMessage: text, lastMessageAt: serverTimestamp(), buyerUnread: increment(1),
+            });
+          } catch (e) { console.error('adminSend:', e); }
+          finally { if (btn2) btn2.disabled = false; inp?.focus(); }
+        };
+
+        // ── Admin panel toggle ──
+        window.showAdminChatPanel = function () {
+          document.querySelector('.admin-stats-row')?.style.setProperty('display', 'none', 'important');
+          document.querySelector('.admin-grid')?.style.setProperty('display', 'none', 'important');
+          const p = document.getElementById('adminChatPanel');
+          if (p) { p.style.display = 'flex'; p.classList.add('active'); }
+          if (!_allConvs.length) _initAdminChat();
+        };
+        window.showAdminProductPanel = function () {
+          document.querySelector('.admin-stats-row')?.style.removeProperty('display');
+          document.querySelector('.admin-grid')?.style.removeProperty('display');
+          const p = document.getElementById('adminChatPanel');
+          if (p) { p.style.display = 'none'; p.classList.remove('active'); }
+        };
+
+        // ── Chat system init ──
+        function initChat() {
+          const sid = _getBuyerSession();
+          _listenBuyerMsgs(sid);
+          const chatBtnEl = document.getElementById('chatBubbleBtn');
+          if (chatBtnEl) chatBtnEl.style.display = 'flex';
+          const adminPage = document.getElementById('adminPage');
+          const chatPanel = document.getElementById('adminChatPanel');
+          if (adminPage && chatPanel && chatPanel.parentNode !== adminPage) {
+            adminPage.appendChild(chatPanel);
+          }
+          const adminActions = document.querySelector('.admin-topbar-actions');
+          if (adminActions && !document.getElementById('adminChatTabBtn')) {
+            const prodBtn = document.createElement('button');
+            prodBtn.className = 'admin-tab-btn';
+            prodBtn.id = 'adminProdTabBtn';
+            prodBtn.textContent = '📦 Produk';
+            prodBtn.onclick = showAdminProductPanel;
+            const chatBtn2 = document.createElement('button');
+            chatBtn2.className = 'admin-tab-btn';
+            chatBtn2.id = 'adminChatTabBtn';
+            chatBtn2.innerHTML = '💬 Pesan <span class="admin-tab-badge" id="adminChatTabBadge">0</span>';
+            chatBtn2.onclick = () => { showAdminChatPanel(); _initAdminChat(); };
+            const logoutBtn = adminActions.querySelector('.admin-btn-logout');
+            if (logoutBtn) {
+              adminActions.insertBefore(prodBtn, logoutBtn);
+              adminActions.insertBefore(chatBtn2, logoutBtn);
+            } else {
+              adminActions.appendChild(prodBtn);
+              adminActions.appendChild(chatBtn2);
+            }
+          }
+        }
+
         // Start
         init();
       </script>
@@ -6633,6 +8241,200 @@
         })();
       </script>
       <div id="toastNotif" class="toast-notification"></div>
+
+      <script>
+        // ══════════════════════════════════════
+        // AUTO-SAVE ALAMAT PENGIRIMAN
+        // ══════════════════════════════════════
+        (function () {
+          const STORAGE_KEY = 'sadewa_shipping_address_v1';
+          const FIELDS = ['shipName', 'shipPhone', 'shipRegion', 'shipAddress', 'shipDetail', 'shipNote'];
+          let saveTimer;
+
+          // Load data tersimpan ke form
+          function loadSavedAddress() {
+            try {
+              const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+              if (!Object.keys(saved).length) return;
+              FIELDS.forEach(function (fieldId) {
+                const el = document.getElementById(fieldId);
+                if (el && saved[fieldId]) el.value = saved[fieldId];
+              });
+              showAddressSavedBanner();
+            } catch (e) { }
+          }
+
+          // Simpan otomatis dengan debounce 800ms
+          function saveAddress() {
+            clearTimeout(saveTimer);
+            saveTimer = setTimeout(function () {
+              try {
+                const data = {};
+                FIELDS.forEach(function (fieldId) {
+                  const el = document.getElementById(fieldId);
+                  if (el) data[fieldId] = el.value;
+                });
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+              } catch (e) { }
+            }, 800);
+          }
+
+          // Tampilkan banner "Alamat diisi otomatis"
+          function showAddressSavedBanner() {
+            const existing = document.getElementById('addressAutoFillBanner');
+            if (existing) return;
+
+            const step1 = document.getElementById('checkoutStep1');
+            if (!step1) return;
+
+            const banner = document.createElement('div');
+            banner.id = 'addressAutoFillBanner';
+            banner.style.cssText = [
+              'background:rgba(16,185,129,0.12)',
+              'border:1px solid rgba(16,185,129,0.35)',
+              'border-radius:10px',
+              'padding:0.75rem 1rem',
+              'margin-bottom:1rem',
+              'display:flex',
+              'align-items:center',
+              'justify-content:space-between',
+              'gap:0.75rem',
+              'font-size:0.88rem'
+            ].join(';');
+
+            banner.innerHTML = [
+              '<span style="color:#10b981;font-weight:700;">',
+              '✅ Alamat diisi otomatis dari pembelian sebelumnya',
+              '</span>',
+              '<button onclick="clearSavedAddress()" style="',
+              'background:none;border:1px solid rgba(239,68,68,0.4);',
+              'color:#ef4444;border-radius:6px;padding:3px 10px;',
+              'font-size:0.78rem;font-weight:700;cursor:pointer;',
+              'white-space:nowrap;',
+              '">✕ Hapus</button>'
+            ].join('');
+
+            step1.insertBefore(banner, step1.firstChild);
+          }
+
+          // Hapus data tersimpan
+          window.clearSavedAddress = function () {
+            localStorage.removeItem(STORAGE_KEY);
+            FIELDS.forEach(function (fieldId) {
+              const el = document.getElementById(fieldId);
+              if (el) el.value = '';
+            });
+            const banner = document.getElementById('addressAutoFillBanner');
+            if (banner) banner.remove();
+          };
+
+          // Pasang event listener ke semua field
+          function attachListeners() {
+            FIELDS.forEach(function (fieldId) {
+              const el = document.getElementById(fieldId);
+              if (el) {
+                el.addEventListener('input', saveAddress);
+                el.addEventListener('change', saveAddress);
+              }
+            });
+          }
+
+          // Jalankan saat modal pembayaran dibuka
+          const origOpenPaymentModal = window.openPaymentModal;
+          window.openPaymentModal = function () {
+            if (origOpenPaymentModal) origOpenPaymentModal.apply(this, arguments);
+            setTimeout(function () {
+              attachListeners();
+              loadSavedAddress();
+            }, 100);
+          };
+
+          // Backup: pasang listener saat DOM ready
+          document.addEventListener('DOMContentLoaded', function () {
+            attachListeners();
+          });
+        })();
+      </script>
+
+      <!-- BUYER: Floating Chat Button -->
+      <button class="chat-bubble-btn" id="chatBubbleBtn" onclick="toggleBuyerChat()" title="Chat dengan Penjual"
+        style="display:none;">
+        <span class="cb-icon">💬</span>
+        <span class="chat-bubble-unread" id="chatBubbleUnread">0</span>
+      </button>
+
+      <!-- BUYER: Chat Window -->
+      <div class="buyer-chat-window" id="buyerChatWindow">
+        <div class="bcw-header">
+          <div class="bcw-avatar">⚡</div>
+          <div class="bcw-store-info">
+            <div class="bcw-store-name">Sadewa Elektronik</div>
+            <div class="bcw-store-status">Online · Respon cepat</div>
+          </div>
+          <button class="bcw-close" onclick="toggleBuyerChat()">✕</button>
+        </div>
+        <div class="bcw-messages" id="bcwMessages">
+          <div class="bcw-msg recv">
+            <div class="bcw-bubble">Halo! 👋 Selamat datang di Sadewa Elektronik. Ada yang bisa kami bantu?</div>
+            <div class="bcw-time">Sadewa · Otomatis</div>
+          </div>
+        </div>
+        <div class="bcw-input-area">
+          <textarea class="bcw-input" id="bcwInput" placeholder="Ketik pesan..." rows="1"
+            onkeydown="handleBcwKey(event)" oninput="autoResizeBcw(this)"></textarea>
+          <button class="bcw-send" id="bcwSendBtn" onclick="sendBuyerMessage()">➤</button>
+        </div>
+      </div>
+
+      <!-- ADMIN: Chat Panel -->
+      <div class="admin-chat-panel" id="adminChatPanel">
+        <div class="acp-sidebar">
+          <div class="acp-sidebar-header">
+            <div class="acp-sidebar-title">💬 Pesan Masuk</div>
+            <input type="text" class="acp-search" id="acpSearch" placeholder="Cari pelanggan..."
+              oninput="filterConversations()">
+          </div>
+          <div class="acp-conv-list" id="acpConvList">
+            <div class="acp-empty-state">
+              <div class="acp-empty-icon">💬</div>
+              <p style="font-size:.875rem;">Belum ada percakapan</p>
+            </div>
+          </div>
+        </div>
+        <div class="acp-chat-area" id="acpChatArea">
+          <div class="acp-empty-state" style="display:flex;">
+            <div class="acp-empty-icon">📨</div>
+            <p style="font-size:.875rem;text-align:center;">Pilih percakapan<br>untuk mulai balas pesan</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ORDER CHANNEL CHOICE MODAL -->
+      <div class="channel-choice-overlay" id="channelChoiceOverlay" onclick="if(event.target===this)closeChannelChoice()">
+        <div class="channel-choice-box">
+          <div class="channel-choice-title">📨 Kirim Pesanan Melalui</div>
+          <div class="channel-choice-desc">Pilih cara untuk mengirim konfirmasi pesanan Anda ke kami</div>
+          <div class="channel-choice-options">
+            <div class="channel-option-btn" onclick="sendViaWhatsApp()">
+              <div class="channel-option-icon wa">💬</div>
+              <div class="channel-option-info">
+                <div class="channel-option-name">WhatsApp</div>
+                <div class="channel-option-sub">Kirim pesanan langsung ke WhatsApp kami</div>
+              </div>
+              <div class="channel-option-arrow">›</div>
+            </div>
+            <div class="channel-option-btn" onclick="sendViaChat()">
+              <div class="channel-option-icon chat">⚡</div>
+              <div class="channel-option-info">
+                <div class="channel-option-name">Chat Langsung</div>
+                <div class="channel-option-sub">Chat real-time dengan admin di website ini</div>
+              </div>
+              <div class="channel-option-arrow">›</div>
+            </div>
+          </div>
+          <button class="channel-choice-cancel" onclick="closeChannelChoice()">Batal</button>
+        </div>
+      </div>
 </body>
 
 </html>
