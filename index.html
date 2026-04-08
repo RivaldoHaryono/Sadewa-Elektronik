@@ -4777,6 +4777,24 @@
       border-left: 3px solid #C9A84C
     }
 
+    .acp-conv-item.has-new {
+      background: rgba(201, 168, 76, 0.08);
+      animation: newMsgPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes newMsgPulse {
+
+      0%,
+      100% {
+        border-left-color: transparent;
+      }
+
+      50% {
+        border-left-color: #C9A84C;
+        border-left-width: 3px;
+      }
+    }
+
     .acp-conv-avatar {
       width: 44px;
       height: 44px;
@@ -5156,7 +5174,8 @@
       }
 
       .acp-input {
-        font-size: 16px; /* prevent iOS zoom on focus */
+        font-size: 16px;
+        /* prevent iOS zoom on focus */
         min-height: 44px;
       }
 
@@ -5166,7 +5185,8 @@
       }
 
       .bcw-input {
-        font-size: 16px; /* prevent iOS zoom on focus */
+        font-size: 16px;
+        /* prevent iOS zoom on focus */
         min-height: 44px;
       }
 
@@ -5387,8 +5407,13 @@
     }
 
     @keyframes channelFadeIn {
-      from { opacity: 0; }
-      to   { opacity: 1; }
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
     }
 
     .channel-choice-box {
@@ -5403,8 +5428,15 @@
     }
 
     @keyframes channelSlideUp {
-      from { opacity: 0; transform: translateY(30px) scale(.95); }
-      to   { opacity: 1; transform: translateY(0) scale(1); }
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(.95);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
 
     .channel-choice-title {
@@ -6787,13 +6819,25 @@
           window.isBuyNowMode = false; window.tempBuyNowCart = [];
           window._pendingOrder = null;
         };
-        window.sendViaChat = function () {
+        window.sendViaChat = async function () {
           closeChannelChoice();
           const order = window._pendingOrder;
           if (!order.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
           closePaymentModal();
-          afterPaymentSuccessChat(order.items, order.total, order.method);
-          window.isBuyNowMode = false; window.tempBuyNowCart = [];
+
+          // Tampilkan chat bubble jika belum
+          const chatBtn = document.getElementById('chatBubbleBtn');
+          if (chatBtn) chatBtn.style.display = 'flex';
+
+          await afterPaymentSuccessChat(order.items, order.total, order.method);
+
+          // Buka chat window otomatis
+          if (!_buyerChatOpen) {
+            toggleBuyerChat();
+          }
+
+          window.isBuyNowMode = false;
+          window.tempBuyNowCart = [];
           window._pendingOrder = null;
         };
         function sendPaymentToWhatsApp() {
@@ -7845,6 +7889,22 @@
           if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBuyerMessage(); }
         };
 
+        function _playNotifSound() {
+          try {
+            const ctx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.frequency.setValueAtTime(880, ctx.currentTime);
+            osc.frequency.setValueAtTime(1100, ctx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.15, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+            osc.start(ctx.currentTime);
+            osc.stop(ctx.currentTime + 0.3);
+          } catch (e) { }
+        }
+
         // ── Buyer: Listen messages ──
         function _listenBuyerMsgs(sid) {
           const q2 = query(collection(db, 'sadewaChats', sid, 'messages'), orderBy('createdAt', 'asc'));
@@ -7857,7 +7917,9 @@
               _scrollBcw();
               _markBuyerRead();
             } else {
-              _buyerUnread = snap.docs.filter(d => d.data().sender === 'seller' && !d.data().readByBuyer).length;
+              const newUnread = snap.docs.filter(d => d.data().sender === 'seller' && !d.data().readByBuyer).length;
+              if (newUnread > _buyerUnread) _playNotifSound();
+              _buyerUnread = newUnread;
               _updateBuyerBadge();
             }
           });
@@ -7938,10 +8000,25 @@
             });
 
             _listenBuyerMsgs(sid);
+
+            const storeStatus = document.querySelector('.bcw-store-status');
+            if (storeStatus && name) {
+              storeStatus.textContent = `Halo, ${name}! Pesanan diterima ✓`;
+              storeStatus.style.color = '#10b981';
+            }
+
             const chatBtn = document.getElementById('chatBubbleBtn');
             if (chatBtn) chatBtn.style.display = 'flex';
             if (!_buyerChatOpen) toggleBuyerChat();
-            setTimeout(_scrollBcw, 100);
+            setTimeout(() => {
+              _scrollBcw();
+              // Animasi "pesan terkirim"
+              const container = document.getElementById('bcwMessages');
+              if (container) {
+                const lastMsg = container.lastElementChild;
+                if (lastMsg) lastMsg.style.animation = 'bcwMsgIn 0.4s ease';
+              }
+            }, 200);
           } catch (e) { console.error('afterPaymentSuccessChat:', e); }
         };
 
@@ -7981,7 +8058,8 @@
           list.innerHTML = convs.map(c => {
             const active = c.id === _acpActiveConvId, unread = c.adminUnread || 0;
             const init2 = (c.buyerName || 'P')[0].toUpperCase();
-            return `<div class="acp-conv-item${active ? ' active' : ''}" onclick="openAdminConv('${c.id}')">
+            const hasNew = unread > 0 && c.id !== _acpActiveConvId;
+            return `<div class="acp-conv-item${active ? ' active' : ''}${hasNew ? ' has-new' : ''}" onclick="openAdminConv('${c.id}')">
               <div class="acp-conv-avatar">${init2}</div>
               <div class="acp-conv-info">
                 <div class="acp-conv-name">${_esc(c.buyerName || 'Pelanggan')}</div>
@@ -8403,7 +8481,8 @@
       </div>
 
       <!-- ORDER CHANNEL CHOICE MODAL -->
-      <div class="channel-choice-overlay" id="channelChoiceOverlay" onclick="if(event.target===this)closeChannelChoice()">
+      <div class="channel-choice-overlay" id="channelChoiceOverlay"
+        onclick="if(event.target===this)closeChannelChoice()">
         <div class="channel-choice-box">
           <div class="channel-choice-title">📨 Kirim Pesanan Melalui</div>
           <div class="channel-choice-desc">Pilih cara untuk mengirim konfirmasi pesanan Anda ke kami</div>
