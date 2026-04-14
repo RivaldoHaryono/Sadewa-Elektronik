@@ -22,8 +22,8 @@
       "@context": "https://schema.org",
       "@type": "Organization",
       "name": "Sadewa Elektronik",
-      "url": "https://rivaldoharyono.github.io/sadewa-elektronik/",
-      "logo": "https://rivaldoharyono.github.io/sadewa-elektronik/icon/Logo-Square.png"
+      "url": "https://rivaldoharyono.github.io/Sadewa-Elektronik/",
+      "logo": "https://rivaldoharyono.github.io/Sadewa-Elektronik/icon/Logo-Square.png"
     }
   </script>
 
@@ -5538,6 +5538,537 @@
     .channel-choice-cancel:hover {
       color: #ef4444;
     }
+
+    /* ─── SADEWA CHAT PATCH v2.0 ─── */
+    /* Navbar chat button */
+    .nav-chat-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: .6rem 1rem;
+      border-radius: 10px;
+      border: 1.5px solid rgba(201, 168, 76, .35);
+      background: rgba(201, 168, 76, .1);
+      color: #C9A84C;
+      font-weight: 700;
+      font-size: .82rem;
+      cursor: pointer;
+      transition: all .25s;
+      position: relative;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .nav-chat-btn:hover {
+      background: rgba(201, 168, 76, .2);
+      border-color: rgba(201, 168, 76, .6);
+      transform: translateY(-1px);
+    }
+
+    .nav-chat-notif-dot {
+      position: absolute;
+      top: -5px;
+      right: -5px;
+      width: 14px;
+      height: 14px;
+      background: #ef4444;
+      border-radius: 50%;
+      border: 2px solid #0a0e27;
+      font-size: .6rem;
+      font-weight: 900;
+      color: #fff;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .nav-chat-notif-dot.show {
+      display: flex;
+    }
+
+    /* Chat page full-screen */
+    .chat-page-overlay {
+      position: fixed;
+      inset: 0;
+      background: #050816;
+      z-index: 8000;
+      display: none;
+      flex-direction: column;
+    }
+
+    .chat-page-overlay.active {
+      display: flex;
+    }
+
+    .cp-topbar {
+      background: rgba(10, 14, 39, .95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(201, 168, 76, .2);
+      padding: .85rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-shrink: 0;
+    }
+
+    .cp-back-btn {
+      background: rgba(255, 255, 255, .06);
+      border: 1px solid rgba(255, 255, 255, .1);
+      color: #C9A84C;
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .cp-back-btn:hover {
+      background: rgba(201, 168, 76, .15);
+    }
+
+    .cp-seller-avatar {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #C9A84C, #1A2744);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      flex-shrink: 0;
+      position: relative;
+    }
+
+    .cp-seller-online {
+      position: absolute;
+      bottom: 1px;
+      right: 1px;
+      width: 10px;
+      height: 10px;
+      background: #10b981;
+      border-radius: 50%;
+      border: 2px solid #0a0e27;
+    }
+
+    .cp-seller-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .cp-seller-name {
+      font-weight: 700;
+      font-size: .95rem;
+      color: #F5F0E8;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .cp-seller-status {
+      font-size: .72rem;
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 2px;
+    }
+
+    .cp-wa-btn {
+      background: linear-gradient(135deg, #25D366, #128C7E);
+      color: #fff;
+      border: none;
+      padding: .5rem .85rem;
+      border-radius: 10px;
+      font-size: .78rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .cp-messages-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      scroll-behavior: smooth;
+    }
+
+    .cp-messages-area::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .cp-messages-area::-webkit-scrollbar-thumb {
+      background: rgba(201, 168, 76, .25);
+      border-radius: 4px;
+    }
+
+    .cp-msg {
+      display: flex;
+      flex-direction: column;
+      max-width: 72%;
+      animation: cpMsgIn .25s ease;
+    }
+
+    @keyframes cpMsgIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .cp-msg.sent {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .cp-msg.recv {
+      align-self: flex-start;
+      align-items: flex-start;
+    }
+
+    .cp-bubble {
+      padding: 10px 14px;
+      border-radius: 16px;
+      font-size: .88rem;
+      line-height: 1.55;
+      word-break: break-word;
+      white-space: pre-wrap;
+    }
+
+    .cp-msg.sent .cp-bubble {
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      color: #0B1120;
+      border-bottom-right-radius: 4px;
+    }
+
+    .cp-msg.recv .cp-bubble {
+      background: rgba(26, 40, 68, .9);
+      border: 1px solid rgba(255, 255, 255, .08);
+      color: #F5F0E8;
+      border-bottom-left-radius: 4px;
+    }
+
+    .cp-msg-time {
+      font-size: .64rem;
+      color: rgba(245, 240, 232, .35);
+      margin-top: 3px;
+      padding: 0 3px;
+    }
+
+    .cp-order-card {
+      background: rgba(0, 212, 255, .07);
+      border: 1px solid rgba(201, 168, 76, .25);
+      border-radius: 14px;
+      padding: 12px 14px;
+      max-width: 260px;
+      font-size: .82rem;
+    }
+
+    .cp-order-card-title {
+      color: #C9A84C;
+      font-weight: 700;
+      font-size: .84rem;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .cp-order-item {
+      color: rgba(245, 240, 232, .75);
+      padding: 2px 0;
+    }
+
+    .cp-order-total {
+      color: #C9A84C;
+      font-weight: 700;
+      border-top: 1px dashed rgba(255, 255, 255, .1);
+      margin-top: 7px;
+      padding-top: 7px;
+    }
+
+    .cp-order-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: rgba(16, 185, 129, .12);
+      border: 1px solid rgba(16, 185, 129, .3);
+      color: #10b981;
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      margin-top: 7px;
+    }
+
+    .cp-date-sep {
+      text-align: center;
+      font-size: .68rem;
+      color: rgba(245, 240, 232, .3);
+      padding: 6px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cp-date-sep::before,
+    .cp-date-sep::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .cp-quick-chips {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      padding: 8px 16px 4px;
+      flex-shrink: 0;
+    }
+
+    .cp-chip {
+      background: rgba(201, 168, 76, .1);
+      border: 1px solid rgba(201, 168, 76, .28);
+      color: #C9A84C;
+      border-radius: 999px;
+      padding: 5px 12px;
+      font-size: .75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      white-space: nowrap;
+      font-family: inherit;
+    }
+
+    .cp-chip:hover {
+      background: rgba(201, 168, 76, .2);
+      border-color: rgba(201, 168, 76, .5);
+      transform: translateY(-1px);
+    }
+
+    .cp-input-area {
+      border-top: 1px solid rgba(255, 255, 255, .07);
+      padding: 10px 14px;
+      padding-bottom: max(10px, env(safe-area-inset-bottom, 10px));
+      display: flex;
+      gap: 8px;
+      align-items: flex-end;
+      flex-shrink: 0;
+      background: rgba(5, 8, 22, .8);
+    }
+
+    .cp-input {
+      flex: 1;
+      background: rgba(26, 40, 68, .75);
+      border: 1px solid rgba(255, 255, 255, .1);
+      border-radius: 22px;
+      padding: 10px 16px;
+      color: #F5F0E8;
+      font-size: .875rem;
+      outline: none;
+      resize: none;
+      max-height: 100px;
+      min-height: 42px;
+      font-family: inherit;
+      line-height: 1.45;
+      transition: border-color .2s;
+    }
+
+    .cp-input:focus {
+      border-color: rgba(201, 168, 76, .45);
+    }
+
+    .cp-input::placeholder {
+      color: rgba(245, 240, 232, .35);
+    }
+
+    .cp-send-btn {
+      width: 42px;
+      height: 42px;
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      border: none;
+      border-radius: 50%;
+      color: #0B1120;
+      font-size: 1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all .2s;
+      flex-shrink: 0;
+    }
+
+    .cp-send-btn:hover {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .cp-send-btn:disabled {
+      opacity: .45;
+      cursor: not-allowed;
+    }
+
+    .cp-empty {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 2rem;
+      color: rgba(245, 240, 232, .35);
+    }
+
+    .cp-empty-icon {
+      font-size: 3.5rem;
+      opacity: .4;
+    }
+
+    .cp-empty-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: rgba(245, 240, 232, .5);
+    }
+
+    .cp-empty-desc {
+      font-size: .82rem;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .cp-empty-start-btn {
+      margin-top: 8px;
+      padding: .75rem 1.75rem;
+      background: linear-gradient(135deg, #C9A84C, #b8892a);
+      color: #0B1120;
+      border: none;
+      border-radius: 22px;
+      font-size: .88rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .3s;
+      font-family: inherit;
+    }
+
+    .cp-typing {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 10px 14px;
+      background: rgba(26, 40, 68, .9);
+      border: 1px solid rgba(255, 255, 255, .08);
+      border-radius: 16px;
+      border-bottom-left-radius: 4px;
+      width: fit-content;
+      margin-bottom: 4px;
+      align-self: flex-start;
+    }
+
+    .cp-typing-dot {
+      width: 7px;
+      height: 7px;
+      background: #C9A84C;
+      border-radius: 50%;
+      animation: cpDot 1.2s ease-in-out infinite;
+    }
+
+    .cp-typing-dot:nth-child(2) {
+      animation-delay: .2s;
+    }
+
+    .cp-typing-dot:nth-child(3) {
+      animation-delay: .4s;
+    }
+
+    @keyframes cpDot {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+        opacity: .4;
+      }
+
+      30% {
+        transform: translateY(-6px);
+        opacity: 1;
+      }
+    }
+
+    .cp-toast {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      padding: .65rem 1.25rem;
+      border-radius: 22px;
+      font-size: .85rem;
+      font-weight: 700;
+      z-index: 9999;
+      opacity: 0;
+      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    .cp-toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    #chatBubbleBtn {
+      display: flex !important;
+    }
+
+    .mbn-chat-badge {
+      position: absolute;
+      top: 4px;
+      left: calc(50% + 8px);
+      background: #ef4444;
+      color: #fff;
+      border-radius: 50%;
+      width: 14px;
+      height: 14px;
+      font-size: .55rem;
+      font-weight: 900;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .mbn-chat-badge.visible {
+      display: flex;
+    }
+
+    @media (max-width:600px) {
+      .cp-msg {
+        max-width: 82%;
+      }
+
+      .cp-topbar {
+        padding: .75rem 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -5864,6 +6395,13 @@
               type="text" placeholder="Cari produk..." autocomplete="off"><button class="search-clear"
               id="clearSearchBtn" type="button" title="Bersihkan">×</button></div>
           <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
+
+          <!-- Tambahkan SEBELUM div cart-icon-wrapper -->
+          <button class="nav-chat-btn" onclick="openChatPage()" title="Chat dengan Penjual">
+            💬 Chat
+            <span class="nav-chat-notif-dot" id="navChatDot"></span>
+          </button>
+
           <div class="cart-icon-wrapper"><button class="cart-btn" onclick="toggleCart()">🛒<span id="cartBadge"
                 class="cart-badge">0</span></button></div>
           <button class="admin-btn" onclick="showLoginModal()" title="Admin Login" style="padding:.75rem;">⚙️</button>
@@ -6537,7 +7075,15 @@
           <a href="#products" class="mbn-item"><span class="mbn-icon">⚡</span><span>Produk</span></a>
           <button class="mbn-item" onclick="toggleCart()"><span class="mbn-icon">🛒</span><span class="mbn-cart-badge"
               id="mbnCartBadge">0</span><span>Keranjang</span></button>
-          <a href="#chat" class="mbn-item"><span class="mbn-icon">🤖</span><span>AI Chat</span></a>
+          <button class="mbn-item" onclick="openChatPage()" style="position:relative;">
+            <span class="mbn-icon">💬</span>
+            <span class="mbn-chat-badge" id="mbnChatBadge"></span>
+            <span>Chat</span>
+          </button>
+          <a href="#chat" class="mbn-item">
+            <span class="mbn-icon">🤖</span>
+            <span>AI</span>
+          </a>
           <a href="#contact" class="mbn-item"><span class="mbn-icon">📞</span><span>Kontak</span></a>
         </div>
       </nav>
@@ -6886,6 +7432,11 @@
         const itemsPerPage = 12;
 
         function init() {
+          // ↓↓↓ TAMBAHKAN 2 BARIS INI DI AWAL FUNGSI INIT ↓↓↓
+          window._sadewaDb = db;
+          window._sadewaFirestore = { collection, query, orderBy, onSnapshot, where, getDocs, updateDoc, doc, addDoc, setDoc, serverTimestamp, increment };
+          // ↑↑↑ SELESAI ↑↑↑
+
           onSnapshot(query(prodCol, orderBy("createdAt", "desc")), (snapshot) => {
             products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
             window._sadewaProducts = products;
@@ -8507,6 +9058,330 @@
           <button class="channel-choice-cancel" onclick="closeChannelChoice()">Batal</button>
         </div>
       </div>
+      <!-- CHAT PAGE FULL SCREEN -->
+      <div class="chat-page-overlay" id="chatPageOverlay">
+        <!-- Top bar -->
+        <div class="cp-topbar">
+          <button class="cp-back-btn" onclick="closeChatPage()" title="Kembali">←</button>
+          <div class="cp-seller-avatar">
+            ⚡
+            <span class="cp-seller-online"></span>
+          </div>
+          <div class="cp-seller-info">
+            <div class="cp-seller-name">Sadewa Elektronik</div>
+            <div class="cp-seller-status">Online · Respon cepat</div>
+          </div>
+          <a href="https://wa.me/+6285872189172" target="_blank" class="cp-wa-btn">
+            💬 <span>WhatsApp</span>
+          </a>
+        </div>
+
+        <!-- Quick reply chips -->
+        <div class="cp-quick-chips" id="cpQuickChips">
+          <button class="cp-chip" onclick="cpSendChip('Halo, saya ingin tanya produk')">👋 Halo</button>
+          <button class="cp-chip" onclick="cpSendChip('Bagaimana status pesanan saya?')">📦 Cek pesanan</button>
+          <button class="cp-chip" onclick="cpSendChip('Apakah ada promo atau diskon?')">🏷 Promo</button>
+          <button class="cp-chip" onclick="cpSendChip('Berapa lama pengiriman ke daerah saya?')">🚚 Pengiriman</button>
+          <button class="cp-chip" onclick="cpSendChip('Apakah produk bergaransi?')">✅ Garansi</button>
+        </div>
+
+        <!-- Messages area -->
+        <div class="cp-messages-area" id="cpMessagesArea"></div>
+
+        <!-- Input area -->
+        <div class="cp-input-area">
+          <textarea class="cp-input" id="cpInput" placeholder="Ketik pesan..." rows="1" onkeydown="cpHandleKey(event)"
+            oninput="cpAutoResize(this)"></textarea>
+          <button class="cp-send-btn" id="cpSendBtn" onclick="cpSendMessage()">➤</button>
+        </div>
+      </div>
+
+      <!-- Toast notification -->
+      <div class="cp-toast" id="cpToast"></div>
+      <script>
+        // ═══════════════════════════════════════════
+        // SADEWA CHAT PAGE SYSTEM v2.0
+        // ═══════════════════════════════════════════
+
+        (function () {
+          'use strict';
+
+          // ── Helpers ──
+          function _esc(t) {
+            return String(t || '')
+              .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/\n/g, '<br>');
+          }
+          function _fmtTime(ts) {
+            if (!ts) return '';
+            const d = ts.toDate ? ts.toDate() : new Date(ts);
+            const now = new Date(), diff = now - d;
+            if (diff < 60000) return 'Baru saja';
+            if (diff < 3600000) return Math.floor(diff / 60000) + ' mnt lalu';
+            if (d.toDateString() === now.toDateString())
+              return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' });
+          }
+
+          // ── State ──
+          let _cpOpen = false;
+          let _cpUnread = 0;
+          let _cpMsgUnsub = null;
+
+          // ── Toast notification ──
+          window._cpShowToast = function (msg) {
+            const t = document.getElementById('cpToast');
+            if (!t) return;
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2800);
+          };
+
+          // ── Update badge (navbar + bottom nav) ──
+          function _updateCpBadges() {
+            const dot = document.getElementById('navChatDot');
+            const mbnBadge = document.getElementById('mbnChatBadge');
+            const bubbleBadge = document.getElementById('chatBubbleUnread');
+
+            if (dot) {
+              if (_cpUnread > 0) { dot.textContent = _cpUnread > 9 ? '9+' : _cpUnread; dot.classList.add('show'); }
+              else dot.classList.remove('show');
+            }
+            if (mbnBadge) {
+              if (_cpUnread > 0) { mbnBadge.textContent = _cpUnread; mbnBadge.classList.add('visible'); }
+              else mbnBadge.classList.remove('visible');
+            }
+            if (bubbleBadge) {
+              if (_cpUnread > 0) { bubbleBadge.textContent = _cpUnread; bubbleBadge.classList.add('visible'); }
+              else bubbleBadge.classList.remove('visible');
+            }
+          }
+
+          // ── Open chat page ──
+          window.openChatPage = function () {
+            const overlay = document.getElementById('chatPageOverlay');
+            if (!overlay) return;
+            overlay.classList.add('active');
+            _cpOpen = true;
+            _cpUnread = 0;
+            _updateCpBadges();
+            document.body.style.overflow = 'hidden';
+            _cpLoadMessages();
+            setTimeout(() => {
+              const area = document.getElementById('cpMessagesArea');
+              if (area) area.scrollTop = area.scrollHeight;
+              document.getElementById('cpInput')?.focus();
+            }, 150);
+          };
+
+          window.closeChatPage = function () {
+            const overlay = document.getElementById('chatPageOverlay');
+            if (!overlay) return;
+            overlay.classList.remove('active');
+            _cpOpen = false;
+            document.body.style.overflow = '';
+            _cpMarkRead();
+          };
+
+          // Handle back button (Android)
+          window.addEventListener('popstate', function (e) {
+            if (_cpOpen) { closeChatPage(); history.pushState(null, '', location.href); }
+          });
+
+          // ── Load & render messages from Firestore ──
+          function _cpLoadMessages() {
+            // Re-use existing Firebase listener via _listenBuyerMsgs pattern
+            // Fungsi ini akan di-hook ke sistem yang sudah ada
+            const area = document.getElementById('cpMessagesArea');
+            if (!area) return;
+
+            // Get session ID
+            const sid = localStorage.getItem('sadewaChatSession');
+            if (!sid) {
+              _cpShowEmpty();
+              return;
+            }
+
+            // Unsubscribe existing listener
+            if (_cpMsgUnsub) { _cpMsgUnsub(); _cpMsgUnsub = null; }
+
+            area.innerHTML = '<div class="cp-typing" id="cpLoadingIndicator"><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div></div>';
+
+            // Hook into Firebase — gunakan db & Firestore functions dari scope module yang ada
+            // Ini akan bekerja jika window._sadewaFirebaseReady === true
+            const tryLoad = function () {
+              if (!window._sadewaDb) { setTimeout(tryLoad, 500); return; }
+              const { collection, query, orderBy, onSnapshot } = window._sadewaFirestore;
+              const db = window._sadewaDb;
+              _cpMsgUnsub = onSnapshot(
+                query(collection(db, 'sadewaChats', sid, 'messages'), orderBy('createdAt', 'asc')),
+                function (snap) {
+                  const area2 = document.getElementById('cpMessagesArea');
+                  if (!area2) return;
+                  if (!snap.docs.length) { _cpShowEmpty(); return; }
+                  area2.innerHTML = '';
+                  let lastDate = '';
+                  snap.docs.forEach(function (d) {
+                    const msg = d.data();
+                    const msgDate = msg.createdAt?.toDate
+                      ? msg.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+                      : '';
+                    if (msgDate && msgDate !== lastDate) {
+                      lastDate = msgDate;
+                      const sep = document.createElement('div');
+                      sep.className = 'cp-date-sep';
+                      sep.textContent = msgDate;
+                      area2.appendChild(sep);
+                    }
+                    _cpAppendMsg(msg, area2);
+                  });
+                  if (_cpOpen) {
+                    area2.scrollTop = area2.scrollHeight;
+                    _cpMarkRead();
+                  } else {
+                    const newUnread = snap.docs.filter(d => d.data().sender === 'seller' && !d.data().readByBuyer).length;
+                    if (newUnread > _cpUnread) window._cpShowToast('💬 Pesan baru dari Sadewa Elektronik!');
+                    _cpUnread = newUnread;
+                    _updateCpBadges();
+                  }
+                }
+              );
+            };
+            tryLoad();
+          }
+
+          function _cpShowEmpty() {
+            const area = document.getElementById('cpMessagesArea');
+            if (!area) return;
+            area.innerHTML = `
+      <div class="cp-empty">
+        <div class="cp-empty-icon">💬</div>
+        <div class="cp-empty-title">Belum ada percakapan</div>
+        <div class="cp-empty-desc">Mulai chat dengan admin kami<br>untuk bertanya tentang produk atau pesanan</div>
+        <button class="cp-empty-start-btn" onclick="cpSendChip('Halo, saya ingin bertanya tentang produk')">
+          👋 Mulai Chat
+        </button>
+      </div>`;
+          }
+
+          function _cpAppendMsg(msg, container) {
+            const sent = msg.sender === 'buyer';
+            const div = document.createElement('div');
+            div.className = 'cp-msg ' + (sent ? 'sent' : 'recv');
+
+            let content = '';
+            if (msg.orderCard) {
+              const items = (msg.orderCard.items || []).map(i =>
+                `<div class="cp-order-item">• ${_esc(i.name)}${i.variant ? ` (${_esc(i.variant)})` : ''} ×${i.qty}</div>`
+              ).join('');
+              content = `<div class="cp-order-card">
+        <div class="cp-order-card-title">📞 Detail Pesanan</div>
+        ${items}
+        <div class="cp-order-total">Total: Rp ${Number(msg.orderCard.total || 0).toLocaleString('id-ID')}</div>
+        <div class="cp-order-status">✓ Pesanan Dikonfirmasi</div>
+      </div>`;
+            } else {
+              content = `<div class="cp-bubble">${_esc(msg.text)}</div>`;
+            }
+            div.innerHTML = content + `<div class="cp-msg-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtTime(msg.createdAt)}</div>`;
+            container.appendChild(div);
+          }
+
+          async function _cpMarkRead() {
+            const sid = localStorage.getItem('sadewaChatSession');
+            if (!sid || !window._sadewaDb) return;
+            try {
+              const { collection, query, where, getDocs, updateDoc, doc } = window._sadewaFirestore;
+              const db = window._sadewaDb;
+              const snap = await getDocs(query(
+                collection(db, 'sadewaChats', sid, 'messages'),
+                where('sender', '==', 'seller'), where('readByBuyer', '==', false)
+              ));
+              snap.docs.forEach(async d => {
+                await updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true }).catch(() => { });
+              });
+              _cpUnread = 0;
+              _updateCpBadges();
+            } catch (e) { }
+          }
+
+          // ── Send message ──
+          window.cpSendMessage = async function () {
+            const input = document.getElementById('cpInput');
+            const text = (input?.value || '').trim();
+            if (!text) return;
+            const btn = document.getElementById('cpSendBtn');
+            if (btn) btn.disabled = true;
+            input.value = ''; input.style.height = 'auto';
+
+            // Ensure session exists
+            let sid = localStorage.getItem('sadewaChatSession');
+            if (!sid) {
+              sid = 'buyer_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+              localStorage.setItem('sadewaChatSession', sid);
+            }
+
+            // Load messages if first time
+            if (!_cpMsgUnsub) _cpLoadMessages();
+
+            // Use direct Firebase instead of existing sendBuyerMessage to avoid focus bugs on hidden bcwInput
+            await _cpDirectSend(sid, text);
+
+            if (btn) btn.disabled = false;
+            setTimeout(() => {
+              const area = document.getElementById('cpMessagesArea');
+              if (area) area.scrollTop = area.scrollHeight;
+            }, 100);
+          };
+
+          async function _cpDirectSend(sid, text) {
+            if (!window._sadewaDb) return;
+            try {
+              const { collection, addDoc, doc, setDoc, serverTimestamp, increment } = window._sadewaFirestore;
+              const db = window._sadewaDb;
+              const name = localStorage.getItem('sadewaBuyerName') || 'Pelanggan';
+              await setDoc(doc(db, 'sadewaChats', sid), {
+                sessionId: sid, buyerName: name,
+                lastMessage: text, lastMessageAt: serverTimestamp(),
+                adminUnread: increment(1), updatedAt: serverTimestamp(),
+              }, { merge: true });
+              await addDoc(collection(db, 'sadewaChats', sid, 'messages'), {
+                text, sender: 'buyer', senderName: name,
+                createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true,
+              });
+            } catch (e) { console.error('cpDirectSend:', e); }
+          }
+
+          window.cpSendChip = function (text) {
+            const input = document.getElementById('cpInput');
+            if (input) { input.value = text; cpSendMessage(); }
+          };
+
+          window.cpHandleKey = function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); cpSendMessage(); }
+          };
+
+          window.cpAutoResize = function (el) {
+            el.style.height = 'auto';
+            el.style.height = Math.min(el.scrollHeight, 100) + 'px';
+          };
+
+          // ── Init: always show chat bubble ──
+          document.addEventListener('DOMContentLoaded', function () {
+            const btn = document.getElementById('chatBubbleBtn');
+            if (btn) btn.style.display = 'flex';
+            // Override toggleBuyerChat untuk membuka chatPage juga
+            const origToggle = window.toggleBuyerChat;
+            window.toggleBuyerChat = function () {
+              if (!_cpOpen) {
+                openChatPage();
+              } else {
+                closeChatPage();
+              }
+            };
+          });
+
+        })();
+      </script>
 </body>
 
 </html>
