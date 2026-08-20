@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Allow: /icon/
 
-Sitemap: https://rivaldoharyono.github.io/sadewa-elektronik/sitemap.xml
+Sitemap: https://sadewaelektronik.com/sitemap.xml
