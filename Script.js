@@ -434,17 +434,53 @@ document.addEventListener('DOMContentLoaded', function () {
 //
 // Elemen dengan class "selectable" DIKECUALIKAN dari proteksi ini
 // (tetap bisa di-copy), contoh: <p class="selectable">0812-xxxx</p>
+//
+// Seluruh area Chatbot AI (widget kecil & chat page fullscreen) JUGA
+// dikecualikan otomatis, supaya pengguna bebas mengetik, men-select,
+// dan copy-paste di dalam chat tanpa terganggu proteksi ini.
 // ============================================================
 (function () {
   'use strict';
 
   var ALLOW_CLASS = 'selectable';
 
+  // Selector elemen yang dikecualikan dari proteksi anti-copy.
+  // Tambahkan selector baru di sini kalau ada area lain yang perlu dibebaskan.
+  var ALLOW_SELECTORS = [
+    '.' + ALLOW_CLASS,   // elemen manual yang ditandai class "selectable"
+    '#chatlog',          // isi percakapan chatbot AI (widget kecil)
+    '#userInput',        // kolom ketik chatbot AI (widget kecil)
+    '#sendBtn',          // tombol kirim chatbot AI (widget kecil)
+    '#chatPageOverlay',  // seluruh chat page fullscreen (buyer chat + admin)
+    '#chatBubbleBtn'     // tombol bubble pembuka chat
+  ];
+
+  function isFormField(target) {
+    if (!target) return false;
+    var tag = target.tagName;
+    return tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || target.isContentEditable;
+  }
+
   function isAllowed(target) {
-    return target && target.closest && target.closest('.' + ALLOW_CLASS);
+    if (!target) return false;
+    // Semua form field (input/textarea/select/contenteditable) selalu
+    // dikecualikan — user harus tetap bisa select/copy/cut teks yang
+    // mereka ketik sendiri, di mana pun form itu berada.
+    if (isFormField(target)) return true;
+    if (!target.closest) return false;
+    return ALLOW_SELECTORS.some(function (sel) { return target.closest(sel); });
   }
 
   // 1. Suntik CSS untuk menonaktifkan seleksi teks secara visual
+  var allowCss = ALLOW_SELECTORS.map(function (sel) {
+    return sel + ' {' +
+      '  -webkit-user-select: text;' +
+      '  -moz-user-select: text;' +
+      '  -ms-user-select: text;' +
+      '  user-select: text;' +
+      '}';
+  }).join('\n');
+
   var style = document.createElement('style');
   style.textContent =
     'body {' +
@@ -452,13 +488,7 @@ document.addEventListener('DOMContentLoaded', function () {
     '  -moz-user-select: none;' +
     '  -ms-user-select: none;' +
     '  user-select: none;' +
-    '}' +
-    '.' + ALLOW_CLASS + ' {' +
-    '  -webkit-user-select: text;' +
-    '  -moz-user-select: text;' +
-    '  -ms-user-select: text;' +
-    '  user-select: text;' +
-    '}';
+    '}\n' + allowCss;
   document.head.appendChild(style);
 
   // 2. Blokir klik kanan (context menu)
