@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
       var pool = matched ? products.filter(function (p) { return p.category === matched; }) : products;
       if (!pool.length) return { html: 'Hubungi kami via <a href="https://wa.me/+6285872189172" target="_blank" style="color:var(--primary);">WhatsApp</a>.', chips: ['💬 WhatsApp'] };
       var r = '⭐ <b>Rekomendasi' + (matched ? ' ' + matched : '') + ':</b><br><br>';
-      pool.slice(0, 3).forEach(function (p, i) { r += (i + 1) + '. <b>' + p.name + '</b><br>&nbsp;&nbsp;💰 Rp ' + p.price.toLocaleString('id-ID') + '<br><br>'; });
+      pool.slice(0, 3).forEach(function (p, i) { r += (i + 1) + '. <b>' + p.name + '</b><br>  💰 Rp ' + p.price.toLocaleString('id-ID') + '<br><br>'; });
       return { html: r, chips: ['🛒 Cara Beli', '💳 Cara Bayar'] };
     }
     var catMap = [
@@ -423,4 +423,63 @@ document.addEventListener('DOMContentLoaded', function () {
     };
   });
 
+})();
+
+// ============================================================
+// ANTI-COPY PROTECTION
+// Mencegah user meng-copy/select teks di halaman secara kasual.
+// CATATAN: ini deteren, bukan proteksi absolut — teks tetap ada
+// di HTML sehingga user yang membuka "View Source"/DevTools tetap
+// bisa membacanya.
+//
+// Elemen dengan class "selectable" DIKECUALIKAN dari proteksi ini
+// (tetap bisa di-copy), contoh: <p class="selectable">0812-xxxx</p>
+// ============================================================
+(function () {
+  'use strict';
+
+  var ALLOW_CLASS = 'selectable';
+
+  function isAllowed(target) {
+    return target && target.closest && target.closest('.' + ALLOW_CLASS);
+  }
+
+  // 1. Suntik CSS untuk menonaktifkan seleksi teks secara visual
+  var style = document.createElement('style');
+  style.textContent =
+    'body {' +
+    '  -webkit-user-select: none;' +
+    '  -moz-user-select: none;' +
+    '  -ms-user-select: none;' +
+    '  user-select: none;' +
+    '}' +
+    '.' + ALLOW_CLASS + ' {' +
+    '  -webkit-user-select: text;' +
+    '  -moz-user-select: text;' +
+    '  -ms-user-select: text;' +
+    '  user-select: text;' +
+    '}';
+  document.head.appendChild(style);
+
+  // 2. Blokir klik kanan (context menu)
+  document.addEventListener('contextmenu', function (e) {
+    if (!isAllowed(e.target)) e.preventDefault();
+  });
+
+  // 3. Blokir event select, copy, cut
+  ['selectstart', 'copy', 'cut'].forEach(function (evt) {
+    document.addEventListener(evt, function (e) {
+      if (!isAllowed(e.target)) e.preventDefault();
+    });
+  });
+
+  // 4. Blokir shortcut keyboard: Ctrl/Cmd + C, X, A, U (view-source), S (save)
+  document.addEventListener('keydown', function (e) {
+    var ctrlOrCmd = e.ctrlKey || e.metaKey;
+    if (!ctrlOrCmd) return;
+    var blockedKeys = ['c', 'x', 'a', 'u', 's'];
+    if (blockedKeys.indexOf(e.key.toLowerCase()) !== -1 && !isAllowed(e.target)) {
+      e.preventDefault();
+    }
+  });
 })();

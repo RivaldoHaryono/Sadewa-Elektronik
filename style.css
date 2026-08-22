@@ -1331,3 +1331,148 @@
   .cp-topbar { padding: 0.85rem 1rem; }
   .cp-wa-btn span { display: none; }
 }
+
+
+/* ── Segmen Kategori Produk ── */
+.kategori-section {
+  max-width: 720px;
+  margin: 2.5rem auto 0;
+  background: linear-gradient(180deg, #0d1326 0%, #0a0e1a 100%);
+  border: 1px solid #1f2b4a;
+  border-radius: 24px;
+  padding: 36px 32px;
+  position: relative;
+}
+
+.kategori-section .eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 28px;
+}
+
+.kategori-section .eyebrow .dash {
+  width: 24px;
+  height: 2px;
+  background: #d4af6a;
+  display: inline-block;
+}
+
+.kategori-section .eyebrow span.label {
+  font-size: 13px;
+  letter-spacing: 3px;
+  font-weight: 700;
+  color: #e8cf9c;
+  text-transform: uppercase;
+}
+
+.kategori-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.kategori-card {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  background: #10162a;
+  border: 1px solid #1f2b4a;
+  border-radius: 16px;
+  padding: 20px 22px;
+  text-decoration: none;
+  color: #f2f4fa;
+  transition: border-color .2s ease, transform .2s ease, background .2s ease;
+}
+
+.kategori-card:hover {
+  border-color: #d4af6a;
+  background: #131a33;
+  transform: translateY(-2px);
+}
+
+.kategori-icon {
+  flex-shrink: 0;
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: radial-gradient(circle at 30% 30%, #1b2340, #0d1326);
+  border: 1px solid #1f2b4a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26px;
+}
+
+.kategori-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.kategori-text .title {
+  font-size: 17px;
+  font-weight: 700;
+  color: #f2f4fa;
+}
+
+.kategori-text .desc {
+  font-size: 13px;
+  color: #93a0c2;
+}
+
+.kategori-arrow {
+  margin-left: auto;
+  color: #d4af6a;
+  font-size: 20px;
+  opacity: .7;
+}
+
+@media (max-width: 480px) {
+  .kategori-section { padding: 24px 18px; }
+  .kategori-card { padding: 16px; gap: 14px; }
+  .kategori-icon { width: 48px; height: 48px; font-size: 22px; }
+}
+
+/* ── Tambahan: Hero Kategori Produk versi 3 kotak besar ── */
+.hero-product-icons.hero-product-icons--3col {
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.hero-product-icons--3col .hero-product-icon-box {
+  padding: 22px 12px;
+}
+
+.hero-product-icons--3col .pib-icon {
+  font-size: 30px;
+}
+
+.hero-product-icons--3col .pib-label {
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: center;
+}
+
+@media (max-width: 640px) {
+  .hero-product-icons.hero-product-icons--3col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Hero 3col kategori: deskripsi kecil di dalam label ── */
+.hero-product-icons--3col .pib-label small {
+  display: block;
+  font-size: 11px;
+  color: var(--gray);
+  font-weight: 400;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+.hero-product-icons--3col .hero-product-icon-box {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100px;
+}
