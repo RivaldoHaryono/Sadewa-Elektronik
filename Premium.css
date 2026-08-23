@@ -6035,4 +6035,37 @@
         padding: .75rem 1rem;
       }
     }
-  
+  /* ===== ONGKIR BOX ===== */
+.ongkir-box .autocomplete-wrap { position: relative; }
+
+.ongkir-box .autocomplete-list {
+  position: absolute; top: 100%; left: 0; right: 0;
+  background: var(--darker, #0B1120);
+  border: 1px solid rgba(0, 212, 255, .3);
+  border-top: none; border-radius: 0 0 10px 10px;
+  max-height: 180px; overflow-y: auto; z-index: 30; display: none;
+}
+.ongkir-box .autocomplete-list div {
+  padding: .65rem .9rem; font-size: .85rem; color: var(--light);
+  cursor: pointer; border-bottom: 1px solid rgba(255,255,255,.05);
+}
+.ongkir-box .autocomplete-list div:last-child { border-bottom: none; }
+.ongkir-box .autocomplete-list div:hover { background: rgba(0, 212, 255, .1); }
+
+.ongkir-option {
+  display: flex; justify-content: space-between; align-items: center;
+  border: 1px solid rgba(0, 212, 255, .3); border-radius: 10px;
+  padding: .75rem 1rem; margin-top: .5rem; cursor: pointer;
+  font-size: .85rem; color: var(--light); transition: all .2s;
+}
+.ongkir-option:hover { border-color: var(--primary); }
+.ongkir-option.selected {
+  border-color: var(--primary); background: rgba(201, 168, 76, .1);
+  box-shadow: 0 0 15px rgba(0, 212, 255, .2);
+}
+.ongkir-option .ongkir-price { color: var(--primary); font-weight: 800; }
+
+.ongkir-loading, .ongkir-error { font-size: .82rem; padding: .5rem 0; }
+.ongkir-loading { color: var(--gray); }
+.ongkir-error { color: #ef4444; }
+
