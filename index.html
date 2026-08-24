@@ -39,6 +39,58 @@
   <meta name="robots" content="index, follow">
   <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="Premium.css">
+  <style>
+    /* ==== CSS Cek Ongkir (ongkir.js) ==== */
+    .ongkir-box { position: relative; }
+    .autocomplete-wrap { position: relative; }
+    .autocomplete-list {
+      display: none;
+      position: absolute;
+      top: 100%; left: 0; right: 0;
+      z-index: 50;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #fff;
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 8px;
+      margin-top: 4px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    .autocomplete-list div {
+      padding: 0.6rem 0.75rem;
+      cursor: pointer;
+      color: var(--dark);
+      font-size: 0.9rem;
+    }
+    .autocomplete-list div:hover { background: rgba(0,212,255,0.08); }
+    #shipDestSearch, #shipCourier {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid rgba(0,212,255,0.3);
+      border-radius: 8px;
+      background: rgba(255,255,255,0.05);
+      color: var(--dark);
+      font-family: inherit;
+    }
+    .ongkir-option {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.65rem 0.75rem;
+      border: 1px solid rgba(0,212,255,0.2);
+      border-radius: 8px;
+      margin-top: 0.5rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      color: var(--dark);
+      transition: border-color .15s, background .15s;
+    }
+    .ongkir-option:hover { border-color: var(--primary); }
+    .ongkir-option.selected { border-color: var(--primary); background: rgba(0,212,255,0.08); }
+    .ongkir-price { font-weight: 700; color: var(--primary); }
+    .ongkir-error { color: #e53935; font-size: 0.85rem; margin-top: 0.5rem; }
+    .ongkir-loading { color: var(--dark); opacity: 0.7; font-size: 0.85rem; margin-top: 0.5rem; }
+  </style>
 </head>
 
 <body>
@@ -732,28 +784,29 @@
           <input type="text" id="shipNote" placeholder="Tinggalkan pesan...">
         </div>
 
+        <div class="form-group-payment ongkir-box" id="ongkirBoxWrap">
+          <label>🚚 Cek Ongkos Kirim</label>
+          <div class="autocomplete-wrap">
+            <input type="text" id="shipDestSearch" placeholder="Ketik kota/kecamatan tujuan..." autocomplete="off">
+            <div class="autocomplete-list" id="shipDestList"></div>
+          </div>
+          <input type="hidden" id="shipDestId">
+          <select id="shipCourier" style="margin-top:.75rem;">
+            <option value="">-- Pilih Kurir --</option>
+            <option value="jne">JNE</option>
+            <option value="jnt">J&T</option>
+            <option value="pos">Pos Indonesia</option>
+            <option value="anteraja">AnterAja</option>
+          </select>
+          <button type="button" class="admin-btn-secondary" id="cekOngkirBtn" style="width:100%;margin-top:.75rem;">
+            Hitung Ongkir
+          </button>
+          <div id="ongkirResult" style="margin-top:.6rem;"></div>
+        </div>
+
         <button class="payment-submit" onclick="goToPaymentStep()" style="margin-top: 1rem;">Lanjut ke Pembayaran
           ➡️</button>
       </div>
-       <div class="form-group-payment ongkir-box" id="ongkirBoxWrap">
-  <label>🚚 Cek Ongkos Kirim</label>
-  <div class="autocomplete-wrap">
-    <input type="text" id="shipDestSearch" placeholder="Ketik kota/kecamatan tujuan..." autocomplete="off">
-    <div class="autocomplete-list" id="shipDestList"></div>
-  </div>
-  <input type="hidden" id="shipDestId">
-  <select id="shipCourier" style="margin-top:.75rem;">
-    <option value="">-- Pilih Kurir --</option>
-    <option value="jne">JNE</option>
-    <option value="jnt">J&T</option>
-    <option value="pos">Pos Indonesia</option>
-    <option value="anteraja">AnterAja</option>
-  </select>
-  <button type="button" class="admin-btn-secondary" id="cekOngkirBtn" style="width:100%;margin-top:.75rem;">
-    Hitung Ongkir
-  </button>
-  <div id="ongkirResult" style="margin-top:.6rem;"></div>
-</div>
       <!-- STEP 2: PAYMENT METHOD -->
       <div id="checkoutStep2" class="checkout-step" style="display:none;">
         <button onclick="goToAddressStep()"

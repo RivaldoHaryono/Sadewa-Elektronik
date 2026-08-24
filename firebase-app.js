@@ -1,7 +1,7 @@
-// ============================================================
 // firebase-app.js — Sadewa Elektronik
 // Firebase + semua logic utama (cart, payment, produk, admin)
 // ============================================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, onSnapshot, query, orderBy,
@@ -9,7 +9,7 @@ import {
   serverTimestamp, setDoc, increment, getDocs, where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // ── Firebase Init ──
@@ -56,46 +56,23 @@ onAuthStateChanged(auth, (user) => {
   currentUser = user;
 });
 
-// Buatkan "kartu tamu" otomatis (anonymous) untuk pengunjung yang belum login.
-// Aman untuk admin juga — saat admin login manual (email/password), currentUser
-// akan ditimpa oleh proses login admin, jadi tidak saling ganggu.
-signInAnonymously(auth).catch((err) => {
-  console.error('Gagal membuat sesi anonymous:', err);
-});
-
-// ── Jembatan UID Firebase untuk file lain (Script.js) ──
-// Script.js dimuat sebagai <script> biasa (bukan module), jadi dia TIDAK bisa
-// baca variabel `auth` di atas secara langsung. Makanya UID Firebase
-// "dipinjamkan" lewat window, persis seperti window._sadewaDb di bawah.
-window._sadewaAuth = auth;
-
-// Tunggu sampai Firebase Auth benar-benar punya user (anonymous atau login),
-// baru kasih UID-nya. Dipakai bersama oleh firebase-app.js DAN Script.js,
-// supaya keduanya selalu dapat UID yang SAMA PERSIS (satu sumber kebenaran).
-// Kalau sampai timeoutMs belum ada user juga (misal internet mati / Anonymous
-// belum diaktifkan di Firebase Console), fungsi ini nyerah dengan rapi dan
-// mengembalikan null (bukan nge-hang selamanya).
-window._sadewaWaitForUID = function (timeoutMs = 10000) {
-  return new Promise((resolve) => {
-    if (auth.currentUser) { resolve(auth.currentUser.uid); return; }
-    let settled = false;
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user && !settled) { settled = true; unsub(); resolve(user.uid); }
-    });
-    setTimeout(() => {
-      if (!settled) { settled = true; unsub(); resolve(auth.currentUser ? auth.currentUser.uid : null); }
-    }, timeoutMs);
-  });
-};
-
 // ============================================================
 // CART
 // ============================================================
 function loadCartFromStorage() {
   const saved = localStorage.getItem('sadewaCart');
   if (saved) { try { cartItems = JSON.parse(saved); updateCartBadge(); } catch (e) { cartItems = []; } }
+  window._sadewaCart = cartItems.map(item => ({ weight: item.weight || 1000, qty: item.quantity || 1 }));
 }
-function saveCartToStorage() { localStorage.setItem('sadewaCart', JSON.stringify(cartItems)); }
+function saveCartToStorage() {
+  localStorage.setItem('sadewaCart', JSON.stringify(cartItems));
+  // Jembatan ke ongkir-integration.js: cartItems asli pakai field price/quantity,
+  // ongkir butuh weight/qty. Default 1000gr per item kalau produk belum punya berat.
+  window._sadewaCart = cartItems.map(item => ({
+    weight: item.weight || 1000,
+    qty: item.quantity || 1
+  }));
+}
 
 window.toggleCart = function () {
   const modal = document.getElementById('cartModal');
@@ -409,6 +386,11 @@ function init() {
     collection, query, orderBy, onSnapshot, where, getDocs,
     updateDoc, doc, addDoc, setDoc, serverTimestamp, increment
   };
+  // Dibutuhkan Script.js (Chat Page System) untuk dapat ID sesi pembeli.
+  // Sengaja tidak pakai Firebase Auth UID — _getBuyerSession() sudah
+  // membuat & menyimpan ID unik sendiri di localStorage, jadi tinggal
+  // dibungkus jadi Promise biar cocok dengan `await ...WaitForUID()`.
+  window._sadewaWaitForUID = async function () { return _getBuyerSession(); };
 
   onSnapshot(query(prodCol, orderBy("createdAt", "desc")), (snapshot) => {
     products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -646,9 +628,6 @@ window.adminLogout = async function () {
     document.getElementById('mainWebsite').classList.add('active');
     window.resetAdminForm();
     showAdminNotif('👋 Logout berhasil');
-    // Pulihkan sesi tamu (anonymous) untuk buyer, karena signOut() di atas
-    // ikut mencabut sesi anonymous (auth dipakai bersama admin & buyer).
-    signInAnonymously(auth).catch((err) => console.error('Gagal memulihkan sesi anonymous:', err));
   } catch (error) {
     adminAuthenticated = false;
     document.getElementById('adminPage').classList.remove('active');
@@ -1040,6 +1019,7 @@ function showAdminNotif(msg, isError) {
 // ============================================================
 // CHAT SYSTEM
 // ============================================================
+let _buyerSessionId = null;
 let _buyerChatOpen = false;
 let _acpActiveConvId = null;
 let _allConvs = [];
@@ -1047,18 +1027,15 @@ let _adminChatUnread = 0;
 let _buyerUnread = 0;
 let _adminMsgUnsub = null;
 
-// ID sesi buyer SEKARANG = UID Firebase (bukan ID lokal lagi).
-// Sinkron: kalau auth belum siap, kembalikan null -- untuk kondisi ini,
-// pakai _waitForBuyerUID() di bawah (async), jangan panggil ini langsung.
 function _getBuyerSession() {
-  return auth.currentUser ? auth.currentUser.uid : null;
-}
-
-// Alias lokal ke jembatan global, supaya kode di bawah tetap ringkas.
-// window._sadewaWaitForUID didefinisikan di dekat baris 55 (satu sumber
-// kebenaran yang sama dipakai juga oleh Script.js untuk chat full-screen).
-function _waitForBuyerUID(timeoutMs) {
-  return window._sadewaWaitForUID(timeoutMs);
+  if (!_buyerSessionId) {
+    _buyerSessionId = localStorage.getItem('sadewaChatSession');
+    if (!_buyerSessionId) {
+      _buyerSessionId = 'buyer_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem('sadewaChatSession', _buyerSessionId);
+    }
+  }
+  return _buyerSessionId;
 }
 function _getBuyerName() { return localStorage.getItem('sadewaBuyerName') || 'Pelanggan'; }
 function _setBuyerName(n) { if (n) localStorage.setItem('sadewaBuyerName', n); }
@@ -1154,8 +1131,7 @@ function _appendBuyerMsg(msg, container) {
 }
 
 async function _markBuyerRead() {
-  const sid = await _waitForBuyerUID();
-  if (!sid) return;
+  const sid = _getBuyerSession();
   try {
     const snap = await getDocs(query(collection(db, 'sadewaChats', sid, 'messages'), where('sender', '==', 'seller'), where('readByBuyer', '==', false)));
     snap.docs.forEach(async d => await updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true }));
@@ -1169,14 +1145,7 @@ window.sendBuyerMessage = async function () {
   const btn = document.getElementById('bcwSendBtn');
   if (btn) btn.disabled = true;
   input.value = ''; input.style.height = 'auto';
-  const sid = await _waitForBuyerUID();
-  const name = _getBuyerName();
-  if (!sid) {
-    console.error('sendBuyerMsg: sesi buyer belum siap (Firebase Auth gagal/timeout).');
-    if (input) input.value = text; // kembalikan teks yang tadi diketik, jangan sampai hilang
-    if (btn) btn.disabled = false;
-    return;
-  }
+  const sid = _getBuyerSession(), name = _getBuyerName();
   try {
     await setDoc(doc(db, 'sadewaChats', sid), { sessionId: sid, buyerName: name, lastMessage: text, lastMessageAt: serverTimestamp(), adminUnread: increment(1), updatedAt: serverTimestamp() }, { merge: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { text, sender: 'buyer', senderName: name, createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
@@ -1186,8 +1155,7 @@ window.sendBuyerMessage = async function () {
 
 window.afterPaymentSuccessChat = async function (items, total, method) {
   try {
-    const sid = await _waitForBuyerUID();
-    if (!sid) { console.error('afterPaymentSuccessChat: sesi buyer belum siap (Firebase Auth gagal/timeout).'); return; }
+    const sid = _getBuyerSession();
     const name = document.getElementById('shipName')?.value?.trim() || _getBuyerName();
     const phone = document.getElementById('shipPhone')?.value?.trim() || '';
     const addr = document.getElementById('shipAddress')?.value?.trim() || '';
@@ -1195,9 +1163,7 @@ window.afterPaymentSuccessChat = async function (items, total, method) {
     await setDoc(doc(db, 'sadewaChats', sid), { sessionId: sid, buyerName: name, buyerPhone: phone, lastMessage: '🧾 Pesanan baru dikonfirmasi', lastMessageAt: serverTimestamp(), adminUnread: increment(2), updatedAt: serverTimestamp() }, { merge: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { sender: 'buyer', senderName: name, orderCard: { items: items.map(i => ({ name: i.name, variant: i.variant || '', qty: i.quantity, price: i.price })), total, method }, text: '🧾 Pesanan baru dikonfirmasi', createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { text: `📍 Alamat: ${name}\n📱 HP: ${phone}\n🏠 ${addr}`, sender: 'buyer', senderName: name, createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
-    // Catatan: window.toggleBuyerChat() di bawah ini otomatis membuka chat
-    // full-screen (Script.js) yang sudah punya loader pesannya sendiri
-    // (_cpLoadMessages), jadi tidak perlu panggil _listenBuyerMsgs(sid) di sini.
+    _listenBuyerMsgs(sid);
     const chatBtn = document.getElementById('chatBubbleBtn');
     if (chatBtn) chatBtn.style.display = 'flex';
     if (!_buyerChatOpen) window.toggleBuyerChat();
@@ -1330,10 +1296,9 @@ window.showAdminProductPanel = function () {
 };
 
 // ── Init Chat ──
-async function initChat() {
-  const sid = await _waitForBuyerUID();
-  if (sid) _listenBuyerMsgs(sid);
-  else console.error('initChat: gagal mendapatkan UID Firebase (anonymous auth mungkin belum diaktifkan di Firebase Console, atau bermasalah).');
+function initChat() {
+  const sid = _getBuyerSession();
+  _listenBuyerMsgs(sid);
   const chatBtnEl = document.getElementById('chatBubbleBtn');
   if (chatBtnEl) chatBtnEl.style.display = 'flex';
   const adminActions = document.querySelector('.admin-topbar-actions');

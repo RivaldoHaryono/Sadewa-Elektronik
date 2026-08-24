@@ -9,7 +9,7 @@
   // ---- KONFIGURASI ----
   const CARI_KOTA_URL = "https://asia-southeast2-sadewa-2.cloudfunctions.net/cariKota";
   const CEK_ONGKIR_URL = "https://asia-southeast2-sadewa-2.cloudfunctions.net/cekOngkir";
-  const ORIGIN_ID = "61271"; // <-- WAJIB DIGANTI, lihat instruksi
+  const ORIGIN_ID = "61271"; // ID kota asal (Cidahu) dari hasil cariKota — sudah dikonfigurasi
   const DEFAULT_WEIGHT_GRAM = 1000;
 
   let destDebounce = null;
@@ -130,16 +130,36 @@
     document.querySelectorAll('.ongkir-option').forEach((o) => o.classList.remove('selected'));
     el.classList.add('selected');
 
-    window.sadewaShipping = {
+    const courier = document.getElementById('shipCourier').value;
+
+    // PENTING: nama variabel & field ini harus SAMA PERSIS dengan yang dibaca
+    // firebase-app.js (lihat getShippingCost() dan proses checkout di sana).
+    window._sadewaShippingCost = {
       cost: Number(opt.cost || 0),
+      courier: courier || '-',
       service: opt.service || '-',
       etd: opt.etd || '-',
     };
 
     document.dispatchEvent(
-      new CustomEvent('sadewa:shippingSelected', { detail: window.sadewaShipping })
+      new CustomEvent('sadewa:shippingSelected', { detail: window._sadewaShippingCost })
     );
+
+    // Wajib: re-render total di modal pembayaran biar ongkir kehitung.
+    if (typeof window.refreshPaymentTotals === 'function') window.refreshPaymentTotals();
   }
+
+  // Dipanggil firebase-app.js setiap kali modal checkout dibuka (lihat openPaymentModal).
+  // Reset pilihan ongkir lama supaya tidak kebawa dari sesi checkout sebelumnya.
+  window.resetOngkirSelection = function () {
+    window._sadewaShippingCost = null;
+    const resultBox = document.getElementById('ongkirResult');
+    if (resultBox) resultBox.innerHTML = '';
+    const destSearch = document.getElementById('shipDestSearch');
+    if (destSearch) destSearch.value = '';
+    const destId = document.getElementById('shipDestId');
+    if (destId) destId.value = '';
+  };
 
   // Pasang listener setiap kali modal checkout dibuka
   const origOpenPaymentModal = window.openPaymentModal;
