@@ -63,6 +63,31 @@ signInAnonymously(auth).catch((err) => {
   console.error('Gagal membuat sesi anonymous:', err);
 });
 
+// ── Jembatan UID Firebase untuk file lain (Script.js) ──
+// Script.js dimuat sebagai <script> biasa (bukan module), jadi dia TIDAK bisa
+// baca variabel `auth` di atas secara langsung. Makanya UID Firebase
+// "dipinjamkan" lewat window, persis seperti window._sadewaDb di bawah.
+window._sadewaAuth = auth;
+
+// Tunggu sampai Firebase Auth benar-benar punya user (anonymous atau login),
+// baru kasih UID-nya. Dipakai bersama oleh firebase-app.js DAN Script.js,
+// supaya keduanya selalu dapat UID yang SAMA PERSIS (satu sumber kebenaran).
+// Kalau sampai timeoutMs belum ada user juga (misal internet mati / Anonymous
+// belum diaktifkan di Firebase Console), fungsi ini nyerah dengan rapi dan
+// mengembalikan null (bukan nge-hang selamanya).
+window._sadewaWaitForUID = function (timeoutMs = 10000) {
+  return new Promise((resolve) => {
+    if (auth.currentUser) { resolve(auth.currentUser.uid); return; }
+    let settled = false;
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user && !settled) { settled = true; unsub(); resolve(user.uid); }
+    });
+    setTimeout(() => {
+      if (!settled) { settled = true; unsub(); resolve(auth.currentUser ? auth.currentUser.uid : null); }
+    }, timeoutMs);
+  });
+};
+
 // ============================================================
 // CART
 // ============================================================
@@ -1022,36 +1047,18 @@ let _adminChatUnread = 0;
 let _buyerUnread = 0;
 let _adminMsgUnsub = null;
 
-// Ambil UID Firebase milik pengguna saat ini (buyer anonymous ATAU admin
-// yang sedang login). Sinkron: kalau auth belum siap, akan mengembalikan null
-// -- untuk kondisi ini, pakai _waitForBuyerUID() di bawah, bukan fungsi ini.
+// ID sesi buyer SEKARANG = UID Firebase (bukan ID lokal lagi).
+// Sinkron: kalau auth belum siap, kembalikan null -- untuk kondisi ini,
+// pakai _waitForBuyerUID() di bawah (async), jangan panggil ini langsung.
 function _getBuyerSession() {
   return auth.currentUser ? auth.currentUser.uid : null;
 }
 
-// Tunggu sampai Firebase Auth benar-benar punya user (anonymous atau login),
-// baru kasih UID-nya. Ini mencegah chat mencoba jalan sebelum UID siap
-// (misalnya saat halaman baru saja dibuka, atau sesaat setelah admin logout
-// ketika sesi anonymous baru sedang dibuatkan ulang).
-function _waitForBuyerUID(timeoutMs = 10000) {
-  return new Promise((resolve) => {
-    if (auth.currentUser) { resolve(auth.currentUser.uid); return; }
-    let settled = false;
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user && !settled) {
-        settled = true;
-        unsub();
-        resolve(user.uid);
-      }
-    });
-    setTimeout(() => {
-      if (!settled) {
-        settled = true;
-        unsub();
-        resolve(auth.currentUser ? auth.currentUser.uid : null);
-      }
-    }, timeoutMs);
-  });
+// Alias lokal ke jembatan global, supaya kode di bawah tetap ringkas.
+// window._sadewaWaitForUID didefinisikan di dekat baris 55 (satu sumber
+// kebenaran yang sama dipakai juga oleh Script.js untuk chat full-screen).
+function _waitForBuyerUID(timeoutMs) {
+  return window._sadewaWaitForUID(timeoutMs);
 }
 function _getBuyerName() { return localStorage.getItem('sadewaBuyerName') || 'Pelanggan'; }
 function _setBuyerName(n) { if (n) localStorage.setItem('sadewaBuyerName', n); }
@@ -1188,7 +1195,9 @@ window.afterPaymentSuccessChat = async function (items, total, method) {
     await setDoc(doc(db, 'sadewaChats', sid), { sessionId: sid, buyerName: name, buyerPhone: phone, lastMessage: '🧾 Pesanan baru dikonfirmasi', lastMessageAt: serverTimestamp(), adminUnread: increment(2), updatedAt: serverTimestamp() }, { merge: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { sender: 'buyer', senderName: name, orderCard: { items: items.map(i => ({ name: i.name, variant: i.variant || '', qty: i.quantity, price: i.price })), total, method }, text: '🧾 Pesanan baru dikonfirmasi', createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { text: `📍 Alamat: ${name}\n📱 HP: ${phone}\n🏠 ${addr}`, sender: 'buyer', senderName: name, createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
-    _listenBuyerMsgs(sid);
+    // Catatan: window.toggleBuyerChat() di bawah ini otomatis membuka chat
+    // full-screen (Script.js) yang sudah punya loader pesannya sendiri
+    // (_cpLoadMessages), jadi tidak perlu panggil _listenBuyerMsgs(sid) di sini.
     const chatBtn = document.getElementById('chatBubbleBtn');
     if (chatBtn) chatBtn.style.display = 'flex';
     if (!_buyerChatOpen) window.toggleBuyerChat();

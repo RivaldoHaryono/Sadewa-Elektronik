@@ -312,27 +312,15 @@ document.addEventListener('DOMContentLoaded', function () {
     if (_cpOpen) { window.closeChatPage(); history.pushState(null, '', location.href); }
   });
 
-  // Cache UID sebagai promise (bukan cuma variable) — dipanggil sekali per
-  // page-load, hasilnya dipakai ulang. Auth Firebase biasanya sudah siap
-  // JAUH sebelum buyer sempat klik chat, jadi dalam praktiknya promise ini
-  // resolve hampir instan. Nunggu di sini TIDAK memblokir UI (lihat
-  // cpSendMessage: pesan tetap langsung muncul di layar).
-  let _cpSidPromise = null;
-  function _cpGetSid() {
-    if (!_cpSidPromise) {
-      _cpSidPromise = (typeof window._sadewaGetBuyerUID === 'function')
-        ? window._sadewaGetBuyerUID()
-        : Promise.resolve(null);
-    }
-    return _cpSidPromise;
-  }
-
   async function _cpLoadMessages() {
     const area = document.getElementById('cpMessagesArea'); if (!area) return;
-    area.innerHTML = '<div class="cp-typing"><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div></div>';
-    const sid = await _cpGetSid();
-    if (!sid) { _cpShowEmpty(); return; }
     if (_cpMsgUnsub) { _cpMsgUnsub(); _cpMsgUnsub = null; }
+    area.innerHTML = '<div class="cp-typing"><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div></div>';
+    // Tunggu UID Firebase siap (biasanya nyaris instan kalau pengunjung sudah
+    // pernah buka web ini sebelumnya). window._sadewaWaitForUID datang dari
+    // firebase-app.js -- jembatan resmi supaya ID-nya selalu sama & valid.
+    const sid = window._sadewaWaitForUID ? await window._sadewaWaitForUID() : null;
+    if (!sid) { _cpShowEmpty(); return; }
     const tryLoad = function () {
       if (!window._sadewaDb) { setTimeout(tryLoad, 500); return; }
       const { collection, query, orderBy, onSnapshot } = window._sadewaFirestore;
@@ -384,13 +372,13 @@ document.addEventListener('DOMContentLoaded', function () {
       const items = (msg.orderCard.items || []).map(i => `<div class="cp-order-item">• ${_esc(i.name)}${i.variant ? ` (${_esc(i.variant)})` : ''} ×${i.qty}</div>`).join('');
       content = `<div class="cp-order-card"><div class="cp-order-card-title">📞 Detail Pesanan</div>${items}<div class="cp-order-total">Total: Rp ${Number(msg.orderCard.total || 0).toLocaleString('id-ID')}</div><div class="cp-order-status">✓ Pesanan Dikonfirmasi</div></div>`;
     } else { content = `<div class="cp-bubble">${_esc(msg.text)}</div>`; }
-    const timeStr = _fmtTime(msg.createdAt);
-    div.innerHTML = content + `<div class="cp-msg-time">${sent ? 'Anda' : 'Sadewa'}${timeStr ? ' · ' + timeStr : ''}</div>`;
+    div.innerHTML = content + `<div class="cp-msg-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtTime(msg.createdAt)}</div>`;
     container.appendChild(div);
   }
 
   async function _cpMarkRead() {
-    const sid = await _cpGetSid();
+    if (!window._sadewaWaitForUID) return;
+    const sid = await window._sadewaWaitForUID();
     if (!sid || !window._sadewaDb) return;
     try {
       const { collection, query, where, getDocs, updateDoc, doc } = window._sadewaFirestore;
@@ -404,23 +392,19 @@ document.addEventListener('DOMContentLoaded', function () {
   window.cpSendMessage = async function () {
     const input = document.getElementById('cpInput');
     const text = (input?.value || '').trim(); if (!text) return;
+    const btn = document.getElementById('cpSendBtn'); if (btn) btn.disabled = true;
     input.value = ''; input.style.height = 'auto';
-
-    // OPTIMISTIC: tampilkan pesan buyer LANGSUNG di layar, tanpa nunggu
-    // UID atau Firestore. Begitu listener realtime dapat data asli dari
-    // server, tampilan otomatis "ditimpa" dengan versi resmi — buyer tidak
-    // pernah melihat loading atau pesan gagal.
-    const area = document.getElementById('cpMessagesArea');
-    if (area) {
-      if (area.querySelector('.cp-empty')) area.innerHTML = '';
-      _cpAppendMsg({ text, sender: 'buyer', createdAt: null }, area);
-      area.scrollTop = area.scrollHeight;
+    const sid = window._sadewaWaitForUID ? await window._sadewaWaitForUID() : null;
+    if (!sid) {
+      console.error('cpSendMessage: sesi buyer belum siap (Firebase Auth gagal/timeout).');
+      if (input) input.value = text; // kembalikan teks yang tadi diketik, jangan sampai hilang
+      if (btn) btn.disabled = false;
+      return;
     }
     if (!_cpMsgUnsub) _cpLoadMessages();
-
-    const sid = await _cpGetSid();
-    if (!sid) { console.error('cpSendMessage: UID Firebase tidak tersedia.'); return; }
     await _cpDirectSend(sid, text);
+    if (btn) btn.disabled = false;
+    setTimeout(() => { const area = document.getElementById('cpMessagesArea'); if (area) area.scrollTop = area.scrollHeight; }, 100);
   };
 
   async function _cpDirectSend(sid, text) {
