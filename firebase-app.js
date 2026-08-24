@@ -2,7 +2,6 @@
 // firebase-app.js — Sadewa Elektronik
 // Firebase + semua logic utama (cart, payment, produk, admin)
 // ============================================================
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore, collection, onSnapshot, query, orderBy,
@@ -10,7 +9,7 @@ import {
   serverTimestamp, setDoc, increment, getDocs, where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged, signInAnonymously
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // ── Firebase Init ──
@@ -57,6 +56,13 @@ onAuthStateChanged(auth, (user) => {
   currentUser = user;
 });
 
+// Buatkan "kartu tamu" otomatis (anonymous) untuk pengunjung yang belum login.
+// Aman untuk admin juga — saat admin login manual (email/password), currentUser
+// akan ditimpa oleh proses login admin, jadi tidak saling ganggu.
+signInAnonymously(auth).catch((err) => {
+  console.error('Gagal membuat sesi anonymous:', err);
+});
+
 // ============================================================
 // CART
 // ============================================================
@@ -94,7 +100,8 @@ window.updateQuantity = function (index, change) {
   if (cartItems[index].quantity <= 0) window.removeFromCart(index);
   else { saveCartToStorage(); renderCart(); }
 };
-function calculateTotal() { return cartItems.reduce((s, i) => s + (i.price * i.quantity), 0); }
+function getShippingCost() { return (window._sadewaShippingCost && window._sadewaShippingCost.cost) || 0; }
+function calculateTotal() { return cartItems.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost(); }
 
 function updateCartBadge() {
   const count = cartItems.reduce((s, i) => s + i.quantity, 0);
@@ -146,14 +153,29 @@ window.clearCart = function () {
 let selectedPaymentMethod = 'card', selectedPaymentProvider = 'visa';
 const bankAccounts = { bri: { number: '3456-01-001829-50-2', name: 'AI JULAEHA' } };
 
+window.refreshPaymentTotals = function () {
+  const items = window.isBuyNowMode ? (window.tempBuyNowCart || []) : cartItems;
+  const orderItemsEl = document.getElementById('paymentOrderItems');
+  if (orderItemsEl) {
+    orderItemsEl.innerHTML = items.map(item =>
+      `<div class="order-item"><span>${item.name} ${item.variant ? '(' + item.variant + ')' : ''} x${item.quantity}</span><span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span></div>`
+    ).join('') + (getShippingCost() > 0
+      ? `<div class="order-item"><span>Ongkos Kirim (${window._sadewaShippingCost.courier} - ${window._sadewaShippingCost.service})</span><span>Rp ${getShippingCost().toLocaleString('id-ID')}</span></div>`
+      : '');
+  }
+  const total = items.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost();
+  const totalEl = document.getElementById('paymentTotal');
+  const transferEl = document.getElementById('transferAmount');
+  const ewalletEl = document.getElementById('ewalletTransferAmount');
+  if (totalEl) totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+  if (transferEl) transferEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+  if (ewalletEl) ewalletEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+};
+
 window.openPaymentModal = function () {
   if (cartItems.length === 0) { alert('Keranjang Anda masih kosong!'); return; }
-  document.getElementById('paymentOrderItems').innerHTML = cartItems.map(item =>
-    `<div class="order-item"><span>${item.name} ${item.variant ? '(' + item.variant + ')' : ''} x${item.quantity}</span><span>Rp ${(item.price * item.quantity).toLocaleString('id-ID')}</span></div>`
-  ).join('');
-  document.getElementById('paymentTotal').textContent = 'Rp ' + calculateTotal().toLocaleString('id-ID');
-  document.getElementById('transferAmount').textContent = 'Rp ' + calculateTotal().toLocaleString('id-ID');
-  document.getElementById('ewalletTransferAmount').textContent = 'Rp ' + calculateTotal().toLocaleString('id-ID');
+  if (typeof window.resetOngkirSelection === 'function') window.resetOngkirSelection();
+  window.refreshPaymentTotals();
   document.getElementById('checkoutStep1').style.display = 'block';
   document.getElementById('checkoutStep2').style.display = 'none';
   document.getElementById('paymentActionContainer').style.display = 'none';
@@ -168,6 +190,7 @@ window.goToPaymentStep = function () {
   const address = document.getElementById('shipAddress').value.trim();
   if (!name || !phone || !region || !address) { alert('Mohon lengkapi semua kolom bertanda * (wajib diisi)'); return; }
   if (phone.length < 10) { alert('Nomor HP tidak valid!'); return; }
+  window.refreshPaymentTotals();
   document.getElementById('checkoutStep1').style.display = 'none';
   document.getElementById('checkoutStep2').style.display = 'block';
   document.getElementById('paymentActionContainer').style.display = 'block';
@@ -265,7 +288,8 @@ window.processPayment = function () {
       method: selectedPaymentMethod,
       isBuyNow: window.isBuyNowMode
     };
-    window._pendingOrder.total = window._pendingOrder.items.reduce((s, i) => s + (i.price * i.quantity), 0);
+    window._pendingOrder.total = window._pendingOrder.items.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost();
+    window._pendingOrder.shipping = window._sadewaShippingCost || null;
     btn.disabled = false; btn.textContent = 'Konfirmasi Pembayaran';
     window.showChannelChoice();
   }, 500);
@@ -318,7 +342,12 @@ function sendPaymentToWhatsApp() {
     if (item.variant) message += ` (${item.variant})`;
     message += `\n   ${item.quantity} pcs × Rp ${item.price.toLocaleString('id-ID')}\n   Subtotal: Rp ${(item.price * item.quantity).toLocaleString('id-ID')}\n\n`;
   });
-  const total = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  const subtotal = items.reduce((sum, i) => sum + (i.price * i.quantity), 0);
+  const shipping = window._sadewaShippingCost;
+  if (shipping && shipping.cost > 0) {
+    message += `\n*🚚 Pengiriman:*\n${shipping.courier} - ${shipping.service}\nTujuan: ${shipping.destinationLabel}\nOngkir: Rp ${shipping.cost.toLocaleString('id-ID')}\n`;
+  }
+  const total = subtotal + (shipping && shipping.cost > 0 ? shipping.cost : 0);
   message += `━━━━━━━━━━━━━━━━━━━━\n*Total: Rp ${total.toLocaleString('id-ID')}*\n\n*Metode Pembayaran:*\n`;
   if (selectedPaymentMethod === 'card') message += `💳 ${selectedPaymentProvider.toUpperCase()} - **** ${document.getElementById('cardNumber').value.slice(-4)}\nNama: ${document.getElementById('cardName').value}\n`;
   else if (selectedPaymentMethod === 'bank') message += `🏦 Transfer ${bankAccounts[selectedPaymentProvider]?.name || ''}\nNama: ${document.getElementById('senderName').value}\n`;
@@ -592,6 +621,9 @@ window.adminLogout = async function () {
     document.getElementById('mainWebsite').classList.add('active');
     window.resetAdminForm();
     showAdminNotif('👋 Logout berhasil');
+    // Pulihkan sesi tamu (anonymous) untuk buyer, karena signOut() di atas
+    // ikut mencabut sesi anonymous (auth dipakai bersama admin & buyer).
+    signInAnonymously(auth).catch((err) => console.error('Gagal memulihkan sesi anonymous:', err));
   } catch (error) {
     adminAuthenticated = false;
     document.getElementById('adminPage').classList.remove('active');
@@ -983,7 +1015,6 @@ function showAdminNotif(msg, isError) {
 // ============================================================
 // CHAT SYSTEM
 // ============================================================
-let _buyerSessionId = null;
 let _buyerChatOpen = false;
 let _acpActiveConvId = null;
 let _allConvs = [];
@@ -991,15 +1022,36 @@ let _adminChatUnread = 0;
 let _buyerUnread = 0;
 let _adminMsgUnsub = null;
 
+// Ambil UID Firebase milik pengguna saat ini (buyer anonymous ATAU admin
+// yang sedang login). Sinkron: kalau auth belum siap, akan mengembalikan null
+// -- untuk kondisi ini, pakai _waitForBuyerUID() di bawah, bukan fungsi ini.
 function _getBuyerSession() {
-  if (!_buyerSessionId) {
-    _buyerSessionId = localStorage.getItem('sadewaChatSession');
-    if (!_buyerSessionId) {
-      _buyerSessionId = 'buyer_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
-      localStorage.setItem('sadewaChatSession', _buyerSessionId);
-    }
-  }
-  return _buyerSessionId;
+  return auth.currentUser ? auth.currentUser.uid : null;
+}
+
+// Tunggu sampai Firebase Auth benar-benar punya user (anonymous atau login),
+// baru kasih UID-nya. Ini mencegah chat mencoba jalan sebelum UID siap
+// (misalnya saat halaman baru saja dibuka, atau sesaat setelah admin logout
+// ketika sesi anonymous baru sedang dibuatkan ulang).
+function _waitForBuyerUID(timeoutMs = 10000) {
+  return new Promise((resolve) => {
+    if (auth.currentUser) { resolve(auth.currentUser.uid); return; }
+    let settled = false;
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user && !settled) {
+        settled = true;
+        unsub();
+        resolve(user.uid);
+      }
+    });
+    setTimeout(() => {
+      if (!settled) {
+        settled = true;
+        unsub();
+        resolve(auth.currentUser ? auth.currentUser.uid : null);
+      }
+    }, timeoutMs);
+  });
 }
 function _getBuyerName() { return localStorage.getItem('sadewaBuyerName') || 'Pelanggan'; }
 function _setBuyerName(n) { if (n) localStorage.setItem('sadewaBuyerName', n); }
@@ -1095,7 +1147,8 @@ function _appendBuyerMsg(msg, container) {
 }
 
 async function _markBuyerRead() {
-  const sid = _getBuyerSession();
+  const sid = await _waitForBuyerUID();
+  if (!sid) return;
   try {
     const snap = await getDocs(query(collection(db, 'sadewaChats', sid, 'messages'), where('sender', '==', 'seller'), where('readByBuyer', '==', false)));
     snap.docs.forEach(async d => await updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true }));
@@ -1109,7 +1162,14 @@ window.sendBuyerMessage = async function () {
   const btn = document.getElementById('bcwSendBtn');
   if (btn) btn.disabled = true;
   input.value = ''; input.style.height = 'auto';
-  const sid = _getBuyerSession(), name = _getBuyerName();
+  const sid = await _waitForBuyerUID();
+  const name = _getBuyerName();
+  if (!sid) {
+    console.error('sendBuyerMsg: sesi buyer belum siap (Firebase Auth gagal/timeout).');
+    if (input) input.value = text; // kembalikan teks yang tadi diketik, jangan sampai hilang
+    if (btn) btn.disabled = false;
+    return;
+  }
   try {
     await setDoc(doc(db, 'sadewaChats', sid), { sessionId: sid, buyerName: name, lastMessage: text, lastMessageAt: serverTimestamp(), adminUnread: increment(1), updatedAt: serverTimestamp() }, { merge: true });
     await addDoc(collection(db, 'sadewaChats', sid, 'messages'), { text, sender: 'buyer', senderName: name, createdAt: serverTimestamp(), readByAdmin: false, readByBuyer: true });
@@ -1119,7 +1179,8 @@ window.sendBuyerMessage = async function () {
 
 window.afterPaymentSuccessChat = async function (items, total, method) {
   try {
-    const sid = _getBuyerSession();
+    const sid = await _waitForBuyerUID();
+    if (!sid) { console.error('afterPaymentSuccessChat: sesi buyer belum siap (Firebase Auth gagal/timeout).'); return; }
     const name = document.getElementById('shipName')?.value?.trim() || _getBuyerName();
     const phone = document.getElementById('shipPhone')?.value?.trim() || '';
     const addr = document.getElementById('shipAddress')?.value?.trim() || '';
@@ -1260,9 +1321,10 @@ window.showAdminProductPanel = function () {
 };
 
 // ── Init Chat ──
-function initChat() {
-  const sid = _getBuyerSession();
-  _listenBuyerMsgs(sid);
+async function initChat() {
+  const sid = await _waitForBuyerUID();
+  if (sid) _listenBuyerMsgs(sid);
+  else console.error('initChat: gagal mendapatkan UID Firebase (anonymous auth mungkin belum diaktifkan di Firebase Console, atau bermasalah).');
   const chatBtnEl = document.getElementById('chatBubbleBtn');
   if (chatBtnEl) chatBtnEl.style.display = 'flex';
   const adminActions = document.querySelector('.admin-topbar-actions');
