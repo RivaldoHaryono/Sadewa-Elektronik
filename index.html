@@ -90,6 +90,23 @@
     .ongkir-price { font-weight: 700; color: var(--primary); }
     .ongkir-error { color: #e53935; font-size: 0.85rem; margin-top: 0.5rem; }
     .ongkir-loading { color: var(--dark); opacity: 0.7; font-size: 0.85rem; margin-top: 0.5rem; }
+
+    /* ==== Mobile fit patch (360px–430px) — additive only, tidak mengubah tampilan desktop ==== */
+    @media (max-width: 430px) {
+      /* Judul modal keranjang & checkout: cegah mepet dengan tombol close di layar sempit */
+      .cart-title,
+      .payment-title {
+        font-size: clamp(1.15rem, 5.5vw, 1.8rem);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .cart-header,
+      .payment-header {
+        gap: .75rem;
+      }
+    }
   </style>
 </head>
 
@@ -838,37 +855,13 @@
         <div class="payment-methods">
           <h3>Pilih Metode Pembayaran</h3>
           <div class="payment-tabs">
-            <div class="payment-tab active" onclick="switchPaymentTab('card',this)"><span class="payment-tab-icon"
-                style="display:flex;align-items:center;justify-content:center;gap:4px;min-height:36px;"><svg
-                  viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg"
-                  style="height:16px;background:#1a1f71;border-radius:3px;padding:1px 3px;"><text x="30" y="16"
-                    text-anchor="middle" font-family="Arial Black,sans-serif" font-size="16" font-weight="900"
-                    font-style="italic" fill="white">VISA</text></svg><svg viewBox="0 0 40 26"
-                  xmlns="http://www.w3.org/2000/svg" style="height:18px;">
-                  <circle cx="13" cy="13" r="12" fill="#EB001B" />
-                  <circle cx="27" cy="13" r="12" fill="#F79E1B" />
-                  <path d="M20 4.5a12 12 0 0 1 0 17A12 12 0 0 1 20 4.5z" fill="#FF5F00" />
-                </svg></span>
-              <div>Kartu</div>
-            </div>
-            <div class="payment-tab" onclick="switchPaymentTab('bank',this)"><span class="payment-tab-icon"
+            <div class="payment-tab active" onclick="switchPaymentTab('bank',this)"><span class="payment-tab-icon"
                 style="display:flex;align-items:center;justify-content:center;gap:3px;min-height:36px;flex-wrap:wrap;"><svg
                   viewBox="0 0 50 14" xmlns="http://www.w3.org/2000/svg"
                   style="height:14px;background:#00529b;border-radius:3px;padding:1px 3px;"><text x="25" y="11"
                     text-anchor="middle" font-family="Arial Black,sans-serif" font-size="10" font-weight="900"
                     fill="white">BRI</text></svg></span>
               <div>Transfer</div>
-            </div>
-            <div class="payment-tab" onclick="switchPaymentTab('ewallet',this)"><span class="payment-tab-icon"
-                style="display:flex;align-items:center;justify-content:center;gap:3px;min-height:36px;flex-wrap:wrap;"><svg
-                  viewBox="0 0 40 14" xmlns="http://www.w3.org/2000/svg"
-                  style="height:14px;background:#00AED6;border-radius:3px;padding:1px 3px;"><text x="20" y="11"
-                    text-anchor="middle" font-family="Arial Black,sans-serif" font-size="9" font-weight="900"
-                    fill="white">GoPay</text></svg><svg viewBox="0 0 36 14" xmlns="http://www.w3.org/2000/svg"
-                  style="height:14px;background:#108EE9;border-radius:3px;padding:1px 3px;"><text x="18" y="11"
-                    text-anchor="middle" font-family="Arial Black,sans-serif" font-size="9" font-weight="900"
-                    fill="white">DANA</text></svg></span>
-              <div>E-Wallet</div>
             </div>
             <div class="payment-tab" onclick="switchPaymentTab('qris',this)"><span class="payment-tab-icon"
                 style="display:flex;align-items:center;justify-content:center;min-height:36px;"><svg
@@ -882,62 +875,7 @@
             </div>
           </div>
 
-          <div id="cardPayment" class="payment-content active">
-            <div class="payment-options">
-              <div class="payment-option selected" onclick="selectPaymentOption(this,'visa')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#1a1f71;"><svg viewBox="0 0 500 160"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><text x="250" y="125"
-                        text-anchor="middle" font-family="Arial Black,sans-serif" font-size="130" font-weight="900"
-                        font-style="italic" fill="white" letter-spacing="-5">VISA</text></svg></div>
-                </div>
-                <div class="payment-option-name">Visa</div>
-              </div>
-              <div class="payment-option" onclick="selectPaymentOption(this,'mastercard')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#252525;"><svg viewBox="0 0 86 54"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <circle cx="29" cy="27" r="22" fill="#EB001B" />
-                      <circle cx="57" cy="27" r="22" fill="#F79E1B" />
-                      <path d="M43 10.8a22 22 0 0 1 0 32.4A22 22 0 0 1 43 10.8z" fill="#FF5F00" />
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">Mastercard</div>
-              </div>
-              <div class="payment-option" onclick="selectPaymentOption(this,'debit')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#003087;"><svg viewBox="0 0 120 50"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><text x="60" y="36"
-                        text-anchor="middle" font-family="Arial,sans-serif" font-size="22" font-weight="900"
-                        fill="white">DEBIT</text></svg></div>
-                </div>
-                <div class="payment-option-name">Debit</div>
-              </div>
-            </div>
-            <div class="payment-form">
-              <div class="form-group-payment"><label>Nomor Kartu</label><input type="text" id="cardNumber"
-                  placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)"></div>
-              <div class="form-group-payment"><label>Nama Pemegang Kartu</label><input type="text" id="cardName"
-                  placeholder="NAMA LENGKAP"></div>
-              <div class="form-row">
-                <div class="form-group-payment"><label>Tanggal Kadaluarsa</label><input type="text" id="cardExpiry"
-                    placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)"></div>
-                <div class="form-group-payment"><label>CVV</label><input type="text" id="cardCVV" placeholder="123"
-                    maxlength="3" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-              </div>
-            </div>
-            <div class="method-specific-guide">
-              <h5>💳 Cara Pembayaran Kartu:</h5>
-              <ul>
-                <li>Masukkan 16 digit nomor kartu</li>
-                <li>Nama pemegang sesuai kartu</li>
-                <li>Tanggal kadaluarsa MM/YY</li>
-                <li>CVV 3 digit belakang kartu</li>
-              </ul>
-            </div>
-          </div>
-
-          <div id="bankPayment" class="payment-content">
+          <div id="bankPayment" class="payment-content active">
             <div class="payment-options">
               <div class="payment-option selected" onclick="selectPaymentOption(this,'bri')">
                 <div class="payment-option-icon">
@@ -955,7 +893,7 @@
               <div class="bank-detail">
                 <div>
                   <div class="bank-detail-label">Bank</div>
-                  <div class="bank-detail-value" id="selectedBankName">BCA</div>
+                  <div class="bank-detail-value" id="selectedBankName">BRI</div>
                 </div>
               </div>
               <div class="bank-detail">
@@ -994,100 +932,13 @@
             </div>
           </div>
 
-          <div id="ewalletPayment" class="payment-content">
-            <div class="payment-options">
-              <div class="payment-option selected" onclick="selectPaymentOption(this,'gopay')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#00AED6;"><svg viewBox="0 0 200 70"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <rect width="200" height="70" fill="#00AED6" />
-                      <circle cx="35" cy="35" r="26" fill="white" /><text x="35" y="44" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="30" font-weight="900"
-                        fill="#00AED6">G</text><text x="130" y="44" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="26" font-weight="900" fill="white">GoPay</text>
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">GoPay</div>
-              </div>
-              <div class="payment-option" onclick="selectPaymentOption(this,'ovo')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#4c3494;"><svg viewBox="0 0 200 70"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <rect width="200" height="70" fill="#4c3494" /><text x="100" y="46" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="34" font-weight="900" fill="white"
-                        letter-spacing="3">OVO</text>
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">OVO</div>
-              </div>
-              <div class="payment-option" onclick="selectPaymentOption(this,'dana')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#108EE9;"><svg viewBox="0 0 200 70"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <rect width="200" height="70" fill="#108EE9" /><text x="100" y="46" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="32" font-weight="900" fill="white"
-                        letter-spacing="2">DANA</text>
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">DANA</div>
-              </div>
-              <div class="payment-option" onclick="selectPaymentOption(this,'shopeepay')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#EE4D2D;"><svg viewBox="0 0 200 70"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <rect width="200" height="70" fill="#EE4D2D" /><text x="100" y="46" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="20" font-weight="900"
-                        fill="white">ShopeePay</text>
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">ShopeePay</div>
-              </div>
-            </div>
-            <div class="bank-account-info">
-              <h4>📲 Informasi Penerima</h4>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Nomor HP / Akun</div>
-                  <div class="bank-detail-value" id="ewalletReceiverNumber">+62 858-7218-9172</div>
-                </div><button class="copy-btn" onclick="copyToClipboard('ewalletReceiverNumber')">📋 Salin</button>
-              </div>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Atas Nama</div>
-                  <div class="bank-detail-value">SADEWA ELEKTRONIK</div>
-                </div>
-              </div>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Jumlah Transfer</div>
-                  <div class="bank-detail-value" id="ewalletTransferAmount">Rp 0</div>
-                </div><button class="copy-btn" onclick="copyEwalletAmount()">📋 Salin</button>
-              </div>
-            </div>
-            <div class="payment-form" style="margin-top:1.5rem;">
-              <div class="form-group-payment"><label>Nomor HP E-Wallet Anda</label><input type="tel" id="ewalletPhone"
-                  placeholder="08xxxxxxxxxx" maxlength="13" oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
-              <div class="form-group-payment"><label>Nama Pemilik Akun</label><input type="text" id="ewalletName"
-                  placeholder="Nama sesuai akun e-wallet"></div>
-            </div>
-            <div class="method-specific-guide">
-              <h5>📱 Cara E-Wallet:</h5>
-              <ul>
-                <li>Pilih e-wallet Anda</li>
-                <li>Salin nomor HP penerima</li>
-                <li>Transfer sesuai jumlah</li>
-                <li>Kirim screenshot ke WhatsApp</li>
-              </ul>
-            </div>
-          </div>
-
           <div id="qrisPayment" class="payment-content">
             <div style="text-align:center;padding:1.5rem 0;">
               <div
                 style="display:inline-block;background:white;border-radius:20px;padding:1.5rem;box-shadow:0 0 40px rgba(228,0,43,0.3);">
                 <!-- QRIS QR CODE - object-fit:contain agar tidak blur/terpotong -->
                 <div id="qrisCodeBox"
-                  style="width:300px;height:300px;border-radius:14px;margin:0 auto;border:4px solid #e4002b;box-shadow:0 0 25px rgba(228,0,43,0.4),0 4px 16px rgba(0,0,0,0.3);background:#fff;display:flex;align-items:center;justify-content:center;">
+                  style="width:min(300px, calc(100vw - 100px));height:min(300px, calc(100vw - 100px));border-radius:14px;margin:0 auto;border:4px solid #e4002b;box-shadow:0 0 25px rgba(228,0,43,0.4),0 4px 16px rgba(0,0,0,0.3);background:#fff;display:flex;align-items:center;justify-content:center;">
                   <!-- Menggunakan gambar QRIS toko Sadewa Elektronik asli -->
                   <img id="qrisImage" src="/qris-sadewa.jpeg" alt="QRIS Sadewa Elektronik Cidahu"
                     style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;display:block;border-radius:8px;"

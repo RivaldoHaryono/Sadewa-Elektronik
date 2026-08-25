@@ -201,7 +201,7 @@
       z-index: 2;
       max-width: 1280px;
       margin: 0 auto;
-      padding: 7rem 2.5rem 5rem;
+      padding: 4rem 2.5rem 6rem;
       display: grid;
       grid-template-columns: 1fr .9fr;
       gap: 5rem;
@@ -253,7 +253,7 @@
 
     .hero-headline {
       font-family: 'Syne', sans-serif;
-      font-size: clamp(2.6rem, 4.8vw, 4rem);
+      font-size: clamp(2.9rem, 5.4vw, 4.5rem);
       font-weight: 800;
       line-height: 1.07;
       letter-spacing: -1.5px;
@@ -3798,7 +3798,7 @@
     @media(max-width:900px) {
       .hero-inner {
         grid-template-columns: 1fr;
-        padding: 6rem 1.5rem 5rem;
+        padding: 3.75rem 1.5rem 5.5rem;
         gap: 3rem;
         text-align: center
       }
@@ -4002,13 +4002,13 @@
 
       .hero-inner {
         grid-template-columns: 1fr;
-        padding: 5.5rem 1.25rem 4rem;
+        padding: 3.5rem 1.25rem 4.5rem;
         gap: 2rem;
         text-align: center
       }
 
       .hero-headline {
-        font-size: clamp(2rem, 8vw, 2.8rem)
+        font-size: clamp(2.3rem, 8.5vw, 3.1rem)
       }
 
       .hero-ctas {
@@ -4132,13 +4132,13 @@
 
       .payment-tabs {
         display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        gap: .4rem
+        grid-template-columns: repeat(2, 1fr);
+        gap: .6rem
       }
 
       .payment-tab {
-        padding: .6rem .3rem;
-        font-size: .68rem
+        padding: .8rem .5rem;
+        font-size: .8rem
       }
 
       .payment-tab-icon {
@@ -6068,105 +6068,3 @@
 .ongkir-loading, .ongkir-error { font-size: .82rem; padding: .5rem 0; }
 .ongkir-loading { color: var(--gray); }
 .ongkir-error { color: #ef4444; }
-
-/* ===== MOBILE POLISH (Android & iOS) =====
-   Blok ini HANYA menyesuaikan ukuran/spacing untuk layar kecil.
-   Tidak mengubah warna, layout, atau elemen desain yang sudah ada. */
-@media (max-width: 600px) {
-  /* --- Kotak Cek Ongkir: cegah teks & harga bertabrakan di layar sempit --- */
-  .ongkir-box .autocomplete-list {
-    -webkit-overflow-scrolling: touch;
-    max-height: 160px;
-  }
-
-  .ongkir-box .autocomplete-list div {
-    padding: .75rem .9rem;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    font-size: .82rem;
-  }
-
-  .ongkir-option {
-    flex-wrap: wrap;
-    row-gap: .35rem;
-    padding: .7rem .85rem;
-    font-size: .8rem;
-  }
-
-  .ongkir-option span:first-child {
-    flex: 1 1 100%;
-    line-height: 1.35;
-  }
-
-  .ongkir-option .ongkir-price {
-    flex: 1 1 100%;
-    text-align: right;
-    font-size: .95rem;
-  }
-
-  #cekOngkirBtn.admin-btn-secondary {
-    min-height: 46px;
-    font-size: .88rem;
-  }
-
-  #shipCourier {
-    min-height: 44px;
-  }
-
-  .ongkir-loading, .ongkir-error {
-    font-size: .8rem;
-    line-height: 1.4;
-  }
-
-  /* --- Chat fullscreen: samakan target sentuh dengan tombol lain di mobile --- */
-  .cp-send-btn {
-    width: 44px;
-    height: 44px;
-    flex-shrink: 0;
-  }
-
-  .cp-chip {
-    padding: 7px 13px;
-    min-height: 32px;
-    display: inline-flex;
-    align-items: center;
-    font-size: .78rem;
-  }
-
-  .cp-input {
-    font-size: 16px !important; /* cegah auto-zoom keyboard iOS Safari */
-  }
-
-  .cp-back-btn {
-    width: 40px;
-    height: 40px;
-  }
-}
-
-/* --- Layar sangat sempit (iPhone SE, Android kecil ≤375px) --- */
-@media (max-width: 375px) {
-  .ongkir-box .autocomplete-wrap input,
-  #shipDestSearch {
-    font-size: 16px !important;
-  }
-
-  .ongkir-option {
-    font-size: .76rem;
-    padding: .6rem .75rem;
-  }
-
-  .ongkir-option .ongkir-price {
-    font-size: .9rem;
-  }
-
-  .payment-title {
-    font-size: 1.5rem;
-  }
-
-  .cp-seller-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 1rem;
-  }
-}
