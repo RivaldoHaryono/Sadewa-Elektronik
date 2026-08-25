@@ -1,4 +1,4 @@
-    @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,300&family=DM+Mono:wght@400;500&display=swap');
 
     :root {
       --primary: #C9A84C;
@@ -6069,3 +6069,104 @@
 .ongkir-loading { color: var(--gray); }
 .ongkir-error { color: #ef4444; }
 
+/* ===== MOBILE POLISH (Android & iOS) =====
+   Blok ini HANYA menyesuaikan ukuran/spacing untuk layar kecil.
+   Tidak mengubah warna, layout, atau elemen desain yang sudah ada. */
+@media (max-width: 600px) {
+  /* --- Kotak Cek Ongkir: cegah teks & harga bertabrakan di layar sempit --- */
+  .ongkir-box .autocomplete-list {
+    -webkit-overflow-scrolling: touch;
+    max-height: 160px;
+  }
+
+  .ongkir-box .autocomplete-list div {
+    padding: .75rem .9rem;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    font-size: .82rem;
+  }
+
+  .ongkir-option {
+    flex-wrap: wrap;
+    row-gap: .35rem;
+    padding: .7rem .85rem;
+    font-size: .8rem;
+  }
+
+  .ongkir-option span:first-child {
+    flex: 1 1 100%;
+    line-height: 1.35;
+  }
+
+  .ongkir-option .ongkir-price {
+    flex: 1 1 100%;
+    text-align: right;
+    font-size: .95rem;
+  }
+
+  #cekOngkirBtn.admin-btn-secondary {
+    min-height: 46px;
+    font-size: .88rem;
+  }
+
+  #shipCourier {
+    min-height: 44px;
+  }
+
+  .ongkir-loading, .ongkir-error {
+    font-size: .8rem;
+    line-height: 1.4;
+  }
+
+  /* --- Chat fullscreen: samakan target sentuh dengan tombol lain di mobile --- */
+  .cp-send-btn {
+    width: 44px;
+    height: 44px;
+    flex-shrink: 0;
+  }
+
+  .cp-chip {
+    padding: 7px 13px;
+    min-height: 32px;
+    display: inline-flex;
+    align-items: center;
+    font-size: .78rem;
+  }
+
+  .cp-input {
+    font-size: 16px !important; /* cegah auto-zoom keyboard iOS Safari */
+  }
+
+  .cp-back-btn {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+/* --- Layar sangat sempit (iPhone SE, Android kecil ≤375px) --- */
+@media (max-width: 375px) {
+  .ongkir-box .autocomplete-wrap input,
+  #shipDestSearch {
+    font-size: 16px !important;
+  }
+
+  .ongkir-option {
+    font-size: .76rem;
+    padding: .6rem .75rem;
+  }
+
+  .ongkir-option .ongkir-price {
+    font-size: .9rem;
+  }
+
+  .payment-title {
+    font-size: 1.5rem;
+  }
+
+  .cp-seller-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
+  }
+}
