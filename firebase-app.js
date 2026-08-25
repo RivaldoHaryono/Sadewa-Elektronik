@@ -184,8 +184,8 @@ window.refreshPaymentTotals = function () {
   const total = items.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost();
   const totalEl = document.getElementById('paymentTotal');
   const transferEl = document.getElementById('transferAmount');
-  const ewalletTransferEl = document.getElementById('ewalletTransferAmount');
-  if (ewalletTransferEl) ewalletTransferEl.textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
+  const ewalletEl = document.getElementById('ewalletTransferAmount');
+  if (totalEl) totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
   if (transferEl) transferEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
   if (ewalletEl) ewalletEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
 };
@@ -571,6 +571,23 @@ function _resolveVariant(product, variantFromModal) {
   return { selectedVariant, finalPrice, itemMedia };
 }
 
+function playAddToCartSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    const ctx = new AudioCtx();
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(ctx.destination);
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, ctx.currentTime);
+    gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.15);
+  } catch (e) { /* abaikan kalau browser tidak mendukung audio */ }
+}
+
 window.addToCart = function (productId, variantFromModal) {
   const product = products.find(p => p.id === productId);
   if (!product) return;
@@ -581,6 +598,7 @@ window.addToCart = function (productId, variantFromModal) {
   if (existingIndex > -1) { cartItems[existingIndex].quantity += 1; cartItems[existingIndex].price = finalPrice; }
   else cartItems.push({ id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia });
   saveCartToStorage(); updateCartBadge(); renderCart();
+  playAddToCartSound();
   window.showBuyerToast(`✅ ${product.name}${selectedVariant ? ' (' + selectedVariant + ')' : ''} ditambahkan ke keranjang`);
 };
 
