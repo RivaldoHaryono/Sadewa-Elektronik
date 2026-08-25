@@ -408,15 +408,21 @@ function init() {
   // dibungkus jadi Promise biar cocok dengan `await ...WaitForUID()`.
   window._sadewaWaitForUID = async function () { return _getBuyerSession(); };
 
-  onSnapshot(query(prodCol, orderBy("createdAt", "desc")), (snapshot) => {
-    products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-    window._sadewaProducts = products;
-    applyFilters();
-    if (adminAuthenticated) { renderAdminProductList(); updateAdminStats(); }
-  });
+  // initChat() dijalankan PALING AWAL & dibungkus try/catch di dalamnya (lihat definisi
+  // initChat) supaya tombol fitur pesan (chat bubble) tetap pasti muncul & bisa dibuka,
+  // walaupun ada gangguan koneksi/izin Firestore saat memuat riwayat chat.
+  initChat();
   initSearchBar();
   loadCartFromStorage();
-  initChat();
+
+  try {
+    onSnapshot(query(prodCol, orderBy("createdAt", "desc")), (snapshot) => {
+      products = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      window._sadewaProducts = products;
+      applyFilters();
+      if (adminAuthenticated) { renderAdminProductList(); updateAdminStats(); }
+    });
+  } catch (e) { console.error('init: gagal memuat produk', e); }
 }
 
 window.filterCategory = function (category, btn) {
@@ -457,8 +463,13 @@ window.applyFilters = function () {
 function initSearchBar() {
   const si = document.getElementById('productSearch');
   const cb = document.getElementById('clearSearchBtn');
-  if (si) si.oninput = (e) => { lastSearchQuery = e.target.value; window.applyFilters(); };
-  if (cb) cb.onclick = () => { si.value = ''; lastSearchQuery = ''; window.applyFilters(); };
+  if (cb) cb.classList.toggle('visible', !!(si && si.value));
+  if (si) si.oninput = (e) => {
+    lastSearchQuery = e.target.value;
+    if (cb) cb.classList.toggle('visible', !!e.target.value);
+    window.applyFilters();
+  };
+  if (cb) cb.onclick = () => { si.value = ''; lastSearchQuery = ''; cb.classList.remove('visible'); window.applyFilters(); };
 }
 
 window.renderProducts = function () {
@@ -1325,10 +1336,15 @@ window.showAdminProductPanel = function () {
 
 // ── Init Chat ──
 function initChat() {
-  const sid = _getBuyerSession();
-  _listenBuyerMsgs(sid);
+  // Tombol chat SELALU ditampilkan lebih dulu, tidak lagi menunggu/bergantung pada
+  // berhasil-tidaknya sinkronisasi riwayat chat ke Firestore — supaya fitur pesan
+  // tidak pernah "macet tersembunyi" (tombol tidak muncul) akibat gangguan jaringan/izin.
   const chatBtnEl = document.getElementById('chatBubbleBtn');
   if (chatBtnEl) chatBtnEl.style.display = 'flex';
+  try {
+    const sid = _getBuyerSession();
+    _listenBuyerMsgs(sid);
+  } catch (e) { console.error('initChat: gagal memuat riwayat chat', e); }
   const adminActions = document.querySelector('.admin-topbar-actions');
   if (adminActions && !document.getElementById('adminChatTabBtn')) {
     const prodBtn = document.createElement('button');

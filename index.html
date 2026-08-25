@@ -145,6 +145,47 @@
         padding: .6rem 1rem;
       }
     }
+
+    /* ==== Search bar: tombol clear (x) dirapikan — center pas & hanya tampil saat ada teks ==== */
+    .search-clear {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      line-height: 1;
+      flex-shrink: 0;
+      padding: 0;
+    }
+    .search-clear.visible {
+      display: flex;
+    }
+
+    /* ==== Logo brand (ganti ikon petir ⚡ dengan logo resmi) ==== */
+    .nav-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .nav-logo-img {
+      height: 1.7em;
+      width: 1.7em;
+      object-fit: contain;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .footer-logo {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .6rem;
+    }
+    .footer-logo-img {
+      height: 1.9rem;
+      width: 1.9rem;
+      object-fit: contain;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
   </style>
 </head>
 
@@ -453,7 +494,7 @@
     </section>
     <nav>
       <div class="nav-container">
-        <a href="#home" class="nav-logo">⚡ SADEWA</a>
+        <a href="#home" class="nav-logo"><img src="./logo-sadewa.png" alt="Sadewa Elektronik" class="nav-logo-img"> SADEWA</a>
         <ul>
           <li><a href="#products">Produk</a></li>
           <li><a href="#contact">Kontak</a></li>
@@ -570,7 +611,7 @@
       </section>
     </div>
     <footer id="about">
-      <h3 class="logo" style="margin-bottom:.75rem;">⚡ Sadewa Elektronik</h3>
+      <h3 class="logo footer-logo" style="margin-bottom:.75rem;"><img src="./logo-sadewa.png" alt="Sadewa Elektronik" class="footer-logo-img"> Sadewa Elektronik</h3>
       <p style="max-width:800px;margin:1.25rem auto;color:var(--gray);font-size:1rem;line-height:1.8;">Sadewa Elektronik
         adalah pusat elektronik modern di wilayah Cidahu dan sekitarnya. Kami menyediakan produk listrik dan elektronik
         berkualitas dengan harga kompetitif, pelayanan cepat, serta dukungan teknologi AI.</p>
@@ -1066,7 +1107,7 @@
       <!-- BUYER: Chat Window -->
       <div class="buyer-chat-window" id="buyerChatWindow">
         <div class="bcw-header">
-          <div class="bcw-avatar">⚡</div>
+          <div class="bcw-avatar"><img src="./logo-sadewa.png" alt="Sadewa" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
           <div class="bcw-store-info">
             <div class="bcw-store-name">Sadewa Elektronik</div>
             <div class="bcw-store-status">Online · Respon cepat</div>
@@ -1142,7 +1183,7 @@
         <div class="cp-topbar">
           <button class="cp-back-btn" onclick="closeChatPage()" title="Kembali">←</button>
           <div class="cp-seller-avatar">
-            ⚡
+            <img src="./logo-sadewa.png" alt="Sadewa" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
             <span class="cp-seller-online"></span>
           </div>
           <div class="cp-seller-info">
