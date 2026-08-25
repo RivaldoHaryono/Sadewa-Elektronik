@@ -3996,6 +3996,17 @@
         flex-shrink: 0
       }
 
+      /* FIX: nav-right tidak pernah di-nowrap-kan di mobile, jadi item
+         terakhir (tombol settings) terlempar ke baris baru sendirian.
+         Chat button juga disembunyikan karena sudah ada di mobile-bottom-nav. */
+      .nav-right {
+        flex-wrap: nowrap
+      }
+
+      .nav-chat-btn {
+        display: none
+      }
+
       .hero-section {
         min-height: 100svh
       }

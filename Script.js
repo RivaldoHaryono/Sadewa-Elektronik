@@ -66,7 +66,11 @@ document.addEventListener('DOMContentLoaded', function () {
     chips.forEach(function (chip) {
       var btn = document.createElement('button'); btn.className = 'chat-chip'; btn.textContent = chip;
       btn.addEventListener('click', function () {
-        document.querySelectorAll('.chat-chips').forEach(function (el) { el.remove(); });
+        // FIX: dulu ini menghapus SEMUA .chat-chips di seluruh riwayat chat
+        // (querySelectorAll ke seluruh document), jadi chip dari balasan
+        // sebelumnya ikut hilang. Sekarang hanya hapus grup chip yang baru
+        // diklik (wrap ini sendiri), riwayat sebelumnya tetap ada.
+        wrap.remove();
         triggerSend(chip);
       });
       wrap.appendChild(btn);
@@ -92,7 +96,7 @@ document.addEventListener('DOMContentLoaded', function () {
     if (/bayar|pembayaran|transfer|gopay|ovo|dana|qris|bca|mandiri/.test(q)) return { html: '💳 <b>Metode Bayar:</b><br>💳 Kartu: Visa, Mastercard, Debit<br>🏦 Bank: BCA, Mandiri, BNI, BRI<br>📱 E-Wallet: GoPay, OVO, DANA, ShopeePay<br>📲 QRIS', chips: ['🛒 Cara Beli', '💡 Lihat Produk'] };
     if (/cara beli|cara pesan|gimana/.test(q)) return { html: '🛒 <b>Cara Beli:</b><br>1. Pilih produk<br>2. Pilih varian<br>3. Klik <b>Beli Sekarang</b><br>4. Pilih metode bayar<br>5. Detail terkirim ke WhatsApp!', chips: ['💳 Cara Bayar', '💡 Lampu', '💨 Kipas Angin'] };
     if (/^(daftar|semua|produk apa|ada apa|daftar harga)|^produk$|^semua produk$|^💰/.test(q)) {
-      if (!products.length) return { html: 'Produk sedang dimuat...', chips: [] };
+      if (!products.length) return { html: 'Produk sedang dimuat, coba lagi sebentar ya...', chips: ['🔄 Coba Lagi', '📍 Lokasi', '💬 WhatsApp'] };
       var r = '📋 <b>Produk kami (' + products.length + ' item):</b><br><br>';
       products.slice(0, 10).forEach(function (p, i) { r += (i + 1) + '. ' + p.name + ' — <span style="color:var(--primary);font-weight:700;">Rp ' + p.price.toLocaleString('id-ID') + '</span><br>'; });
       if (products.length > 10) r += '<br>...dan ' + (products.length - 10) + ' lainnya.';
