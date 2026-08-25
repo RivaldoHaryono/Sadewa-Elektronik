@@ -107,6 +107,44 @@
         gap: .75rem;
       }
     }
+
+    /* ==== Toast notifikasi keranjang (#toastNotif) — gaya selaras dengan .cp-toast yang sudah ada ==== */
+    .toast-notification {
+      position: fixed;
+      top: 80px;
+      left: 50%;
+      transform: translateX(-50%) translateY(-20px);
+      max-width: min(92vw, 420px);
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      padding: .65rem 1.25rem;
+      border-radius: 22px;
+      font-size: .85rem;
+      font-weight: 700;
+      text-align: center;
+      line-height: 1.4;
+      white-space: normal;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
+    }
+    .toast-notification.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+    .toast-notification.toast-notification--error {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+    }
+    @media (max-width: 430px) {
+      .toast-notification {
+        top: auto;
+        bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+        font-size: .8rem;
+        padding: .6rem 1rem;
+      }
+    }
   </style>
 </head>
 
@@ -371,15 +409,15 @@
             <div class="hero-main-card">
               <div class="hero-card-label">— Kategori Produk</div>
               <div class="hero-product-icons hero-product-icons--3col">
-                <a href="#products" class="hero-product-icon-box">
+                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Kipas Angin','Lampu'])">
                   <span class="pib-icon">🏠</span>
                   <span class="pib-label">Peralatan Rumah Tangga<br><small>Kipas, lampu &amp; lainnya</small></span>
                 </a>
-                <a href="#products" class="hero-product-icon-box">
+                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Kabel','Saklar','Stopkontak'])">
                   <span class="pib-icon">⚡</span>
                   <span class="pib-label">Peralatan Listrik<br><small>Kabel, saklar, stopkontak</small></span>
                 </a>
-                <a href="#products" class="hero-product-icon-box">
+                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Lainnya'])">
                   <span class="pib-icon">🔧</span>
                   <span class="pib-label">Peralatan Pertukangan<br><small>Alat &amp; perkakas kerja</small></span>
                 </a>

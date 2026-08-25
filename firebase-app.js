@@ -94,6 +94,22 @@ function getVariantOptions(category) {
   return variantMap[category] || [];
 }
 
+// ============================================================
+// TOAST NOTIFIKASI (KERANJANG) — menggantikan alert() bawaan browser
+// agar konsisten dengan gaya UI/UX situs (memakai elemen #toastNotif
+// yang sudah ada di index.html).
+// ============================================================
+let _toastTimer = null;
+window.showBuyerToast = function (msg, isError) {
+  const el = document.getElementById('toastNotif');
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.toggle('toast-notification--error', !!isError);
+  el.classList.add('show');
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => el.classList.remove('show'), 2600);
+};
+
 window.removeFromCart = function (index) {
   cartItems.splice(index, 1); saveCartToStorage(); updateCartBadge(); renderCart();
 };
@@ -414,10 +430,22 @@ window.filterCategory = function (category, btn) {
   applyFilters();
 };
 
+// Filter gabungan beberapa kategori sekaligus (dipakai oleh shortcut kategori di hero:
+// "Peralatan Rumah Tangga", "Peralatan Listrik", "Peralatan Pertukangan"). Tidak mengganggu
+// filterCategory() yang dipakai tombol kategori tunggal di category bar.
+window.filterCategoryGroup = function (categories) {
+  activeCategory = categories; // array = mode filter grup
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  currentPage = 1;
+  applyFilters();
+};
+
 window.applyFilters = function () {
   const q = lastSearchQuery.trim().toLowerCase();
   filteredProducts = products.filter(p => {
-    const passCat = activeCategory === 'all' ? true : p.category === activeCategory;
+    const passCat = activeCategory === 'all' ? true
+      : Array.isArray(activeCategory) ? activeCategory.includes(p.category)
+      : p.category === activeCategory;
     const passSearch = q ? [p.name, p.description].some(s => s && s.toLowerCase().includes(q)) : true;
     return passCat && passSearch;
   });
@@ -515,11 +543,11 @@ function _resolveVariant(product, variantFromModal) {
   }
   let selectedVariant = variantFromModal || '';
   if (!selectedVariant && variantOptions.length > 0) {
+    // Jika ada elemen pilihan varian (mis. di modal detail produk) dan sudah dipilih user, hormati pilihan itu.
+    // Jika tidak ada / belum dipilih, varian PERTAMA otomatis jadi default agar Beli Sekarang / Tambah Keranjang
+    // tetap berfungsi dengan 1 klik tanpa mewajibkan user memilih varian dulu.
     const selectEl = document.getElementById('variant-' + product.id);
-    if (selectEl) {
-      selectedVariant = selectEl.value;
-      if (!selectedVariant) { alert('Silakan pilih varian terlebih dahulu!'); return null; }
-    } else { selectedVariant = variantOptions[0]; }
+    selectedVariant = (selectEl && selectEl.value) ? selectEl.value : variantOptions[0];
   }
   let finalPrice = product.price;
   if (selectedVariant && product.variantPrices && product.variantPrices[selectedVariant])
@@ -542,7 +570,7 @@ window.addToCart = function (productId, variantFromModal) {
   if (existingIndex > -1) { cartItems[existingIndex].quantity += 1; cartItems[existingIndex].price = finalPrice; }
   else cartItems.push({ id: productId, name: product.name, price: finalPrice, variant: selectedVariant, quantity: 1, media: itemMedia });
   saveCartToStorage(); updateCartBadge(); renderCart();
-  alert(`✅ ${product.name} ditambahkan ke keranjang`);
+  window.showBuyerToast(`✅ ${product.name}${selectedVariant ? ' (' + selectedVariant + ')' : ''} ditambahkan ke keranjang`);
 };
 
 window.buyDirectly = function (productId, variantFromModal) {
