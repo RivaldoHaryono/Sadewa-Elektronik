@@ -184,8 +184,8 @@ window.refreshPaymentTotals = function () {
   const total = items.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost();
   const totalEl = document.getElementById('paymentTotal');
   const transferEl = document.getElementById('transferAmount');
-  const ewalletEl = document.getElementById('ewalletTransferAmount');
-  if (totalEl) totalEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
+  const ewalletTransferEl = document.getElementById('ewalletTransferAmount');
+  if (ewalletTransferEl) ewalletTransferEl.textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
   if (transferEl) transferEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
   if (ewalletEl) ewalletEl.textContent = 'Rp ' + total.toLocaleString('id-ID');
 };
@@ -596,7 +596,8 @@ window.buyDirectly = function (productId, variantFromModal) {
   document.getElementById('paymentOrderItems').innerHTML = `<div class="order-item"><span>${tempCartItem.name} ${tempCartItem.variant ? '(' + tempCartItem.variant + ')' : ''} x1</span><span>Rp ${tempCartItem.price.toLocaleString('id-ID')}</span></div>`;
   document.getElementById('paymentTotal').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
   document.getElementById('transferAmount').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
-  document.getElementById('ewalletTransferAmount').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
+  const ewalletTransferEl = document.getElementById('ewalletTransferAmount');
+  if (ewalletTransferEl) ewalletTransferEl.textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
   document.getElementById('paymentModal').classList.add('active');
 };
 
