@@ -6,7 +6,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore, collection, onSnapshot, query, orderBy,
   enableIndexedDbPersistence, doc, addDoc, updateDoc, deleteDoc,
-  serverTimestamp, setDoc, increment, getDocs, where
+  serverTimestamp, setDoc, increment, getDocs, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
@@ -400,7 +400,7 @@ function init() {
   window._sadewaDb = db;
   window._sadewaFirestore = {
     collection, query, orderBy, onSnapshot, where, getDocs,
-    updateDoc, doc, addDoc, setDoc, serverTimestamp, increment
+    updateDoc, doc, addDoc, setDoc, serverTimestamp, increment, writeBatch
   };
   // Dibutuhkan Script.js (Chat Page System) untuk dapat ID sesi pembeli.
   // Sengaja tidak pakai Firebase Auth UID — _getBuyerSession() sudah
@@ -1106,6 +1106,10 @@ let _allConvs = [];
 let _adminChatUnread = 0;
 let _buyerUnread = 0;
 let _adminMsgUnsub = null;
+// Guard supaya _listenBuyerMsgs() tidak pernah menumpuk: simpan fungsi
+// unsubscribe listener yang sedang aktif + sid yang sedang didengarkan.
+let _buyerMsgUnsub = null;
+let _buyerMsgListenerSid = null;
 
 function _getBuyerSession() {
   if (!_buyerSessionId) {
@@ -1186,12 +1190,35 @@ function _playNotifSound() {
 }
 
 function _listenBuyerMsgs(sid) {
+  // 1 chat session = 1 listener aktif. Jika listener untuk sid yang sama
+  // masih aktif, jangan buat listener baru (mencegah listener menumpuk saat
+  // initChat()/afterPaymentSuccessChat() dipanggil berkali-kali).
+  if (_buyerMsgUnsub && _buyerMsgListenerSid === sid) return;
+  // Session/chat berbeda dari yang sedang didengarkan -> hentikan listener
+  // lama dulu sebelum membuat yang baru, supaya tidak ada listener "hantu".
+  if (_buyerMsgUnsub) { _buyerMsgUnsub(); _buyerMsgUnsub = null; }
+  _buyerMsgListenerSid = sid;
   const q2 = query(collection(db, 'sadewaChats', sid, 'messages'), orderBy('createdAt', 'asc'));
-  onSnapshot(q2, snap => {
+  _buyerMsgUnsub = onSnapshot(q2, snap => {
     const container = document.getElementById('bcwMessages');
     if (!container) return;
-    container.innerHTML = '';
-    snap.docs.forEach(d => _appendBuyerMsg(d.data(), container));
+    // Incremental rendering: jangan innerHTML='' + render ulang semua pesan.
+    // Cukup terapkan perubahan (added/modified/removed) ke elemen terkait,
+    // memakai ID pesan Firestore sebagai identifier DOM (data-message-id).
+    snap.docChanges().forEach(change => {
+      const msgId = change.doc.id;
+      const msg = change.doc.data();
+      if (change.type === 'added') {
+        if (!container.querySelector(`[data-message-id="${msgId}"]`)) {
+          _appendBuyerMsg(msg, msgId, container);
+        }
+      } else if (change.type === 'modified') {
+        _updateBuyerMsgEl(msg, msgId, container);
+      } else if (change.type === 'removed') {
+        const el = container.querySelector(`[data-message-id="${msgId}"]`);
+        if (el) el.remove();
+      }
+    });
     if (_buyerChatOpen) { _scrollBcw(); _markBuyerRead(); }
     else {
       const newUnread = snap.docs.filter(d => d.data().sender === 'seller' && !d.data().readByBuyer).length;
@@ -1201,20 +1228,45 @@ function _listenBuyerMsgs(sid) {
   });
 }
 
-function _appendBuyerMsg(msg, container) {
+function _buyerMsgHtml(msg) {
+  const sent = msg.sender === 'buyer';
+  const content = msg.orderCard ? _buildOrderCard(msg.orderCard) : `<div class="bcw-bubble">${_esc(msg.text)}</div>`;
+  return content + `<div class="bcw-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtShort(msg.createdAt)}</div>`;
+}
+
+function _appendBuyerMsg(msg, msgId, container) {
   const sent = msg.sender === 'buyer';
   const div = document.createElement('div');
   div.className = 'bcw-msg ' + (sent ? 'sent' : 'recv');
-  const content = msg.orderCard ? _buildOrderCard(msg.orderCard) : `<div class="bcw-bubble">${_esc(msg.text)}</div>`;
-  div.innerHTML = content + `<div class="bcw-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtShort(msg.createdAt)}</div>`;
+  if (msgId) div.dataset.messageId = msgId;
+  div.innerHTML = _buyerMsgHtml(msg);
   container.appendChild(div);
+}
+
+function _updateBuyerMsgEl(msg, msgId, container) {
+  const el = container.querySelector(`[data-message-id="${msgId}"]`);
+  if (!el) { _appendBuyerMsg(msg, msgId, container); return; }
+  el.className = 'bcw-msg ' + (msg.sender === 'buyer' ? 'sent' : 'recv');
+  el.innerHTML = _buyerMsgHtml(msg);
 }
 
 async function _markBuyerRead() {
   const sid = _getBuyerSession();
   try {
     const snap = await getDocs(query(collection(db, 'sadewaChats', sid, 'messages'), where('sender', '==', 'seller'), where('readByBuyer', '==', false)));
-    snap.docs.forEach(async d => await updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true }));
+    if (snap.empty) return;
+    // Tandai semua pesan unread sekaligus lewat writeBatch (bukan updateDoc
+    // satu-satu) supaya jumlah request & trigger onSnapshot jauh berkurang.
+    // Di-chunk per 450 operasi untuk aman terhadap batas 500 operasi/batch Firestore.
+    const docsToMark = snap.docs;
+    const CHUNK_SIZE = 450;
+    for (let i = 0; i < docsToMark.length; i += CHUNK_SIZE) {
+      const batch = writeBatch(db);
+      docsToMark.slice(i, i + CHUNK_SIZE).forEach(d => {
+        batch.update(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true });
+      });
+      await batch.commit();
+    }
   } catch (e) {}
 }
 

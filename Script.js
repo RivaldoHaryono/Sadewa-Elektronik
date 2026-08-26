@@ -267,6 +267,10 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   let _cpOpen = false, _cpUnread = 0, _cpMsgUnsub = null;
+  // Dipakai untuk incremental rendering (penanda tanggal terakhir yang sudah
+  // dirender) & untuk tahu apakah area chat sedang menampilkan state kosong.
+  let _cpLastRenderedDate = '';
+  let _cpShowingEmptyState = false;
 
   window._cpShowToast = function (msg) {
     const t = document.getElementById('cpToast'); if (!t) return;
@@ -319,6 +323,8 @@ document.addEventListener('DOMContentLoaded', function () {
   async function _cpLoadMessages() {
     const area = document.getElementById('cpMessagesArea'); if (!area) return;
     if (_cpMsgUnsub) { _cpMsgUnsub(); _cpMsgUnsub = null; }
+    _cpLastRenderedDate = '';
+    _cpShowingEmptyState = false;
     area.innerHTML = '<div class="cp-typing"><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div><div class="cp-typing-dot"></div></div>';
     // Tunggu UID Firebase siap (biasanya nyaris instan kalau pengunjung sudah
     // pernah buka web ini sebelumnya). window._sadewaWaitForUID datang dari
@@ -333,18 +339,42 @@ document.addEventListener('DOMContentLoaded', function () {
         query(collection(db, 'sadewaChats', sid, 'messages'), orderBy('createdAt', 'asc')),
         function (snap) {
           const area2 = document.getElementById('cpMessagesArea'); if (!area2) return;
-          if (!snap.docs.length) { _cpShowEmpty(); return; }
-          area2.innerHTML = '';
-          let lastDate = '';
-          snap.docs.forEach(function (d) {
-            const msg = d.data();
-            const msgDate = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
-            if (msgDate && msgDate !== lastDate) {
-              lastDate = msgDate;
-              const sep = document.createElement('div'); sep.className = 'cp-date-sep'; sep.textContent = msgDate;
-              area2.appendChild(sep);
+          if (!snap.docs.length) {
+            _cpShowEmpty();
+            _cpShowingEmptyState = true;
+            _cpLastRenderedDate = '';
+            return;
+          }
+          // Kalau area masih menampilkan state kosong/typing dari sebelumnya,
+          // bersihkan sekali sebelum mulai render incremental.
+          if (_cpShowingEmptyState || area2.querySelector('.cp-typing')) {
+            area2.innerHTML = '';
+            _cpShowingEmptyState = false;
+            _cpLastRenderedDate = '';
+          }
+          // Incremental rendering: jangan innerHTML='' + render ulang semua
+          // pesan tiap ada perubahan. Terapkan hanya perubahan yang terjadi
+          // (added/modified/removed), pakai ID pesan Firestore sebagai
+          // identifier DOM (data-message-id).
+          snap.docChanges().forEach(function (change) {
+            const msgId = change.doc.id;
+            const msg = change.doc.data();
+            if (change.type === 'added') {
+              if (!area2.querySelector(`[data-message-id="${msgId}"]`)) {
+                const msgDate = msg.createdAt?.toDate ? msg.createdAt.toDate().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
+                if (msgDate && msgDate !== _cpLastRenderedDate) {
+                  _cpLastRenderedDate = msgDate;
+                  const sep = document.createElement('div'); sep.className = 'cp-date-sep'; sep.textContent = msgDate;
+                  area2.appendChild(sep);
+                }
+                _cpAppendMsg(msg, msgId, area2);
+              }
+            } else if (change.type === 'modified') {
+              _cpUpdateMsgEl(msg, msgId, area2);
+            } else if (change.type === 'removed') {
+              const el = area2.querySelector(`[data-message-id="${msgId}"]`);
+              if (el) el.remove();
             }
-            _cpAppendMsg(msg, area2);
           });
           if (_cpOpen) { area2.scrollTop = area2.scrollHeight; _cpMarkRead(); }
           else {
@@ -368,16 +398,29 @@ document.addEventListener('DOMContentLoaded', function () {
     </div>`;
   }
 
-  function _cpAppendMsg(msg, container) {
+  function _cpMsgHtml(msg) {
     const sent = msg.sender === 'buyer';
-    const div = document.createElement('div'); div.className = 'cp-msg ' + (sent ? 'sent' : 'recv');
     let content = '';
     if (msg.orderCard) {
       const items = (msg.orderCard.items || []).map(i => `<div class="cp-order-item">• ${_esc(i.name)}${i.variant ? ` (${_esc(i.variant)})` : ''} ×${i.qty}</div>`).join('');
       content = `<div class="cp-order-card"><div class="cp-order-card-title">📞 Detail Pesanan</div>${items}<div class="cp-order-total">Total: Rp ${Number(msg.orderCard.total || 0).toLocaleString('id-ID')}</div><div class="cp-order-status">✓ Pesanan Dikonfirmasi</div></div>`;
     } else { content = `<div class="cp-bubble">${_esc(msg.text)}</div>`; }
-    div.innerHTML = content + `<div class="cp-msg-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtTime(msg.createdAt)}</div>`;
+    return content + `<div class="cp-msg-time">${sent ? 'Anda' : 'Sadewa'} · ${_fmtTime(msg.createdAt)}</div>`;
+  }
+
+  function _cpAppendMsg(msg, msgId, container) {
+    const sent = msg.sender === 'buyer';
+    const div = document.createElement('div'); div.className = 'cp-msg ' + (sent ? 'sent' : 'recv');
+    if (msgId) div.dataset.messageId = msgId;
+    div.innerHTML = _cpMsgHtml(msg);
     container.appendChild(div);
+  }
+
+  function _cpUpdateMsgEl(msg, msgId, container) {
+    const el = container.querySelector(`[data-message-id="${msgId}"]`);
+    if (!el) { _cpAppendMsg(msg, msgId, container); return; }
+    el.className = 'cp-msg ' + (msg.sender === 'buyer' ? 'sent' : 'recv');
+    el.innerHTML = _cpMsgHtml(msg);
   }
 
   async function _cpMarkRead() {
@@ -385,10 +428,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const sid = await window._sadewaWaitForUID();
     if (!sid || !window._sadewaDb) return;
     try {
-      const { collection, query, where, getDocs, updateDoc, doc } = window._sadewaFirestore;
+      const { collection, query, where, getDocs, doc, writeBatch } = window._sadewaFirestore;
       const db = window._sadewaDb;
       const snap = await getDocs(query(collection(db, 'sadewaChats', sid, 'messages'), where('sender', '==', 'seller'), where('readByBuyer', '==', false)));
-      snap.docs.forEach(async d => updateDoc(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true }).catch(() => {}));
+      if (!snap.empty) {
+        // Tandai semua sekaligus lewat writeBatch (bukan updateDoc satu-satu),
+        // di-chunk per 450 operasi untuk aman terhadap limit 500 operasi/batch.
+        const docsToMark = snap.docs;
+        const CHUNK_SIZE = 450;
+        for (let i = 0; i < docsToMark.length; i += CHUNK_SIZE) {
+          const batch = writeBatch(db);
+          docsToMark.slice(i, i + CHUNK_SIZE).forEach(d => {
+            batch.update(doc(db, 'sadewaChats', sid, 'messages', d.id), { readByBuyer: true });
+          });
+          await batch.commit();
+        }
+      }
       _cpUnread = 0; _updateCpBadges();
     } catch (e) {}
   }
