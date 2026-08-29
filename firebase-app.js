@@ -9,7 +9,8 @@ import {
   serverTimestamp, setDoc, increment, getDocs, where, writeBatch
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
-  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged
+  getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
+  GoogleAuthProvider, signInWithPopup
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // ── Firebase Init ──
@@ -25,6 +26,17 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+// ── Google Login ──
+const googleProvider = new GoogleAuthProvider();
+
+window.loginWithGoogle = async function () {
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    console.log("Login berhasil:", result.user);
+  } catch (err) {
+    console.error("Login gagal:", err);
+  }
+};
 const prodCol = collection(db, "sadewaProducts");
 
 try {

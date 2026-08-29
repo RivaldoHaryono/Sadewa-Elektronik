@@ -525,8 +525,12 @@
             <span class="nav-chat-notif-dot" id="navChatDot"></span>
           </button>
 
-          <div class="cart-icon-wrapper"><button class="cart-btn" onclick="toggleCart()">🛒<span id="cartBadge"
+           <div class="cart-icon-wrapper"><button class="cart-btn" onclick="toggleCart()">🛒<span id="cartBadge"
                 class="cart-badge">0</span></button></div>
+           <!-- Tombol Login Google -->
+          <button id="btnLoginGoogle" class="admin-btn" onclick="loginWithGoogle()" title="Login dengan Google" style="padding:.75rem;">
+            👤 Login
+          </button>
           <button class="admin-btn" onclick="showLoginModal()" title="Admin Login" style="padding:.75rem;">⚙️</button>
         </div>
       </div>
@@ -1080,17 +1084,12 @@
       </div>
 
       <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
+              <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
         <div class="mobile-bottom-nav-inner">
           <a href="#home" class="mbn-item"><span class="mbn-icon">🏠</span><span>Beranda</span></a>
           <a href="#products" class="mbn-item"><span class="mbn-icon">⚡</span><span>Produk</span></a>
           <button class="mbn-item" onclick="toggleCart()"><span class="mbn-icon">🛒</span><span class="mbn-cart-badge"
-              id="mbnCartBadge">0</span><span>Keranjang</span></button>
-          <!-- 🔁 Diarahkan ke Tawk.to (fallback ke chat lama kalau Tawk.to belum load) -->
-          <button class="mbn-item" onclick="if(window.Tawk_API && Tawk_API.toggle){Tawk_API.toggle();}else{openChatPage();}" style="position:relative;">
-            <span class="mbn-icon">💬</span>
-            <span class="mbn-chat-badge" id="mbnChatBadge"></span>
-            <span>Chat</span>
-          </button>
+           id="mbnCartBadge">0</span><span>Keranjang</span></button>
           <a href="#chat" class="mbn-item">
             <span class="mbn-icon">🤖</span>
             <span>AI</span>
