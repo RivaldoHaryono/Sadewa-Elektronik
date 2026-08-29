@@ -519,7 +519,8 @@
           <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
 
           <!-- Tambahkan SEBELUM div cart-icon-wrapper -->
-          <button class="nav-chat-btn" onclick="openChatPage()" title="Chat dengan Penjual">
+          <!-- 🔁 Diarahkan ke Tawk.to (fallback ke chat lama kalau Tawk.to belum load) -->
+          <button class="nav-chat-btn" onclick="if(window.Tawk_API && Tawk_API.toggle){Tawk_API.toggle();}else{openChatPage();}" title="Chat dengan Penjual">
             💬 Chat
             <span class="nav-chat-notif-dot" id="navChatDot"></span>
           </button>
@@ -1084,7 +1085,8 @@
           <a href="#products" class="mbn-item"><span class="mbn-icon">⚡</span><span>Produk</span></a>
           <button class="mbn-item" onclick="toggleCart()"><span class="mbn-icon">🛒</span><span class="mbn-cart-badge"
               id="mbnCartBadge">0</span><span>Keranjang</span></button>
-          <button class="mbn-item" onclick="openChatPage()" style="position:relative;">
+          <!-- 🔁 Diarahkan ke Tawk.to (fallback ke chat lama kalau Tawk.to belum load) -->
+          <button class="mbn-item" onclick="if(window.Tawk_API && Tawk_API.toggle){Tawk_API.toggle();}else{openChatPage();}" style="position:relative;">
             <span class="mbn-icon">💬</span>
             <span class="mbn-chat-badge" id="mbnChatBadge"></span>
             <span>Chat</span>
@@ -1108,12 +1110,15 @@
       <div id="toastNotif" class="toast-notification"></div>
 
 
-      <!-- BUYER: Floating Chat Button -->
+      <!-- ⛔ DINONAKTIFKAN: Floating Chat Button custom (diganti Tawk.to widget) -->
+      <!-- Kalau mau balik pakai chat custom lagi, un-comment blok ini -->
+      <!--
       <button class="chat-bubble-btn" id="chatBubbleBtn" onclick="toggleBuyerChat()" title="Chat dengan Penjual"
         style="display:none;">
         <span class="cb-icon">💬</span>
         <span class="chat-bubble-unread" id="chatBubbleUnread">0</span>
       </button>
+      -->
 
       <!-- BUYER: Chat Window -->
       <div class="buyer-chat-window" id="buyerChatWindow">
@@ -1232,6 +1237,21 @@
   <script type="module" src="firebase-app.js"></script>
   <script src="Script.js" defer></script> 
   <script src="ongkir.js" defer></script>
+
+  <!--Start of Tawk.to Script-->
+<script type="text/javascript">
+var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
+(function(){
+var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
+s1.async=true;
+s1.src='https://embed.tawk.to/6a926b04120e0034480d22ac/1k15v42qm';
+s1.charset='UTF-8';
+s1.setAttribute('crossorigin','*');
+s0.parentNode.insertBefore(s1,s0);
+})();
+</script>
+<!--End of Tawk.to Script-->
+
 </body>
 
 </html>
