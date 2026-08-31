@@ -181,6 +181,7 @@
   line-height: 1.65;
   font-size: 0.95rem;
   font-weight: 300;
+  white-space: pre-line;
 }
 
 .detail-variants {
@@ -204,6 +205,71 @@
   }
   .product-detail-modal { padding: 1rem; }
   .detail-title { font-size: 1.4rem; }
+}
+
+/* ── Kartu produk: link "Lihat selengkapnya" untuk deskripsi terpotong ── */
+.desc-readmore {
+  color: var(--primary);
+  cursor: pointer;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.desc-readmore:hover { text-decoration: underline; }
+
+/* ── Detail Modal: stok & varian ── */
+.detail-stock {
+  font-size: 0.8rem;
+  color: var(--gray-light, #A9B4CA);
+  margin-top: -0.6rem;
+}
+
+.detail-variant-label {
+  color: var(--gray-light, #A9B4CA);
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 0.4rem;
+}
+
+.detail-variant-select {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  color: var(--light);
+  font-family: inherit;
+  font-size: 0.9rem;
+}
+
+/* ── Detail Modal: tombol aksi (Tambah Keranjang / Beli Sekarang) ── */
+.btn-add-cart-wide {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 10px;
+  background: rgba(201, 168, 76, 0.12);
+  border: 1px solid rgba(201, 168, 76, 0.4);
+  color: var(--primary);
+  font-weight: 800;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.25s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.btn-add-cart-wide:hover {
+  background: var(--primary);
+  color: var(--darker);
+}
+.detail-actions .btn { width: 100%; }
+
+@media (max-width: 430px) {
+  .detail-actions {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* ── Video Modal ── */
@@ -1009,197 +1075,6 @@
 
 .mbn-badge.visible { display: flex; }
 
-/* ── Admin Chat Panel ── */
-.admin-chat-panel {
-  background: var(--surface, #151F33);
-  border: 1px solid rgba(201, 168, 76, 0.15);
-  border-radius: var(--radius-lg, 22px);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
-
-.acp-header {
-  padding: 1.25rem 1.5rem;
-  background: rgba(28, 40, 64, 0.8);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
-.acp-title {
-  font-weight: 800;
-  font-size: 1.1rem;
-  color: var(--light);
-}
-
-.acp-search-input {
-  width: 100%;
-  background: rgba(11, 17, 32, 0.7);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  color: var(--light);
-  font-size: 0.875rem;
-  padding: 0.6rem 0.9rem;
-  outline: none;
-  margin: 0.75rem 1rem;
-}
-
-.acp-search-input:focus {
-  border-color: var(--primary, #C9A84C);
-}
-
-.acp-search-input::placeholder { color: var(--gray, #7D8BA8); }
-
-.acp-conv-list {
-  overflow-y: auto;
-  flex: 1;
-  min-height: 200px;
-  max-height: 400px;
-}
-
-.acp-conv-item {
-  display: flex;
-  align-items: center;
-  gap: 0.85rem;
-  padding: 1rem 1.25rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.acp-conv-item:hover,
-.acp-conv-item.active { background: rgba(201, 168, 76, 0.08); }
-
-.acp-conv-avatar {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--primary, #C9A84C), #b8892a);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1.15rem;
-  flex-shrink: 0;
-}
-
-.acp-conv-meta { flex: 1; overflow: hidden; }
-
-.acp-conv-name {
-  font-weight: 700;
-  font-size: 0.9rem;
-  color: var(--light);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.acp-conv-preview {
-  font-size: 0.78rem;
-  color: var(--gray, #7D8BA8);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.acp-unread-badge {
-  background: #ef4444;
-  color: #fff;
-  border-radius: 999px;
-  min-width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 0.7rem;
-  font-weight: 800;
-  padding: 0 4px;
-  flex-shrink: 0;
-}
-
-.acp-empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  height: 200px;
-  gap: 0.75rem;
-}
-
-.acp-empty-icon {
-  font-size: 2.5rem;
-  opacity: 0.35;
-}
-
-.acp-chat-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.acp-messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.25rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
-}
-
-.acp-messages::-webkit-scrollbar { width: 5px; }
-.acp-messages::-webkit-scrollbar-thumb {
-  background: rgba(201, 168, 76, 0.3);
-  border-radius: 4px;
-}
-
-.acp-reply-area {
-  padding: 0.85rem 1rem;
-  background: rgba(21, 31, 51, 0.9);
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-  display: flex;
-  gap: 0.75rem;
-  align-items: flex-end;
-}
-
-.acp-reply-input {
-  flex: 1;
-  background: rgba(11, 17, 32, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  color: var(--light);
-  font-family: inherit;
-  font-size: 0.9rem;
-  padding: 0.7rem 1rem;
-  resize: none;
-  max-height: 90px;
-  outline: none;
-  transition: border-color 0.25s;
-}
-
-.acp-reply-input:focus { border-color: var(--primary, #C9A84C); }
-.acp-reply-input::placeholder { color: var(--gray, #7D8BA8); }
-
-.acp-send-btn {
-  width: 42px;
-  height: 42px;
-  background: linear-gradient(135deg, var(--primary, #C9A84C), #b8892a);
-  color: var(--darker, #0B1120);
-  border: none;
-  border-radius: 10px;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  transition: all 0.25s;
-}
-
-.acp-send-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 16px rgba(201, 168, 76, 0.4); }
 
 /* ── Checkout Steps ── */
 .checkout-step-header {

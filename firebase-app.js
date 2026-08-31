@@ -6,7 +6,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore, collection, onSnapshot, query, orderBy,
   enableIndexedDbPersistence, doc, addDoc, updateDoc, deleteDoc,
-  serverTimestamp, setDoc, increment, getDocs, where, writeBatch
+  serverTimestamp, setDoc, increment, getDocs, where, writeBatch, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -180,7 +180,7 @@ window.clearCart = function () {
 // ============================================================
 // PAYMENT
 // ============================================================
-let selectedPaymentMethod = 'card', selectedPaymentProvider = 'visa';
+let selectedPaymentMethod = 'bank', selectedPaymentProvider = 'bri';
 const bankAccounts = { bri: { number: '3456-01-001829-50-2', name: 'AI JULAEHA' } };
 
 window.refreshPaymentTotals = function () {
@@ -332,18 +332,22 @@ window.closeChannelChoice = function () {
   document.getElementById('channelChoiceOverlay').classList.remove('active');
 };
 
-window.sendViaWhatsApp = function () {
+window.sendViaWhatsApp = async function () {
   window.closeChannelChoice();
-  sendPaymentToWhatsApp();
-  if (!window._pendingOrder.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
+  const order = window._pendingOrder;
+  const saved = await _saveOrderToFirestore(order.items, order.total, order.method, 'whatsapp');
+  sendPaymentToWhatsApp(saved.invoiceNumber);
+  if (!order.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
   window.closePaymentModal();
   window.isBuyNowMode = false; window.tempBuyNowCart = [];
   window._pendingOrder = null;
+  window.openInvoiceModal(saved);
 };
 
 window.sendViaChat = async function () {
   window.closeChannelChoice();
   const order = window._pendingOrder;
+  const saved = await _saveOrderToFirestore(order.items, order.total, order.method, 'chat');
   if (!order.isBuyNow) { cartItems = []; saveCartToStorage(); updateCartBadge(); }
   window.closePaymentModal();
   const chatBtn = document.getElementById('chatBubbleBtn');
@@ -352,16 +356,19 @@ window.sendViaChat = async function () {
   if (!_buyerChatOpen) window.toggleBuyerChat();
   window.isBuyNowMode = false; window.tempBuyNowCart = [];
   window._pendingOrder = null;
+  window.openInvoiceModal(saved);
 };
 
-function sendPaymentToWhatsApp() {
+function sendPaymentToWhatsApp(invoiceNumber) {
   const shipName = document.getElementById('shipName').value.trim();
   const shipPhone = document.getElementById('shipPhone').value.trim();
   const shipRegion = document.getElementById('shipRegion').value.trim();
   const shipAddress = document.getElementById('shipAddress').value.trim();
   const shipDetail = document.getElementById('shipDetail').value.trim();
   const shipNote = document.getElementById('shipNote').value.trim();
-  let message = '💳 *PESANAN BARU (SADEWA ELEKTRONIK)*\n━━━━━━━━━━━━━━━━━━━━\n\n*📍 Alamat Pengiriman:*\n';
+  let message = '💳 *PESANAN BARU (SADEWA ELEKTRONIK)*\n';
+  if (invoiceNumber) message += `No. Invoice: ${invoiceNumber}\n`;
+  message += '━━━━━━━━━━━━━━━━━━━━\n\n*📍 Alamat Pengiriman:*\n';
   message += `Nama: ${shipName}\nNo. HP: ${shipPhone}\nProv/Kota/Kec: ${shipRegion}\nAlamat Lengkap:\n${shipAddress}\n`;
   if (shipDetail) message += `Patokan: ${shipDetail}\n`;
   if (shipNote) message += `Catatan Kurir: ${shipNote}\n`;
@@ -498,14 +505,22 @@ window.renderProducts = function () {
       ? `<img src="${p.media}" style="width:100%;height:100%;object-fit:cover;">`
       : `<div style="font-size:5rem;display:flex;align-items:center;justify-content:center;height:100%;">${p.media || '⚡'}</div>`;
     const priceToShow = p.displayPrice || `Rp ${p.price.toLocaleString('id-ID')}`;
-    return `<div class="product-card">
+    const descFull = p.description || '';
+    const descIsLong = descFull.length > 60;
+    const descPreview = descIsLong
+      ? descFull.substring(0, 60) + '... '
+      : descFull;
+    const readMoreLink = descIsLong
+      ? `<span class="desc-readmore" onclick="event.stopPropagation(); openProductDetail('${p.id}')">Lihat selengkapnya</span>`
+      : '';
+    return `<div class="product-card" onclick="openProductDetail('${p.id}')" style="cursor:pointer;">
       <div class="product-image" id="productImg-${p.id}" style="height:200px;overflow:hidden;position:relative;">
         ${mediaContent}
         ${p.video && p.video.startsWith('data:video') ? '<div style="position:absolute;top:8px;right:8px;background:rgba(0,0,0,0.7);color:white;padding:4px 8px;border-radius:4px;font-size:0.8rem;z-index:5;">🎬 Video</div>' : ''}
       </div>
       <div class="product-info">
         <h3 class="product-title">${p.name}</h3>
-        <p class="product-desc">${p.description ? p.description.substring(0, 60) + '...' : ''}</p>
+        <p class="product-desc">${descPreview}${readMoreLink}</p>
         <div class="product-price-wrapper">
           <div class="product-price" id="productPrice-${p.id}" style="margin-bottom:0">${priceToShow}</div>
           <button class="btn-add-cart" onclick="event.stopPropagation(); addToCart('${p.id}')" title="Tambah ke Keranjang">🛒</button>
@@ -554,6 +569,90 @@ window.goToPage = function (page) {
 };
 
 window.updateProductImage = function () {};
+
+// ============================================================
+// PRODUCT DETAIL MODAL (Shopee-style)
+// Menampilkan deskripsi produk LENGKAP (tidak dipotong ke 60 karakter
+// seperti di kartu produk), lengkap dengan galeri media & pilihan varian.
+// ============================================================
+window.currentDetailProductId = null;
+
+function _detailVariantOptions(product) {
+  const opts = [];
+  if (product.video && product.video.startsWith('data:video')) opts.push('🎬 Video Produk');
+  if (product.variantPrices && Object.keys(product.variantPrices).length > 0) opts.push(...Object.keys(product.variantPrices));
+  else opts.push(...getVariantOptions(product.category));
+  return opts;
+}
+
+window.openProductDetail = function (productId) {
+  const p = products.find(x => x.id === productId);
+  if (!p) return;
+  window.currentDetailProductId = productId;
+
+  document.getElementById('detailCategory').textContent = p.category || '';
+  document.getElementById('detailTitle').textContent = p.name || '';
+  document.getElementById('detailPrice').textContent = p.displayPrice || `Rp ${p.price.toLocaleString('id-ID')}`;
+  document.getElementById('detailStock').textContent = (typeof p.stock === 'number') ? `Stok tersedia: ${p.stock}` : '';
+
+  // Deskripsi LENGKAP — pakai textContent (bukan substring) supaya tidak terpotong sama sekali.
+  document.getElementById('detailDesc').textContent = p.description || 'Belum ada deskripsi untuk produk ini.';
+
+  // -- Galeri media (gambar utama, video, gambar varian) --
+  const mainView = document.getElementById('detailMainView');
+  const thumbStrip = document.getElementById('detailThumbStrip');
+  const thumbs = [];
+  if (p.media && p.media.startsWith('data:image')) thumbs.push({ type: 'image', src: p.media, label: 'Utama' });
+  if (p.video && p.video.startsWith('data:video')) thumbs.push({ type: 'video', src: p.video, label: 'Video' });
+  if (p.variantImages) {
+    Object.entries(p.variantImages).forEach(([vname, vimg]) => {
+      if (vimg && vimg.startsWith('data:image')) thumbs.push({ type: 'image', src: vimg, label: vname });
+    });
+  }
+
+  function showMedia(item) {
+    if (!item) {
+      mainView.innerHTML = `<div style="font-size:6rem;display:flex;align-items:center;justify-content:center;height:100%;">${p.media || '⚡'}</div>`;
+      return;
+    }
+    mainView.innerHTML = item.type === 'video'
+      ? `<video src="${item.src}" controls playsinline></video>`
+      : `<img src="${item.src}" alt="${p.name}">`;
+  }
+  showMedia(thumbs[0]);
+
+  thumbStrip.style.display = thumbs.length > 1 ? 'flex' : 'none';
+  thumbStrip.innerHTML = thumbs.map((t, idx) => `
+    <div class="thumb-item ${idx === 0 ? 'active' : ''}" data-idx="${idx}">
+      ${t.type === 'video' ? `<video src="${t.src}"></video><div class="thumb-play-icon">▶</div>` : `<img src="${t.src}" alt="${t.label}">`}
+    </div>`).join('');
+  thumbStrip.querySelectorAll('.thumb-item').forEach(el => {
+    el.addEventListener('click', () => {
+      thumbStrip.querySelectorAll('.thumb-item').forEach(x => x.classList.remove('active'));
+      el.classList.add('active');
+      showMedia(thumbs[Number(el.dataset.idx)]);
+    });
+  });
+
+  // -- Pilihan varian (kalau ada) --
+  const variantOptions = _detailVariantOptions(p);
+  const variantsBox = document.getElementById('detailVariants');
+  variantsBox.innerHTML = variantOptions.length
+    ? `<div class="detail-variant-label">Pilih Varian</div>
+       <select class="detail-variant-select" id="variant-${p.id}">
+         ${variantOptions.map(v => `<option value="${v}">${v}</option>`).join('')}
+       </select>`
+    : '';
+
+  document.getElementById('productDetailModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeProductDetail = function () {
+  document.getElementById('productDetailModal').classList.remove('active');
+  document.body.style.overflow = '';
+  window.currentDetailProductId = null;
+};
 
 function _resolveVariant(product, variantFromModal) {
   let variantOptions = [];
@@ -693,6 +792,7 @@ window.handleLogin = async function () {
       document.getElementById('adminPage').classList.add('active');
       renderAdminProductList();
       updateAdminStats();
+      window.loadAdminOrders();
     }
   } catch (error) {
     if (user === ADMIN_USER && pass === ADMIN_PASS) {
@@ -705,6 +805,7 @@ window.handleLogin = async function () {
       document.getElementById('adminPage').classList.add('active');
       renderAdminProductList();
       updateAdminStats();
+      window.loadAdminOrders();
       showAdminNotif('✅ Login berhasil');
     } else { showAdminNotif('❌ Username atau password salah!', true); }
   } finally {
@@ -1107,6 +1208,251 @@ function showAdminNotif(msg, isError) {
   notif.classList.add('show');
   setTimeout(() => notif.classList.remove('show'), 3000);
 }
+
+// ============================================================
+// INVOICE & RIWAYAT PESANAN
+// ============================================================
+function _fmtRp(n) { return 'Rp ' + Number(n || 0).toLocaleString('id-ID'); }
+function _fmtInvDate(d) {
+  const dt = d && d.toDate ? d.toDate() : (d instanceof Date ? d : new Date(d));
+  if (isNaN(dt.getTime())) return '-';
+  return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' \u00b7 ' + dt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+const ORDER_STATUSES = ['Menunggu Konfirmasi', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'];
+function _statusIcon(s) {
+  const map = { 'Menunggu Konfirmasi': '\ud83d\udd52', 'Diproses': '\ud83d\udce6', 'Dikirim': '\ud83d\ude9a', 'Selesai': '\u2705', 'Dibatalkan': '\u274c' };
+  return (map[s] || '\ud83d\udd52') + ' ' + (s || 'Menunggu Konfirmasi');
+}
+function _paymentLabel(method, provider) {
+  const labels = { card: '\ud83d\udcb3 Kartu Debit/Kredit', bank: '<img src="./icon/bri-logo.png" alt="BRI" class="inv-pay-icon inv-pay-icon-bank">', ewallet: '\ud83d\udcf1 E-Wallet', qris: '<img src="./icon/qris-logo.png" alt="QRIS" class="inv-pay-icon">' };
+  let base = labels[method] || (method || '-');
+  if (method === 'bank' && bankAccounts[provider]) base += ' \u2014 ' + bankAccounts[provider].name;
+  else if (method === 'ewallet' && provider) base += ' \u2014 ' + provider.toUpperCase();
+  return base;
+}
+
+// Nomor invoice sequential & atomic, dijamin tidak bentrok walau ada
+// beberapa pesanan masuk hampir bersamaan (pakai Firestore transaction).
+async function _nextInvoiceNumber() {
+  const counterRef = doc(db, 'sadewaCounters', 'invoiceCounter');
+  const next = await runTransaction(db, async (tx) => {
+    const snap = await tx.get(counterRef);
+    const current = snap.exists() ? (snap.data().count || 0) : 0;
+    const val = current + 1;
+    tx.set(counterRef, { count: val }, { merge: true });
+    return val;
+  });
+  return `INV-${new Date().getFullYear()}-${String(next).padStart(5, '0')}`;
+}
+
+async function _saveOrderToFirestore(items, total, method, channel) {
+  const shipName = document.getElementById('shipName')?.value?.trim() || _getBuyerName();
+  const shipPhone = document.getElementById('shipPhone')?.value?.trim() || '';
+  const shipRegion = document.getElementById('shipRegion')?.value?.trim() || '';
+  const shipAddress = document.getElementById('shipAddress')?.value?.trim() || '';
+  const shipDetail = document.getElementById('shipDetail')?.value?.trim() || '';
+  const shipNote = document.getElementById('shipNote')?.value?.trim() || '';
+  _setBuyerName(shipName);
+  const shipping = window._sadewaShippingCost || null;
+  const subtotal = items.reduce((s, i) => s + (i.price * i.quantity), 0);
+  let invoiceNumber = 'INV-' + Date.now();
+  try { invoiceNumber = await _nextInvoiceNumber(); } catch (e) { console.error('_nextInvoiceNumber:', e); }
+  const orderData = {
+    invoiceNumber,
+    buyerUid: _getBuyerSession(),
+    buyerName: shipName, buyerPhone: shipPhone, buyerRegion: shipRegion,
+    buyerAddress: shipAddress, buyerDetail: shipDetail, buyerNote: shipNote,
+    items: items.map(i => ({ name: i.name, variant: i.variant || '', qty: i.quantity, price: i.price })),
+    subtotal,
+    shippingCost: shipping ? (shipping.cost || 0) : 0,
+    shippingCourier: shipping ? (shipping.courier || '') : '',
+    shippingService: shipping ? (shipping.service || '') : '',
+    total,
+    paymentMethod: method,
+    paymentProvider: selectedPaymentProvider || '',
+    channel,
+    status: 'Menunggu Konfirmasi',
+    createdAt: serverTimestamp()
+  };
+  let savedId = null;
+  try {
+    const docRef = await addDoc(collection(db, 'sadewaOrders'), orderData);
+    savedId = docRef.id;
+  } catch (e) { console.error('_saveOrderToFirestore:', e); }
+  // Pakai Date lokal untuk tampilan invoice langsung (serverTimestamp belum resolve di client sampai reload)
+  return { id: savedId, ...orderData, createdAt: new Date() };
+}
+
+function _buildInvoiceHtml(order) {
+  const itemsRows = (order.items || []).map(i => `
+    <tr>
+      <td>${_esc(i.name)}${i.variant ? ' <span class="inv-variant">(' + _esc(i.variant) + ')</span>' : ''}</td>
+      <td class="inv-center">${i.qty}</td>
+      <td class="inv-right">${_fmtRp(i.price)}</td>
+      <td class="inv-right">${_fmtRp(i.price * i.qty)}</td>
+    </tr>`).join('');
+  const shippingRow = (order.shippingCost || 0) > 0 ? `
+    <div class="inv-total-row"><span>Ongkos Kirim${order.shippingCourier ? ' (' + _esc(order.shippingCourier) + (order.shippingService ? ' - ' + _esc(order.shippingService) : '') + ')' : ''}</span><span>${_fmtRp(order.shippingCost)}</span></div>` : '';
+  return `
+    <div class="invoice-print-area" id="invoicePrintArea">
+      <div class="inv-header">
+        <div class="inv-brand">
+          <img src="./logo-sadewa.png" alt="Sadewa" class="inv-logo" onerror="this.style.display='none'" />
+          <div>
+            <div class="inv-brand-name">Sadewa Elektronik</div>
+            <div class="inv-brand-sub">Cidahu, Sukabumi &middot; wa.me/6285872189172</div>
+          </div>
+        </div>
+        <div class="inv-meta">
+          <div class="inv-title">INVOICE</div>
+          <div><b>No:</b> ${_esc(order.invoiceNumber)}</div>
+          <div><b>Tanggal:</b> ${_fmtInvDate(order.createdAt)}</div>
+          <div class="inv-status-line"><b>Status:</b> ${_statusIcon(order.status)}</div>
+        </div>
+      </div>
+      <div class="inv-parties">
+        <div>
+          <div class="inv-label">Ditagihkan Kepada</div>
+          <div class="inv-buyer-name">${_esc(order.buyerName)}</div>
+          <div>${_esc(order.buyerPhone)}</div>
+          <div>${_esc(order.buyerRegion)}</div>
+          <div>${_esc(order.buyerAddress)}${order.buyerDetail ? ', ' + _esc(order.buyerDetail) : ''}</div>
+        </div>
+        <div>
+          <div class="inv-label">Metode Pembayaran</div>
+          <div>${_paymentLabel(order.paymentMethod, order.paymentProvider)}</div>
+          <div class="inv-label" style="margin-top:.75rem">Dikirim via</div>
+          <div>${order.channel === 'whatsapp' ? '<img src="./icon/whatsapp-logo.png" alt="WhatsApp" class="inv-pay-icon"> WhatsApp' : '<img src="./icon/whatsapp-logo.png" alt="WhatsApp" class="inv-pay-icon"> Chat Langsung'}</div>
+        </div>
+      </div>
+      <table class="inv-table">
+        <thead><tr><th>Produk</th><th class="inv-center">Qty</th><th class="inv-right">Harga</th><th class="inv-right">Subtotal</th></tr></thead>
+        <tbody>${itemsRows}</tbody>
+      </table>
+      <div class="inv-totals">
+        <div class="inv-total-row"><span>Subtotal</span><span>${_fmtRp(order.subtotal)}</span></div>
+        ${shippingRow}
+        <div class="inv-total-row inv-grand-total"><span>Total</span><span>${_fmtRp(order.total)}</span></div>
+      </div>
+      <div class="inv-footer">\ud83d\ude4f Terima kasih telah berbelanja di Sadewa Elektronik!</div>
+    </div>`;
+}
+
+window.openInvoiceModal = function (order) {
+  window._currentInvoiceOrder = order;
+  const c = document.getElementById('invoiceContent');
+  if (c) c.innerHTML = _buildInvoiceHtml(order);
+  document.getElementById('invoiceModal')?.classList.add('active');
+};
+window.closeInvoiceModal = function () {
+  document.getElementById('invoiceModal')?.classList.remove('active');
+};
+window.closeInvoiceOnOverlay = function (event) {
+  if (event.target === event.currentTarget) window.closeInvoiceModal();
+};
+window.printInvoice = function () { window.print(); };
+
+// ── Riwayat Pesanan (Buyer) ──
+window.openRiwayatModal = async function () {
+  document.getElementById('riwayatModal')?.classList.add('active');
+  const listEl = document.getElementById('riwayatList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="riwayat-loading">\u23f3 Memuat riwayat pesanan...</div>';
+  try {
+    const sid = _getBuyerSession();
+    const qy = query(collection(db, 'sadewaOrders'), where('buyerUid', '==', sid), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(qy);
+    if (snap.empty) {
+      listEl.innerHTML = '<div class="riwayat-empty">\ud83d\udced Belum ada riwayat pesanan.</div>';
+      return;
+    }
+    window._riwayatOrders = {};
+    listEl.innerHTML = snap.docs.map(d => {
+      const o = { id: d.id, ...d.data() };
+      window._riwayatOrders[d.id] = o;
+      return `<div class="riwayat-item" onclick="viewInvoiceFromRiwayat('${d.id}')">
+        <div class="riwayat-item-top">
+          <span class="riwayat-inv-no">\ud83e\uddfe ${_esc(o.invoiceNumber)}</span>
+          <span class="riwayat-status">${_statusIcon(o.status)}</span>
+        </div>
+        <div class="riwayat-item-mid">${(o.items || []).length} produk &middot; ${_fmtInvDate(o.createdAt)}</div>
+        <div class="riwayat-item-bottom"><span class="riwayat-total">${_fmtRp(o.total)}</span><span class="riwayat-arrow">Lihat Invoice \u203a</span></div>
+      </div>`;
+    }).join('');
+  } catch (e) {
+    console.error('openRiwayatModal:', e);
+    listEl.innerHTML = '<div class="riwayat-empty">\u26a0\ufe0f Gagal memuat riwayat. Periksa koneksi &amp; coba lagi.<br><small style="opacity:.7">Jika ini pertama kali, buka Console (F12) &mdash; mungkin perlu buat index Firestore, klik link yang muncul di sana.</small></div>';
+  }
+};
+window.closeRiwayatModal = function () { document.getElementById('riwayatModal')?.classList.remove('active'); };
+window.closeRiwayatOnOverlay = function (event) { if (event.target === event.currentTarget) window.closeRiwayatModal(); };
+window.viewInvoiceFromRiwayat = function (id) {
+  const o = window._riwayatOrders?.[id];
+  if (o) window.openInvoiceModal(o);
+};
+
+// ── Pesanan & Invoice (Admin) ──
+window._adminOrders = [];
+window.loadAdminOrders = async function () {
+  const listEl = document.getElementById('adminOrderList');
+  if (!listEl) return;
+  listEl.innerHTML = '<div class="admin-empty-state"><p>\u23f3 Memuat pesanan...</p></div>';
+  try {
+    const qy = query(collection(db, 'sadewaOrders'), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(qy);
+    window._adminOrders = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    window.renderAdminOrders();
+  } catch (e) {
+    console.error('loadAdminOrders:', e);
+    listEl.innerHTML = '<div class="admin-empty-state"><p>\u26a0\ufe0f Gagal memuat pesanan.</p></div>';
+  }
+};
+window.renderAdminOrders = function () {
+  const listEl = document.getElementById('adminOrderList');
+  if (!listEl) return;
+  const kw = (document.getElementById('adminOrderSearch')?.value || '').toLowerCase();
+  const filterStatus = document.getElementById('adminOrderFilterStatus')?.value || 'all';
+  let orders = window._adminOrders || [];
+  if (kw) orders = orders.filter(o => (o.buyerName || '').toLowerCase().includes(kw) || (o.invoiceNumber || '').toLowerCase().includes(kw) || (o.buyerPhone || '').includes(kw));
+  if (filterStatus !== 'all') orders = orders.filter(o => o.status === filterStatus);
+  const countLabel = document.getElementById('adminOrderCountLabel');
+  if (countLabel) countLabel.textContent = orders.length;
+  if (!orders.length) { listEl.innerHTML = '<div class="admin-empty-state"><div class="admin-empty-icon">\ud83e\uddfe</div><p>Belum ada pesanan.</p></div>'; return; }
+  listEl.innerHTML = orders.map(o => `
+    <div class="admin-order-item">
+      <div class="admin-order-main">
+        <div class="admin-order-top">
+          <span class="admin-order-inv">\ud83e\uddfe ${_esc(o.invoiceNumber)}</span>
+          <span class="admin-order-date">${_fmtInvDate(o.createdAt)}</span>
+        </div>
+        <div class="admin-order-buyer">${_esc(o.buyerName)} &middot; ${_esc(o.buyerPhone)}</div>
+        <div class="admin-order-items">${(o.items || []).map(i => _esc(i.name) + ' x' + i.qty).join(', ')}</div>
+      </div>
+      <div class="admin-order-side">
+        <div class="admin-order-total">${_fmtRp(o.total)}</div>
+        <select class="admin-order-status-select" onchange="updateOrderStatus('${o.id}', this.value)">
+          ${ORDER_STATUSES.map(s => `<option value="${s}"${s === o.status ? ' selected' : ''}>${_statusIcon(s)}</option>`).join('')}
+        </select>
+        <button class="admin-btn-view" style="padding:.5rem .85rem;font-size:.78rem" onclick="viewInvoiceFromAdmin('${o.id}')">\ud83e\uddfe Invoice</button>
+      </div>
+    </div>`).join('');
+};
+window.filterAdminOrders = function () { window.renderAdminOrders(); };
+window.viewInvoiceFromAdmin = function (id) {
+  const o = (window._adminOrders || []).find(x => x.id === id);
+  if (o) window.openInvoiceModal(o);
+};
+window.updateOrderStatus = async function (id, status) {
+  try {
+    await updateDoc(doc(db, 'sadewaOrders', id), { status });
+    const o = (window._adminOrders || []).find(x => x.id === id);
+    if (o) o.status = status;
+    showAdminNotif('\u2705 Status pesanan diperbarui');
+  } catch (e) {
+    console.error('updateOrderStatus:', e);
+    showAdminNotif('\u274c Gagal memperbarui status', true);
+  }
+};
 
 // ============================================================
 // CHAT SYSTEM

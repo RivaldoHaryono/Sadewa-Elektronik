@@ -1,1117 +1,2612 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,viewport-fit=cover"
+    />
+    <meta
+      name="google-site-verification"
+      content="V4cO-Dq-92lnRS6zQYIJBZUbFgEuiMtAZZZFV-3hh_I"
+    />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="theme-color" content="#050816" />
+    <title>Sadewa Elektronik - The First Cidahu Center Electronics</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="./icon/favicon (3).ico" />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="./icon/favicon-16x16.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="./icon/favicon-32x32.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="48x48"
+      href="./icon/favicon-48x48 (2).png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="64x64"
+      href="./icon/favicon-64x64.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="128x128"
+      href="./icon/favicon-128x128.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="192x192"
+      href="./icon/favicon-192x192.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="256x256"
+      href="./icon/favicon-256x256.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="512x512"
+      href="./icon/favicon-512x512.png"
+    />
+    <link rel="apple-touch-icon" href="./icon/apple-touch-icon (1).png" />
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
-  <meta name="google-site-verification" content="V4cO-Dq-92lnRS6zQYIJBZUbFgEuiMtAZZZFV-3hh_I">
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="theme-color" content="#050816">
-  <title>Sadewa Elektronik - The First Cidahu Center Electronics</title>
-  <!-- Favicon -->
-  <link rel="icon" type="image/x-icon" href="./icon/favicon (3).ico">
-  <link rel="icon" type="image/png" sizes="16x16" href="./icon/favicon-16x16.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="./icon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="48x48" href="./icon/favicon-48x48 (2).png">
-  <link rel="icon" type="image/png" sizes="64x64" href="./icon/favicon-64x64.png">
-  <link rel="icon" type="image/png" sizes="128x128" href="./icon/favicon-128x128.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="./icon/favicon-192x192.png">
-  <link rel="icon" type="image/png" sizes="256x256" href="./icon/favicon-256x256.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="./icon/favicon-512x512.png">
-  <link rel="apple-touch-icon" href="./icon/apple-touch-icon (1).png">
-
-  <!-- Logo Schema (Google Search) -->
-  <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Organization",
-      "name": "Sadewa Elektronik",
-      "url": "https://sadewaelektronik.com/",
-      "logo": "https://sadewaelektronik.com/icon/favicon-512x512.png"
-    }
-  </script>
-
-  <meta name="description" content="Toko Elektronik terpercaya di Cidahu">
-  <meta name="keywords"
-    content="Toko Elektronik Cidahu, Elektronik Cidahu, Toko Elektronik Murah Cidahu, Toko Elektronik Terlengkap Cidahu, Toko Elektronik Terpercaya Cidahu,Sadewa Elektronik,Sadewa,Toko Sadewa,Sadewa,Toko Elektronik di cidahu,Toko Elektronik Terlengkap, Toko Elektronik Terlengkap di Sukabumi, Toko Listrik, Website Toko Listrik">
-  <meta name="robots" content="index, follow">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="Premium.css">
-  <style>
-    /* ==== CSS Cek Ongkir (ongkir.js) ==== */
-    .ongkir-box { position: relative; }
-    .autocomplete-wrap { position: relative; }
-    .autocomplete-list {
-      display: none;
-      position: absolute;
-      top: 100%; left: 0; right: 0;
-      z-index: 50;
-      max-height: 200px;
-      overflow-y: auto;
-      background: #fff;
-      border: 1px solid rgba(0,212,255,0.3);
-      border-radius: 8px;
-      margin-top: 4px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-    }
-    .autocomplete-list div {
-      padding: 0.6rem 0.75rem;
-      cursor: pointer;
-      color: var(--dark);
-      font-size: 0.9rem;
-    }
-    .autocomplete-list div:hover { background: rgba(0,212,255,0.08); }
-    #shipDestSearch, #shipCourier {
-      width: 100%;
-      padding: 0.75rem;
-      border: 1px solid rgba(0,212,255,0.3);
-      border-radius: 8px;
-      background: rgba(255,255,255,0.05);
-      color: var(--dark);
-      font-family: inherit;
-    }
-    .ongkir-option {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0.65rem 0.75rem;
-      border: 1px solid rgba(0,212,255,0.2);
-      border-radius: 8px;
-      margin-top: 0.5rem;
-      cursor: pointer;
-      font-size: 0.88rem;
-      color: var(--dark);
-      transition: border-color .15s, background .15s;
-    }
-    .ongkir-option:hover { border-color: var(--primary); }
-    .ongkir-option.selected { border-color: var(--primary); background: rgba(0,212,255,0.08); }
-    .ongkir-price { font-weight: 700; color: var(--primary); }
-    .ongkir-error { color: #e53935; font-size: 0.85rem; margin-top: 0.5rem; }
-    .ongkir-loading { color: var(--dark); opacity: 0.7; font-size: 0.85rem; margin-top: 0.5rem; }
-
-    /* ==== Mobile fit patch (360px–430px) — additive only, tidak mengubah tampilan desktop ==== */
-    @media (max-width: 430px) {
-      /* Judul modal keranjang & checkout: cegah mepet dengan tombol close di layar sempit */
-      .cart-title,
-      .payment-title {
-        font-size: clamp(1.15rem, 5.5vw, 1.8rem);
-        min-width: 0;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
+    <!-- Logo Schema (Google Search) -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Sadewa Elektronik",
+        "url": "https://sadewaelektronik.com/",
+        "logo": "https://sadewaelektronik.com/icon/favicon-512x512.png"
       }
-      .cart-header,
-      .payment-header {
-        gap: .75rem;
-      }
-    }
+    </script>
 
-    /* ==== Toast notifikasi keranjang (#toastNotif) — gaya selaras dengan .cp-toast yang sudah ada ==== */
-    .toast-notification {
-      position: fixed;
-      top: 80px;
-      left: 50%;
-      transform: translateX(-50%) translateY(-20px);
-      max-width: min(92vw, 420px);
-      background: linear-gradient(135deg, #10b981, #059669);
-      color: #fff;
-      padding: .65rem 1.25rem;
-      border-radius: 22px;
-      font-size: .85rem;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1.4;
-      white-space: normal;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.25);
-      z-index: 9999;
-      opacity: 0;
-      pointer-events: none;
-      transition: all .35s cubic-bezier(.34, 1.56, .64, 1);
-    }
-    .toast-notification.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-    .toast-notification.toast-notification--error {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-    }
-    @media (max-width: 430px) {
+    <meta name="description" content="Toko Elektronik terpercaya di Cidahu" />
+    <meta
+      name="keywords"
+      content="Toko Elektronik Cidahu, Elektronik Cidahu, Toko Elektronik Murah Cidahu, Toko Elektronik Terlengkap Cidahu, Toko Elektronik Terpercaya Cidahu,Sadewa Elektronik,Sadewa,Toko Sadewa,Sadewa,Toko Elektronik di cidahu,Toko Elektronik Terlengkap, Toko Elektronik Terlengkap di Sukabumi, Toko Listrik, Website Toko Listrik"
+    />
+    <meta name="robots" content="index, follow" />
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="Premium.css" />
+    <style>
+      /* ==== CSS Cek Ongkir (ongkir.js) ==== */
+      .ongkir-box {
+        position: relative;
+      }
+      .autocomplete-wrap {
+        position: relative;
+      }
+      .autocomplete-list {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        max-height: 200px;
+        overflow-y: auto;
+        background: #fff;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 8px;
+        margin-top: 4px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+      }
+      .autocomplete-list div {
+        padding: 0.6rem 0.75rem;
+        cursor: pointer;
+        color: var(--dark);
+        font-size: 0.9rem;
+      }
+      .autocomplete-list div:hover {
+        background: rgba(0, 212, 255, 0.08);
+      }
+      #shipDestSearch,
+      #shipCourier {
+        width: 100%;
+        padding: 0.75rem;
+        border: 1px solid rgba(0, 212, 255, 0.3);
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        color: var(--light);
+        font-family: inherit;
+      }
+      #shipDestSearch::placeholder {
+        color: var(--gray-light, #a9b4ca);
+        opacity: 0.7;
+      }
+      #shipCourier option {
+        background: var(--surface, #151f33);
+        color: var(--light);
+      }
+      .ongkir-option {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.65rem 0.75rem;
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: 8px;
+        margin-top: 0.5rem;
+        cursor: pointer;
+        font-size: 0.88rem;
+        color: var(--light);
+        transition:
+          border-color 0.15s,
+          background 0.15s;
+      }
+      .ongkir-option:hover {
+        border-color: var(--primary);
+      }
+      .ongkir-option.selected {
+        border-color: var(--primary);
+        background: rgba(0, 212, 255, 0.08);
+      }
+      .ongkir-price {
+        font-weight: 700;
+        color: var(--primary);
+      }
+      .ongkir-error {
+        color: #e53935;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+      }
+      .ongkir-loading {
+        color: var(--gray-light, #a9b4ca);
+        opacity: 0.9;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+      }
+
+      /* ==== Mobile fit patch (360px–430px) — additive only, tidak mengubah tampilan desktop ==== */
+      @media (max-width: 430px) {
+        /* Judul modal keranjang & checkout: cegah mepet dengan tombol close di layar sempit */
+        .cart-title,
+        .payment-title {
+          font-size: clamp(1.15rem, 5.5vw, 1.8rem);
+          min-width: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+        .cart-header,
+        .payment-header {
+          gap: 0.75rem;
+        }
+      }
+
+      /* ==== Toast notifikasi keranjang (#toastNotif) — gaya selaras dengan .cp-toast yang sudah ada ==== */
       .toast-notification {
-        top: auto;
-        bottom: calc(84px + env(safe-area-inset-bottom, 0px));
-        font-size: .8rem;
-        padding: .6rem 1rem;
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        max-width: min(92vw, 420px);
+        background: linear-gradient(135deg, #10b981, #059669);
+        color: #fff;
+        padding: 0.65rem 1.25rem;
+        border-radius: 22px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        text-align: center;
+        line-height: 1.4;
+        white-space: normal;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
       }
-    }
+      .toast-notification.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast-notification.toast-notification--error {
+        background: linear-gradient(135deg, #ef4444, #dc2626);
+      }
+      @media (max-width: 430px) {
+        .toast-notification {
+          top: auto;
+          bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+          font-size: 0.8rem;
+          padding: 0.6rem 1rem;
+        }
+      }
 
-    /* ==== Search bar: tombol clear (x) dirapikan — center pas & hanya tampil saat ada teks ==== */
-    .search-clear {
-      display: none;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      line-height: 1;
-      flex-shrink: 0;
-      padding: 0;
-    }
-    .search-clear.visible {
-      display: flex;
-    }
+      /* ==== Search bar: tombol clear (x) dirapikan — center pas & hanya tampil saat ada teks ==== */
+      .search-clear {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        line-height: 1;
+        flex-shrink: 0;
+        padding: 0;
+      }
+      .search-clear.visible {
+        display: flex;
+      }
 
-    /* ==== Logo brand (ganti ikon petir ⚡ dengan logo resmi) ==== */
-    .nav-logo {
-      display: inline-flex;
-      align-items: center;
-      gap: .5rem;
-    }
-    .nav-logo-img {
-      height: 120px;
-      width: 120px;
-      object-fit: contain;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    .footer-logo {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: .6rem;
-    }
-    .footer-logo-img {
-      height: 96px;
-      width: 96px;
-      object-fit: contain;
-      border-radius: 50%;
-      flex-shrink: 0;
-    }
-    /* ==== Logo lebih kecil di HP (Android/iPhone) dibanding tampilan browser desktop ==== */
-    @media (max-width: 430px) {
+      /* ==== Tombol Login Google: dibuat bulat penuh (pill), menyesuaikan header ==== */
+      #btnLoginGoogle {
+        border-radius: 999px !important;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        overflow: hidden;
+      }
+
+      /* ==== Logo brand (ganti ikon petir ⚡ dengan logo resmi) ==== */
+      .nav-logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
       .nav-logo-img {
-        height: 64px;
-        width: 64px;
+        height: 120px;
+        width: 120px;
+        object-fit: contain;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .footer-logo {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.6rem;
       }
       .footer-logo-img {
-        height: 56px;
-        width: 56px;
+        height: 96px;
+        width: 96px;
+        object-fit: contain;
+        border-radius: 50%;
+        flex-shrink: 0;
       }
-    }
-  </style>
-</head>
+      /* ==== Logo lebih kecil di HP (Android/iPhone) dibanding tampilan browser desktop ==== */
+      @media (max-width: 430px) {
+        .nav-logo-img {
+          height: 64px;
+          width: 64px;
+        }
+        .footer-logo-img {
+          height: 56px;
+          width: 56px;
+        }
+      }
+      /* ==== Invoice Modal (cetak/simpan PDF) ==== */
+      .invoice-container {
+        max-width: 700px;
+        background: linear-gradient(
+          160deg,
+          rgba(21, 31, 51, 0.98),
+          rgba(11, 17, 32, 0.98)
+        );
+        border: 1px solid var(--border, rgba(201, 168, 76, 0.25));
+        box-shadow:
+          var(--shadow-elevate, 0 20px 60px rgba(0, 0, 0, 0.55)),
+          0 0 40px rgba(201, 168, 76, 0.08);
+      }
+      #invoiceContent {
+        background: #fdfcfa;
+        color: #1a1a1a;
+        border-radius: 14px;
+        padding: 2rem 1.85rem;
+        margin-bottom: 1.25rem;
+        box-shadow: 0 12px 34px rgba(0, 0, 0, 0.35);
+        position: relative;
+        overflow: hidden;
+      }
+      #invoiceContent::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 4px;
+        background: linear-gradient(
+          90deg,
+          var(--primary, #c9a84c),
+          var(--primary-light, #e8c97a) 50%,
+          var(--primary, #c9a84c)
+        );
+      }
+      .inv-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 1rem;
+        padding-bottom: 1.1rem;
+        margin-bottom: 1.4rem;
+        border-bottom: 1px solid #ece6d8;
+        position: relative;
+        flex-wrap: wrap;
+      }
+      .inv-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+      }
+      .inv-logo {
+        width: 50px;
+        height: 50px;
+        object-fit: contain;
+        border-radius: 50%;
+        border: 2px solid var(--primary-dim, rgba(201, 168, 76, 0.3));
+        padding: 2px;
+        background: #fff;
+      }
+      .inv-brand-name {
+        font-family: var(--font-display, "Cormorant Garamond", Georgia, serif);
+        font-weight: 700;
+        font-size: 1.35rem;
+        color: #14151a;
+        letter-spacing: 0.3px;
+      }
+      .inv-brand-sub {
+        font-size: 0.76rem;
+        color: #888;
+        margin-top: 0.1rem;
+      }
+      .inv-meta {
+        text-align: right;
+        font-size: 0.85rem;
+        color: #444;
+        line-height: 1.7;
+      }
+      .inv-title {
+        font-weight: 900;
+        font-size: 1.5rem;
+        letter-spacing: 3px;
+        background: linear-gradient(
+          135deg,
+          var(--primary, #c9a84c),
+          var(--primary-light, #e8c97a)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.3rem;
+      }
+      .inv-status-line {
+        margin-top: 0.3rem;
+        display: inline-block;
+        padding: 0.2rem 0.65rem;
+        border-radius: 20px;
+        background: rgba(201, 168, 76, 0.12);
+        border: 1px solid rgba(201, 168, 76, 0.35);
+        font-weight: 700;
+        font-size: 0.78rem;
+        color: #8a6d1f;
+      }
+      .inv-parties {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 1.6rem;
+        font-size: 0.85rem;
+        color: #333;
+        line-height: 1.65;
+        background: #f7f4ee;
+        border: 1px solid #ece6d8;
+        border-radius: 10px;
+        padding: 1.1rem 1.2rem;
+      }
+      .inv-label {
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #a58f4a;
+        margin-bottom: 0.35rem;
+      }
+      .inv-buyer-name {
+        font-weight: 700;
+        color: #111;
+      }
+      .inv-pay-icon {
+        height: 22px;
+        width: auto;
+        vertical-align: middle;
+        margin-right: 6px;
+        display: inline-block;
+        object-fit: contain;
+      }
+      .inv-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        margin-bottom: 1.25rem;
+      }
+      .inv-table th {
+        text-align: left;
+        padding: 0.7rem 0.5rem;
+        border-bottom: 2px solid var(--primary, #c9a84c);
+        color: #8a7a4d;
+        font-size: 0.72rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .inv-table td {
+        padding: 0.7rem 0.5rem;
+        border-bottom: 1px solid #eee;
+        color: #222;
+      }
+      .inv-table tbody tr:nth-child(even) td {
+        background: #faf8f3;
+      }
+      .inv-variant {
+        color: #888;
+        font-size: 0.8rem;
+      }
+      .inv-center {
+        text-align: center;
+      }
+      .inv-right {
+        text-align: right;
+      }
+      .inv-totals {
+        max-width: 320px;
+        margin-left: auto;
+        font-size: 0.9rem;
+      }
+      .inv-total-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.4rem 0;
+        color: #555;
+      }
+      .inv-grand-total {
+        border-top: 2px solid var(--primary, #c9a84c);
+        margin-top: 0.5rem;
+        padding-top: 0.7rem;
+        font-weight: 900;
+        font-size: 1.2rem;
+        color: #14151a;
+      }
+      .inv-footer {
+        text-align: center;
+        margin-top: 1.6rem;
+        padding-top: 1.1rem;
+        border-top: 1px dashed #ddd;
+        font-size: 0.85rem;
+        color: #888;
+      }
+      .invoice-actions {
+        display: flex;
+        gap: 0.75rem;
+      }
+      .invoice-actions .btn-add-cart-wide,
+      .invoice-actions .cart-clear-btn {
+        flex: 1;
+        width: auto;
+      }
+      @media (max-width: 560px) {
+        .inv-parties {
+          grid-template-columns: 1fr;
+          gap: 1rem;
+        }
+        .inv-header {
+          flex-direction: column;
+        }
+        .inv-meta {
+          text-align: left;
+        }
+        #invoiceContent {
+          padding: 1.5rem 1.1rem;
+        }
+      }
 
-<body>
-  <div class="bg-animation"></div>
-  <div class="welcome-overlay" id="welcomeOverlay">
-    <div class="welcome-modal">
-      <div class="welcome-hero">
-        <div class="welcome-badge">⚡ Selamat Datang</div>
-        <h1 class="welcome-hero-title">SADEWA ELEKTRONIK</h1>
-        <p class="welcome-hero-sub">Panduan belanja cepat · Baca sebentar, belanja lebih mudah!</p>
-      </div>
-      <div class="welcome-tabs" id="welcomeTabs">
-        <button class="welcome-tab active" onclick="switchWelcomeTab(0)"><span class="welcome-tab-icon">🛒</span>Cara
-          Beli</button>
-        <button class="welcome-tab" onclick="switchWelcomeTab(1)"><span class="welcome-tab-icon">💳</span>Cara
-          Bayar</button>
-        <button class="welcome-tab" onclick="switchWelcomeTab(2)"><span class="welcome-tab-icon">🔍</span>Cari
-          Produk</button>
-        <button class="welcome-tab" onclick="switchWelcomeTab(3)"><span class="welcome-tab-icon">💡</span>Tips &amp;
-          Info</button>
-      </div>
-      <div class="welcome-body">
-        <div class="welcome-panel active" id="wPanel0">
-          <div class="w-panel-heading">🛒 Cara Berbelanja</div>
-          <div class="w-steps">
-            <div class="w-step">
-              <div class="w-step-num">1</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Pilih Produk</div>
-                <div class="w-step-desc">Scroll ke bawah untuk melihat semua produk. Gunakan filter kategori atau search
-                  bar untuk mencari barang tertentu.</div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">2</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Pilih Varian (jika ada)</div>
-                <div class="w-step-desc">Beberapa produk memiliki varian seperti watt lampu, ukuran kabel, atau jumlah
-                  gang saklar. Pilih varian yang sesuai sebelum melanjutkan.</div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">3</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Beli Langsung atau Tambah Keranjang</div>
-                <div class="w-step-desc"><strong style="color:var(--primary)">Beli Sekarang</strong> — langsung ke
-                  pembayaran. <strong style="color:var(--primary)">Ikon 🛒</strong> di samping harga — tambah ke
-                  keranjang untuk beli beberapa produk.</div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">4</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Keranjang Belanja</div>
-                <div class="w-step-desc">Klik ikon 🛒 di pojok kanan atas. Atur jumlah dengan tombol + / −, lalu klik
-                  <strong style="color:var(--primary)">Lanjut ke Pembayaran</strong>.
-                </div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">5</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Selesaikan Pembayaran</div>
-                <div class="w-step-desc">Pilih metode bayar, isi data, klik <strong style="color:#10b981">Konfirmasi
-                    Pembayaran</strong>. Detail otomatis terkirim ke WhatsApp kami!</div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="welcome-panel" id="wPanel1">
-          <div class="w-panel-heading">💳 Metode Pembayaran</div>
-          <div class="w-payment-cards">
-            <div class="w-pay-card">
-              <div class="w-pay-title">💳 Kartu Kredit/Debit</div>
-              <ul class="w-pay-list">
-                <li>Visa, Mastercard, Debit</li>
-                <li>Masukkan 16 digit nomor kartu</li>
-                <li>Tanggal kadaluarsa &amp; CVV</li>
-              </ul>
-            </div>
-            <div class="w-pay-card">
-              <div class="w-pay-title">🏦 Transfer Bank</div>
-              <ul class="w-pay-list">
-                <li>BCA, Mandiri, BNI, BRI</li>
-                <li>Transfer sesuai total bayar</li>
-                <li>Upload bukti transfer</li>
-              </ul>
-            </div>
-            <div class="w-pay-card">
-              <div class="w-pay-title">📱 E-Wallet &amp; QRIS</div>
-              <ul class="w-pay-list">
-                <li>GoPay, OVO, DANA, ShopeePay</li>
-                <li>QRIS semua e-wallet</li>
-                <li>Konfirmasi via WhatsApp</li>
-              </ul>
-            </div>
-          </div>
-          <div class="w-warn-box">
-            <div class="w-warn-box-title">💡 Penting!</div>
-            <p>Setelah konfirmasi, detail pesanan otomatis terkirim ke WhatsApp kami. Simpan bukti pembayaran!</p>
-          </div>
-        </div>
-        <div class="welcome-panel" id="wPanel2">
-          <div class="w-panel-heading">🔍 Menemukan Produk</div>
-          <div class="w-steps">
-            <div class="w-step">
-              <div class="w-step-num">🔎</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Gunakan Search Bar</div>
-                <div class="w-step-desc">Ketik nama produk di kotak pencarian (contoh: "Lampu 10 Watt" atau "Kipas
-                  Angin").</div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">🏷️</div>
-              <div class="w-step-body">
-                <div class="w-step-title">Filter Kategori</div>
-                <div class="w-step-desc">Klik tombol kategori untuk menyaring produk berdasarkan jenis.</div>
-              </div>
-            </div>
-            <div class="w-step">
-              <div class="w-step-num">🤖</div>
-              <div class="w-step-body">
-                <div class="w-step-title">AI Assistant</div>
-                <div class="w-step-desc">Tanya AI di bagian "Smart AI Shopping Assistant" untuk rekomendasi terbaik!
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="w-divider"></div>
-          <div class="w-info-box">
-            <div class="w-info-box-title">📍 Lokasi &amp; Jam Buka</div>
-            <p>Bojong-pari, West Java, Indonesia<br>Senin – Minggu: <strong style="color:var(--light)">08:00 –
-                20:00</strong><br>WhatsApp: <strong style="color:var(--primary)">+62 858-7218-9172</strong></p>
-          </div>
-        </div>
-        <div class="welcome-panel" id="wPanel3">
-          <div class="w-panel-heading">💡 Tips Belanja Efektif</div>
-          <div class="w-tips-grid">
-            <div class="w-tip">
-              <div class="w-tip-icon">✅</div>
-              <div class="w-tip-title">Pilih Varian Dulu</div>
-              <div class="w-tip-desc">Pastikan memilih varian yang benar sebelum klik Beli atau tambah ke keranjang.
-              </div>
-            </div>
-            <div class="w-tip">
-              <div class="w-tip-icon">🛍️</div>
-              <div class="w-tip-title">Beli Banyak? Pakai Keranjang</div>
-              <div class="w-tip-desc">Tambahkan beberapa produk lalu checkout sekaligus.</div>
-            </div>
-            <div class="w-tip">
-              <div class="w-tip-icon">📸</div>
-              <div class="w-tip-title">Simpan Bukti Bayar</div>
-              <div class="w-tip-desc">Screenshot bukti pembayaran sebelum menutup halaman.</div>
-            </div>
-            <div class="w-tip">
-              <div class="w-tip-icon">🤖</div>
-              <div class="w-tip-title">Tanya AI Dulu</div>
-              <div class="w-tip-desc">Ragu pilih produk? Tanya AI Assistant untuk rekomendasi terbaik.</div>
-            </div>
-            <div class="w-tip">
-              <div class="w-tip-icon">📞</div>
-              <div class="w-tip-title">Ada Masalah? Chat Kami</div>
-              <div class="w-tip-desc">Hubungi kami via WhatsApp kapan saja.</div>
-            </div>
-            <div class="w-tip">
-              <div class="w-tip-icon">🔖</div>
-              <div class="w-tip-title">Bookmark Halaman Ini</div>
-              <div class="w-tip-desc">Bookmark website ini untuk kebutuhan elektronik berikutnya!</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="welcome-footer">
-        <label class="welcome-skip-label" for="skipNextTime"><input type="checkbox" id="skipNextTime"> Jangan tampilkan
-          lagi</label>
-        <div class="welcome-nav">
-          <div class="welcome-dots" id="welcomeDots">
-            <div class="welcome-dot active" onclick="switchWelcomeTab(0)"></div>
-            <div class="welcome-dot" onclick="switchWelcomeTab(1)"></div>
-            <div class="welcome-dot" onclick="switchWelcomeTab(2)"></div>
-            <div class="welcome-dot" onclick="switchWelcomeTab(3)"></div>
-          </div>
-          <button class="welcome-prev-btn" id="welcomePrevBtn" onclick="prevWelcomeTab()" style="display:none;">←
-            Kembali</button>
-          <button class="welcome-next-btn" id="welcomeNextBtn" onclick="nextWelcomeTab()">Selanjutnya →</button>
-          <button class="welcome-start-btn" id="welcomeStartBtn" onclick="closeWelcome()">✅ Mulai Belanja!</button>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <h2 class="modal-title">🔐 Admin Login</h2>
-      <div class="form-group"><label>Username</label><input type="text" id="loginUsername" placeholder="admin"
-          autocomplete="off" spellcheck="false"></div>
-      <div class="form-group"><label>Password</label><input type="password" id="loginPassword" placeholder="••••••••"
-          autocomplete="off" spellcheck="false">
-      </div>
-      <button class="btn-login" onclick="handleLogin()">Masuk</button>
-      <button class="btn-cancel" onclick="closeLoginModal()">Batal</button>
-    </div>
-  </div>
-  <div id="mainWebsite" class="page-container active">
-    <section class="hero-section" id="home">
-      <div class="hero-bg"></div>
-      <div class="hero-grid"></div>
-      <div class="hero-orb hero-orb-1"></div>
-      <div class="hero-orb hero-orb-2"></div>
-      <div class="hero-orb hero-orb-3"></div>
-      <div class="hero-inner">
-        <div class="hero-left">
-          <div class="hero-eyebrow">
-            <div class="hero-eyebrow-dot"></div>Pusat Elektronik #1 Cidahu
-          </div>
-          <h1 class="hero-headline">Semua Kebutuhan<br><span class="hl-accent">Listrik &amp; Elektronik</span><br>Ada di
-            Sini</h1>
-          <p class="hero-sub">Dari <strong>lampu LED</strong>, <strong>kipas angin</strong>, kabel, saklar, hingga
-            antena — kami menyediakan produk berkualitas dengan <strong>harga terjangkau</strong> dan pelayanan cepat.
+      /* ==== Cetak Invoice: sembunyikan semua elemen lain saat print ==== */
+      @media print {
+        body * {
+          visibility: hidden;
+        }
+        #invoiceContent,
+        #invoiceContent * {
+          visibility: visible;
+        }
+        #invoiceContent {
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+
+      /* ==== Riwayat Pesanan (Buyer) ==== */
+      .riwayat-container {
+        max-width: 560px;
+      }
+      .riwayat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        max-height: 60vh;
+        overflow-y: auto;
+      }
+      .riwayat-item {
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(0, 212, 255, 0.15);
+        border-radius: 12px;
+        padding: 1rem 1.1rem;
+        cursor: pointer;
+        transition: all 0.2s;
+      }
+      .riwayat-item:hover {
+        border-color: var(--primary);
+        background: rgba(255, 255, 255, 0.07);
+      }
+      .riwayat-item-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.35rem;
+      }
+      .riwayat-inv-no {
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 0.9rem;
+      }
+      .riwayat-status {
+        font-size: 0.78rem;
+        color: var(--gray-light, #a9b4ca);
+      }
+      .riwayat-item-mid {
+        font-size: 0.8rem;
+        color: var(--gray, #7d8ba8);
+        margin-bottom: 0.5rem;
+      }
+      .riwayat-item-bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      .riwayat-total {
+        font-weight: 800;
+        color: var(--light);
+      }
+      .riwayat-arrow {
+        font-size: 0.8rem;
+        color: var(--primary);
+        font-weight: 700;
+      }
+      .riwayat-empty,
+      .riwayat-loading {
+        text-align: center;
+        padding: 3rem 1rem;
+        color: var(--gray, #7d8ba8);
+        font-size: 0.9rem;
+        line-height: 1.6;
+      }
+
+      /* ==== Admin: Pesanan & Invoice ==== */
+      .admin-orders-card {
+        margin-top: 1.5rem;
+      }
+      .admin-order-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      .admin-order-item {
+        background: rgba(10, 14, 39, 0.5);
+        border: 1px solid var(--border-soft);
+        border-radius: 12px;
+        padding: 1rem 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+        transition: all 0.25s;
+      }
+      .admin-order-item:hover {
+        border-color: var(--border);
+        background: rgba(10, 14, 39, 0.8);
+      }
+      .admin-order-main {
+        flex: 1;
+        min-width: 220px;
+      }
+      .admin-order-top {
+        display: flex;
+        justify-content: space-between;
+        gap: 0.75rem;
+        margin-bottom: 0.3rem;
+      }
+      .admin-order-inv {
+        font-weight: 800;
+        color: var(--primary);
+        font-size: 0.88rem;
+      }
+      .admin-order-date {
+        font-size: 0.75rem;
+        color: var(--gray);
+      }
+      .admin-order-buyer {
+        font-size: 0.85rem;
+        color: var(--light);
+        font-weight: 600;
+        margin-bottom: 0.2rem;
+      }
+      .admin-order-items {
+        font-size: 0.78rem;
+        color: var(--gray);
+      }
+      .admin-order-side {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+        flex-wrap: wrap;
+      }
+      .admin-order-total {
+        font-weight: 800;
+        color: var(--light);
+        font-size: 0.95rem;
+        min-width: 90px;
+        text-align: right;
+      }
+      .admin-order-status-select {
+        padding: 0.45rem 0.6rem;
+        background: rgba(10, 14, 39, 0.7);
+        border: 1px solid rgba(0, 212, 255, 0.2);
+        border-radius: 8px;
+        color: var(--light);
+        font-size: 0.78rem;
+        outline: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="bg-animation"></div>
+    <div class="welcome-overlay" id="welcomeOverlay">
+      <div class="welcome-modal">
+        <div class="welcome-hero">
+          <div class="welcome-badge">⚡ Selamat Datang</div>
+          <h1 class="welcome-hero-title">SADEWA ELEKTRONIK</h1>
+          <p class="welcome-hero-sub">
+            Panduan belanja cepat · Baca sebentar, belanja lebih mudah!
           </p>
-          <div class="hero-usps">
-            <div class="hero-usp"><span>⚡</span> Harga Kompetitif</div>
-            <div class="hero-usp"><span>🚀</span> Proses Cepat</div>
-            <div class="hero-usp"><span>🤖</span> AI Assistant</div>
-            <div class="hero-usp"><span>📍</span> Cidahu, Jawa Barat</div>
-            <div class="hero-usp"><span>💳</span> Banyak Metode Bayar</div>
-            <div class="hero-usp"><span>📞</span> Respon via WhatsApp</div>
-          </div>
-          <div class="hero-ctas">
-            <a href="#products" class="hero-cta-primary">⚡ Lihat Produk Unggulan</a>
-            <a href="https://wa.me/+6285872189172" class="hero-cta-secondary" target="_blank">💬 Tanya via WhatsApp</a>
-          </div>
-          <div class="hero-stats">
-            <div class="hero-stat">
-              <div class="hero-stat-num">100+</div>
-              <div class="hero-stat-label">Produk Tersedia</div>
-            </div>
-            <div class="hero-stat">
-              <div class="hero-stat-num">4.9★</div>
-              <div class="hero-stat-label">Rating Pelanggan</div>
-            </div>
-            <div class="hero-stat">
-              <div class="hero-stat-num">7 Hari</div>
-              <div class="hero-stat-label">Buka Setiap Hari</div>
-            </div>
-            <div class="hero-stat">
-              <div class="hero-stat-num">08–20</div>
-              <div class="hero-stat-label">Jam Operasional</div>
-            </div>
-          </div>
         </div>
-        <div class="hero-right">
-          <div class="hero-showcase">
-            <div class="hero-badge-float hero-badge-float-1">
-              <div class="hero-badge-icon">🔥</div>
-              <div class="hero-badge-info">
-                <div class="hero-badge-val">Promo Aktif</div>
-                <div class="hero-badge-sub">Stok terbatas!</div>
-              </div>
-            </div>
-            <div class="hero-main-card">
-              <div class="hero-card-label">— Kategori Produk</div>
-              <div class="hero-product-icons hero-product-icons--3col">
-                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Kipas Angin','Lampu'])">
-                  <span class="pib-icon">🏠</span>
-                  <span class="pib-label">Peralatan Rumah Tangga<br><small>Kipas, lampu &amp; lainnya</small></span>
-                </a>
-                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Kabel','Saklar','Stopkontak'])">
-                  <span class="pib-icon">⚡</span>
-                  <span class="pib-label">Peralatan Listrik<br><small>Kabel, saklar, stopkontak</small></span>
-                </a>
-                <a href="#products" class="hero-product-icon-box" onclick="filterCategoryGroup(['Lainnya'])">
-                  <span class="pib-icon">🔧</span>
-                  <span class="pib-label">Peralatan Pertukangan<br><small>Alat &amp; perkakas kerja</small></span>
-                </a>
-              </div>
-              <div class="hero-promo-strip">
-                <div class="hero-promo-text">
-                  <div class="hero-promo-title">🏷️ Info Toko</div>
-                  <div class="hero-promo-value">Buka 08:00 – 20:00</div>
-                </div>
-                <button class="hero-promo-cta"
-                  onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">📍 Lokasi
-                  Kami</button>
-              </div>
-            </div>
-            <div class="hero-badge-float hero-badge-float-2">
-              <div class="hero-badge-icon">🤖</div>
-              <div class="hero-badge-info">
-                <div class="hero-badge-val">AI Assistant</div>
-                <div class="hero-badge-sub">Siap bantu 24/7</div>
-              </div>
-            </div>
-          </div>
-          <div class="hero-trust">
-            <div class="hero-trust-item"><span class="ti-check">✓</span> Produk Bergaransi</div>
-            <div class="hero-trust-item"><span class="ti-check">✓</span> Bayar Aman</div>
-            <div class="hero-trust-item"><span class="ti-check">✓</span> WhatsApp Responsif</div>
-          </div>
-        </div>
-      </div>
-      <div class="hero-scroll">
-        <div class="hero-scroll-line"></div>Scroll
-      </div>
-    </section>
-    <nav>
-      <div class="nav-container">
-        <a href="#home" class="nav-logo"><img src="./logo-sadewa.png" alt="Sadewa Elektronik" class="nav-logo-img"> SADEWA</a>
-        <ul>
-          <li><a href="#products">Produk</a></li>
-          <li><a href="#contact">Kontak</a></li>
-          <li><a href="#chat">AI Assistant</a></li>
-          <li><a href="#about">Tentang Kami</a></li>
-        </ul>
-        <div class="nav-right">
-          <div class="search-wrap" aria-label="Cari produk"><span class="search-icon">🔎</span><input id="productSearch"
-              type="text" placeholder="Cari produk..." autocomplete="off"><button class="search-clear"
-              id="clearSearchBtn" type="button" title="Bersihkan">×</button></div>
-          <span class="search-meta" id="searchMeta">Menampilkan 0 dari 0</span>
-
-          <!-- Tambahkan SEBELUM div cart-icon-wrapper -->
-          <!-- 🔁 Diarahkan ke Tawk.to (fallback ke chat lama kalau Tawk.to belum load) -->
-          <button class="nav-chat-btn" onclick="if(window.Tawk_API && Tawk_API.toggle){Tawk_API.toggle();}else{openChatPage();}" title="Chat dengan Penjual">
-            💬 Chat
-            <span class="nav-chat-notif-dot" id="navChatDot"></span>
+        <div class="welcome-tabs" id="welcomeTabs">
+          <button class="welcome-tab active" onclick="switchWelcomeTab(0)">
+            <span class="welcome-tab-icon">🛒</span>Cara Beli
           </button>
-
-           <div class="cart-icon-wrapper"><button class="cart-btn" onclick="toggleCart()">🛒<span id="cartBadge"
-                class="cart-badge">0</span></button></div>
-           <!-- Tombol Login Google -->
-          <button id="btnLoginGoogle" class="admin-btn" onclick="loginWithGoogle()" title="Login dengan Google" style="padding:.75rem;">
-            👤 Login
+          <button class="welcome-tab" onclick="switchWelcomeTab(1)">
+            <span class="welcome-tab-icon">💳</span>Cara Bayar
           </button>
-          <button class="admin-btn" onclick="showLoginModal()" title="Admin Login" style="padding:.75rem;">⚙️</button>
-        </div>
-      </div>
-    </nav>
-    <div class="container">
-      <section id="products">
-        <h2 class="section-title">Produk Unggulan</h2>
-        <div class="category-bar" id="categoryBar">
-          <button class="cat-btn active" onclick="filterCategory('all',this)">🌐 Semua</button>
-          <button class="cat-btn" onclick="filterCategory('Lampu',this)">💡 Lampu</button>
-          <button class="cat-btn" onclick="filterCategory('Kipas Angin',this)">💨 Kipas Angin</button>
-          <button class="cat-btn" onclick="filterCategory('Kabel',this)">🔌 Kabel</button>
-          <button class="cat-btn" onclick="filterCategory('Saklar',this)">🎛️ Saklar</button>
-          <button class="cat-btn" onclick="filterCategory('Antena',this)">📡 Antena</button>
-          <button class="cat-btn" onclick="filterCategory('Stopkontak',this)">🔋 Stopkontak</button>
-          <button class="cat-btn" onclick="filterCategory('Lainnya',this)">📦 Lainnya</button>
-        </div>
-        <div class="product-grid" id="productGrid"></div>
-        <div class="pagination" id="paginationContainer"></div>
-      </section>
-      <section id="contact" class="contact-section">
-        <h2 class="section-title">Hubungi Kami</h2>
-        <div class="contact-grid">
-          <div class="contact-card">
-            <div class="contact-icon">📱</div>
-            <h3 class="contact-title">WhatsApp</h3>
-            <p class="contact-info">Chat langsung dengan kami</p><a href="https://wa.me/+6285872189172"
-              class="contact-link" target="_blank">Chat Sekarang</a>
-          </div>
-          <div class="contact-card">
-            <div class="contact-icon">📧</div>
-            <h3 class="contact-title">Email</h3>
-            <p class="contact-info"><a href="/cdn-cgi/l/email-protection" class="__cf_email__"
-                data-cfemail="740715101103151118111f00061b1a1d1f45341319151d185a171b19">[email&#160;protected]</a></p><a
-              href="/cdn-cgi/l/email-protection#e7948683829086828b828c939588898e8cd6a7808a868e8bc984888a"
-              class="contact-link">Kirim Email</a>
-          </div>
-          <div class="contact-card">
-            <div class="contact-icon">📍</div>
-            <h3 class="contact-title">Lokasi</h3>
-            <p class="contact-info">Bojong-pari, West Java, Indonesia</p><a
-              href="https://maps.app.goo.gl/GF1r9Dp8J8ZhPWfj7" class="contact-link" target="_blank">Lihat Peta</a>
-          </div>
-          <div class="contact-card">
-            <div class="contact-icon">⏰</div>
-            <h3 class="contact-title">Jam Operasional</h3>
-            <p class="contact-info">Senin – Minggu: 08:00 – 20:00</p>
-          </div>
-        </div>
-      </section>
-
-      <section class="kategori-section" id="social">
-  <div class="eyebrow">
-    <span class="dash"></span>
-    <span class="label">Ikuti Media Sosial Kami</span>
-  </div>
- 
-  <div class="kategori-list">
- 
-    <a href=" https://www.instagram.com/sadewaelektronik/" target="_blank" rel="noopener" class="kategori-card">
-      <div class="kategori-icon">
-        <img src="https://cdn.simpleicons.org/shopee/EE4D2D" alt="Shopee" style="width:28px;height:28px;">
-      </div>
-      <div class="kategori-text">
-        <div class="title">Shopee</div>
-        <div class="desc">Kunjungi toko Shopee resmi kami untuk promo &amp; cashback eksklusif</div>
-      </div>
-      <div class="kategori-arrow">→</div>
-    </a>
- 
-    <a href="https://instagram.com/sadewaelektronik" target="_blank" rel="noopener" class="kategori-card">
-      <div class="kategori-icon">
-        <img src="https://cdn.simpleicons.org/instagram/E1306C" alt="Instagram" style="width:28px;height:28px;">
-      </div>
-      <div class="kategori-text">
-        <div class="title">Instagram</div>
-        <div class="desc">Lihat produk terbaru, promo, dan aktivitas toko kami</div>
-      </div>
-      <div class="kategori-arrow">→</div>
-    </a>
- 
-  </div>
-</section>
-
-      <section id="chat" class="chat-section">
-        <h2 class="section-title">🧠 Smart AI Shopping Assistant</h2>
-        <p style="text-align:center;color:var(--gray);margin-top:-2rem;margin-bottom:2rem;">Asisten virtual cerdas untuk
-          membantu Anda memilih produk terbaik</p>
-        <div id="chatlog"></div>
-        <div class="chat-input-container">
-          <input type="text" id="userInput" placeholder="Tanyakan tentang produk...">
-          <button id="sendBtn" onclick="handleSend()">Kirim</button>
-        </div>
-      </section>
-    </div>
-    <footer id="about">
-      <h3 class="logo footer-logo" style="margin-bottom:.75rem;"><img src="./logo-sadewa.png" alt="Sadewa Elektronik" class="footer-logo-img"> Sadewa Elektronik</h3>
-      <p style="max-width:800px;margin:1.25rem auto;color:var(--gray);font-size:1rem;line-height:1.8;">Sadewa Elektronik
-        adalah pusat elektronik modern di wilayah Cidahu dan sekitarnya. Kami menyediakan produk listrik dan elektronik
-        berkualitas dengan harga kompetitif, pelayanan cepat, serta dukungan teknologi AI.</p>
-      <div class="footer-links"><a href="#products">Produk</a><a href="#contact">Kontak</a><a href="#chat">AI
-          Assistant</a><a href="#">Kebijakan Privasi</a><a href="#">Syarat &amp; Ketentuan</a><a href="#">FAQ</a></div>
-      <p class="copyright">© 2025 Sadewa Elektronik · Trusted Local Electronics Partner</p>
-    </footer>
-  </div>
-  <div id="adminPage" class="page-container">
-    <div class="admin-topbar">
-      <div class="admin-topbar-title">⚙️ Sadewa Admin</div>
-      <div class="admin-topbar-actions">
-        <button class="admin-btn-view" onclick="goToWebsite()">🏪 Lihat Website</button>
-        <button class="admin-btn-logout" onclick="adminLogout()">🚪 Logout</button>
-      </div>
-    </div>
-    <div class="admin-body">
-      <div class="admin-stats-row">
-        <div class="admin-stat-card">
-          <div class="admin-stat-icon">📦</div>
-          <div class="admin-stat-info">
-            <div class="admin-stat-val" id="statTotalProd">0</div>
-            <div class="admin-stat-label">Total Produk</div>
-          </div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-icon">💡</div>
-          <div class="admin-stat-info">
-            <div class="admin-stat-val" id="statLampu">0</div>
-            <div class="admin-stat-label">Lampu</div>
-          </div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-icon">💨</div>
-          <div class="admin-stat-info">
-            <div class="admin-stat-val" id="statKipas">0</div>
-            <div class="admin-stat-label">Kipas Angin</div>
-          </div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-icon">🔌</div>
-          <div class="admin-stat-info">
-            <div class="admin-stat-val" id="statKabel">0</div>
-            <div class="admin-stat-label">Kabel</div>
-          </div>
-        </div>
-        <div class="admin-stat-card">
-          <div class="admin-stat-icon">📁</div>
-          <div class="admin-stat-info">
-            <div class="admin-stat-val" id="statLainnya">0</div>
-            <div class="admin-stat-label">Kategori Lain</div>
-          </div>
-        </div>
-      </div>
-      <div class="admin-grid">
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <div class="admin-card-title" id="formCardTitle">➕ Tambah Produk Baru</div>
-            <button class="admin-btn-secondary" id="formResetBtn" onclick="resetAdminForm()" style="display:none;">✕
-              Batal Edit</button>
-          </div>
-          <div class="admin-card-body">
-            <input type="hidden" id="editProductId">
-            <div class="admin-form-group"><label>Nama Produk *</label><input type="text" id="adminName"
-                placeholder="Contoh: Lampu LED Philips"></div>
-            <div class="admin-form-row">
-              <div class="admin-form-group"><label>Kategori *</label><select id="adminCategory"
-                  onchange="handleCategoryChange()">
-                  <option value="">-- Pilih Kategori --</option>
-                  <option value="Lampu">💡 Lampu</option>
-                  <option value="Kipas Angin">💨 Kipas Angin</option>
-                  <option value="Kabel">🔌 Kabel</option>
-                  <option value="Saklar">🎛️ Saklar</option>
-                  <option value="Antena">📡 Antena</option>
-                  <option value="Stopkontak">🔋 Stopkontak</option>
-                  <option value="Lainnya">📦 Lainnya</option>
-                </select></div>
-              <div class="admin-form-group"><label>Stok</label><input type="number" id="adminStock" placeholder="0"
-                  min="0"></div>
-            </div>
-            <div class="admin-form-group"><label>Deskripsi</label><textarea id="adminDesc"
-                placeholder="Deskripsi singkat produk..."></textarea></div>
-            <div class="admin-form-group">
-              <label>📷 Gambar Utama Produk</label>
-              <div class="product-img-preview-box" id="mainImgPreviewBox"
-                onclick="document.getElementById('adminMainImage').click()">
-                <div class="placeholder-text">🖼️<br>Klik untuk upload gambar</div>
-              </div>
-              <input type="file" id="adminMainImage" accept="image/*" style="display:none"
-                onchange="previewMainImage(this)">
-              <button type="button" class="admin-btn-secondary" style="width:100%;margin-top:.4rem;"
-                onclick="document.getElementById('adminMainImage').click()">📁 Pilih Gambar Utama</button>
-            </div>
-            <div class="admin-form-group">
-              <label>🎥 Video Produk (Opsional)</label>
-              <div class="product-img-preview-box" id="mainVideoPreviewBox"
-                style="background:rgba(0,0,0,0.3);cursor:pointer;"
-                onclick="document.getElementById('adminMainVideo').click()">
-                <div class="placeholder-text">🎬<br>Klik untuk upload video<br><span
-                    style="font-size:0.7rem;color:var(--gray);">Maks 500MB</span></div>
-              </div>
-              <input type="file" id="adminMainVideo" accept="video/*" style="display:none"
-                onchange="previewMainVideo(this)">
-              <button type="button" class="admin-btn-secondary" style="width:100%;margin-top:.4rem;"
-                onclick="document.getElementById('adminMainVideo').click()">🎬 Pilih Video Produk</button>
-              <button type="button" class="admin-btn-secondary"
-                style="width:100%;margin-top:.3rem;color:#ef4444;border-color:rgba(239,68,68,0.3);"
-                onclick="clearMainVideo()" id="clearVideoBtn" style="display:none;">✕ Hapus Video</button>
-            </div>
-            <div class="admin-form-group"><label>Harga Dasar (Rp) *</label><input type="text" id="adminPrice"
-                inputmode="numeric" placeholder="15.000" oninput="formatRupiahInput(this)"></div>
-            <div class="admin-form-group"><label>Display Harga (opsional)</label><input type="text"
-                id="adminDisplayPrice" placeholder="Contoh: Mulai Rp 15.000"></div>
-            <div class="admin-form-group"><label>Emoji / Icon (jika tidak ada gambar)</label><input type="text"
-                id="adminEmoji" placeholder="💡"></div>
-            <div class="admin-form-group"><label><input type="checkbox" id="hasVariants"
-                  onchange="toggleVariantManager()" style="accent-color:var(--primary);margin-right:.4rem;"> Produk
-                memiliki varian (harga &amp; gambar berbeda per varian)</label></div>
-            <div id="variantManagerSection" style="display:none;">
-              <div class="variant-manager">
-                <div class="variant-manager-title">🎛️ Manajemen Varian</div>
-                <div id="variantList"></div>
-                <button type="button" class="add-variant-btn" onclick="addVariantRow()">+ Tambah Varian</button>
-              </div>
-            </div>
-            <div style="display:flex;gap:.75rem;margin-top:1.25rem;"><button class="admin-btn-primary" style="flex:1;"
-                onclick="saveProduct()">💾 Simpan Produk</button></div>
-          </div>
-        </div>
-        <div class="admin-card">
-          <div class="admin-card-header">
-            <div class="admin-card-title">📋 Daftar Produk (<span id="productCountLabel">0</span>)</div>
-            <div style="display:flex;gap:.5rem;"><select id="adminFilterCat" onchange="renderAdminProductList()"
-                style="padding:.5rem .75rem;background:rgba(10,14,39,.7);border:1px solid rgba(0,212,255,.2);border-radius:8px;color:var(--light);font-size:.82rem;outline:none;">
-                <option value="all">Semua</option>
-                <option value="Lampu">Lampu</option>
-                <option value="Kipas Angin">Kipas Angin</option>
-                <option value="Kabel">Kabel</option>
-                <option value="Saklar">Saklar</option>
-                <option value="Antena">Antena</option>
-                <option value="Stopkontak">Stopkontak</option>
-                <option value="Lainnya">Lainnya</option>
-              </select></div>
-          </div>
-          <div class="admin-card-body" style="padding:1rem;">
-            <input type="text" class="admin-search" id="adminSearch" placeholder="🔍 Cari produk..."
-              oninput="renderAdminProductList()">
-            <div class="admin-product-list" id="adminProductList">
-              <div class="admin-empty-state">
-                <div class="admin-empty-icon">📦</div>
-                <p>Belum ada produk.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="admin-notif" id="adminNotif"></div>
-  </div>
-  <div class="help-btn" onclick="toggleHelpModal()" title="Panduan">❓</div>
-  <div id="helpModal" class="help-modal">
-    <div class="help-container">
-      <div class="help-header">
-        <h2 class="help-title">📚 Panduan Penggunaan</h2><button class="help-close"
-          onclick="toggleHelpModal()">✕</button>
-      </div>
-      <div class="help-section">
-        <h3>👋 Selamat Datang!</h3>
-        <p>Panduan ini membantu Anda berbelanja dengan mudah di Sadewa Elektronik.</p>
-      </div>
-      <div class="help-section">
-        <h3>🔍 Cara Mencari Produk</h3>
-        <ol class="help-steps">
-          <li class="help-step"><span class="help-step-number">1</span><span class="help-step-text"><strong>Search
-                Bar:</strong> Ketik nama produk di kotak pencarian</span></li>
-          <li class="help-step"><span class="help-step-number">2</span><span class="help-step-text"><strong>Filter
-                Kategori:</strong> Klik tombol kategori</span></li>
-          <li class="help-step"><span class="help-step-number">3</span><span class="help-step-text"><strong>Detail
-                Produk:</strong> Scroll ke bawah melihat semua produk</span></li>
-        </ol>
-      </div>
-      <div class="help-section">
-        <h3>🛒 Cara Berbelanja</h3>
-        <div class="help-feature">
-          <div class="help-feature-title">🛒 Beli Sekarang</div>
-          <div class="help-feature-desc">Pilih produk → Pilih varian → Klik "Beli Sekarang"</div>
-        </div>
-        <div class="help-feature">
-          <div class="help-feature-title">🛍️ Keranjang</div>
-          <div class="help-feature-desc">Klik 🛒 di samping harga → Buka keranjang → Checkout</div>
-        </div>
-      </div>
-      <div class="help-tips">
-        <div class="help-tips-title">💡 Tips</div>
-        <ul>
-          <li>Pilih varian sebelum tambah ke keranjang</li>
-          <li>Simpan bukti transfer</li>
-          <li>Gunakan AI Assistant jika ragu</li>
-        </ul>
-      </div>
-      <div class="help-contact">
-        <h4>💬 Butuh Bantuan?</h4>
-        <p>CS kami siap membantu!</p><a href="https://wa.me/+6285872189172" class="help-contact-btn"
-          target="_blank">Chat WhatsApp</a>
-      </div>
-    </div>
-  </div>
-
-  <div id="cartModal" class="cart-modal" onclick="closeCartOnOverlay(event)">
-    <div class="cart-sidebar">
-      <div class="cart-header">
-        <h2 class="cart-title">🛒 Keranjang</h2><button class="cart-close" onclick="toggleCart()">✕</button>
-      </div>
-      <div class="cart-items" id="cartItemsContainer">
-        <div class="cart-empty">
-          <div class="cart-empty-icon">🛒</div>
-          <p class="cart-empty-text">Keranjang masih kosong</p>
-        </div>
-      </div>
-      <div class="cart-footer">
-        <div class="cart-total"><span class="cart-total-label">Total:</span><span class="cart-total-value"
-            id="cartTotalValue">Rp 0</span></div>
-        <button class="cart-checkout-btn" onclick="checkoutWithPayment()">💳 Lanjut ke Pembayaran</button>
-        <button class="cart-clear-btn" onclick="clearCart()">Kosongkan Keranjang</button>
-      </div>
-    </div>
-  </div>
-  </div>
-
-  <!-- PRODUCT DETAIL MODAL (SHOPEE STYLE) -->
-
-  <div id="paymentModal" class="payment-modal">
-    <div class="payment-container" id="checkoutContainer">
-      <div class="payment-header">
-        <h2 class="payment-title" id="checkoutTitle">📍 Alamat Pengiriman</h2><button class="payment-close"
-          onclick="closePaymentModal()">✕</button>
-      </div>
-
-      <!-- STEP 1: SHIPPING ADDRESS -->
-      <div id="checkoutStep1" class="checkout-step active">
-        <div class="form-group-payment">
-          <label>Nama Lengkap Penerima *</label>
-          <input type="text" id="shipName" placeholder="Masukkan nama lengkap" required>
-        </div>
-        <div class="form-group-payment">
-          <label>Nomor HP / WhatsApp *</label>
-          <input type="tel" id="shipPhone" placeholder="Contoh: 08123456789"
-            oninput="this.value=this.value.replace(/[^0-9]/g,'')" required>
-        </div>
-        <div class="form-group-payment">
-          <label>Provinsi, Kota, Kecamatan, Kode Pos *</label>
-          <input type="text" id="shipRegion" placeholder="Contoh: Jawa Barat, Sukabumi, Cidahu, 43358" required>
-        </div>
-        <div class="form-group-payment">
-          <label>Alamat Lengkap (Nama Jalan, Gedung, No. Rumah) *</label>
-          <textarea id="shipAddress" placeholder="Masukkan alamat lengkap..." rows="3"
-            style="width:100%;padding:0.75rem;border:1px solid rgba(0,212,255,0.3);border-radius:8px;background:rgba(255,255,255,0.05);color:var(--dark);font-family:inherit;resize:vertical;"
-            required></textarea>
-        </div>
-        <div class="form-group-payment">
-          <label>Detail Patokan (Opsional)</label>
-          <input type="text" id="shipDetail" placeholder="Contoh: Patokan dekat masjid warna hijau">
-        </div>
-        <div class="form-group-payment">
-          <label>Pesan untuk Penjual / Kurir (Opsional)</label>
-          <input type="text" id="shipNote" placeholder="Tinggalkan pesan...">
-        </div>
-
-        <div class="form-group-payment ongkir-box" id="ongkirBoxWrap">
-          <label>🚚 Cek Ongkos Kirim</label>
-          <div class="autocomplete-wrap">
-            <input type="text" id="shipDestSearch" placeholder="Ketik kota/kecamatan tujuan..." autocomplete="off">
-            <div class="autocomplete-list" id="shipDestList"></div>
-          </div>
-          <input type="hidden" id="shipDestId">
-          <select id="shipCourier" style="margin-top:.75rem;">
-            <option value="">-- Pilih Kurir --</option>
-            <option value="jne">JNE</option>
-            <option value="jnt">J&T</option>
-            <option value="pos">Pos Indonesia</option>
-            <option value="anteraja">AnterAja</option>
-          </select>
-          <button type="button" class="admin-btn-secondary" id="cekOngkirBtn" style="width:100%;margin-top:.75rem;">
-            Hitung Ongkir
+          <button class="welcome-tab" onclick="switchWelcomeTab(2)">
+            <span class="welcome-tab-icon">🔍</span>Cari Produk
           </button>
-          <div id="ongkirResult" style="margin-top:.6rem;"></div>
+          <button class="welcome-tab" onclick="switchWelcomeTab(3)">
+            <span class="welcome-tab-icon">💡</span>Tips &amp; Info
+          </button>
         </div>
-
-        <button class="payment-submit" onclick="goToPaymentStep()" style="margin-top: 1rem;">Lanjut ke Pembayaran
-          ➡️</button>
-      </div>
-      <!-- STEP 2: PAYMENT METHOD -->
-      <div id="checkoutStep2" class="checkout-step" style="display:none;">
-        <button onclick="goToAddressStep()"
-          style="background:none;border:none;color:var(--primary);cursor:pointer;font-weight:600;margin-bottom:1rem;display:inline-flex;align-items:center;gap:5px;">⬅️
-          Kembali ke Alamat</button>
-
-        <div class="order-summary">
-          <h3>📦 Ringkasan Pesanan</h3>
-          <div id="paymentOrderItems"></div>
-          <div class="order-total"><span class="order-total-label">Total Harga:</span><span class="order-total-value"
-              id="paymentTotal">Rp 0</span></div>
-        </div>
-        <div class="payment-guide">
-          <h4>📋 Panduan Pembayaran</h4>
-          <ol class="guide-steps">
-            <li class="guide-step"><span class="step-number">1</span><span class="step-text">Pilih metode
-                pembayaran</span></li>
-            <li class="guide-step"><span class="step-number">2</span><span class="step-text">Isi data pembayaran</span>
-            </li>
-            <li class="guide-step"><span class="step-number">3</span><span class="step-text">Periksa kembali
-                pesanan</span></li>
-            <li class="guide-step"><span class="step-number">4</span><span class="step-text">Klik "Konfirmasi
-                Pembayaran"</span></li>
-            <li class="guide-step"><span class="step-number">5</span><span class="step-text">Detail terkirim ke WhatsApp
-                kami</span></li>
-          </ol>
-          <div class="guide-note"><strong>💡 Tips:</strong> Pastikan data sudah benar sebelum konfirmasi.</div>
-        </div>
-        <div class="payment-methods">
-          <h3>Pilih Metode Pembayaran</h3>
-          <div class="payment-tabs">
-            <div class="payment-tab active" onclick="switchPaymentTab('bank',this)"><span class="payment-tab-icon"
-                style="display:flex;align-items:center;justify-content:center;gap:3px;min-height:36px;flex-wrap:wrap;"><svg
-                  viewBox="0 0 50 14" xmlns="http://www.w3.org/2000/svg"
-                  style="height:14px;background:#00529b;border-radius:3px;padding:1px 3px;"><text x="25" y="11"
-                    text-anchor="middle" font-family="Arial Black,sans-serif" font-size="10" font-weight="900"
-                    fill="white">BRI</text></svg></span>
-              <div>Transfer</div>
-            </div>
-            <div class="payment-tab" onclick="switchPaymentTab('qris',this)"><span class="payment-tab-icon"
-                style="display:flex;align-items:center;justify-content:center;min-height:36px;"><svg
-                  viewBox="0 0 120 40" xmlns="http://www.w3.org/2000/svg" style="height:26px;">
-                  <rect width="120" height="40" rx="5" fill="white" />
-                  <rect x="0" y="0" width="10" height="40" rx="5" fill="#e4002b" /><text x="65" y="27"
-                    text-anchor="middle" font-family="Arial Black,sans-serif" font-size="22" font-weight="900"
-                    fill="#333">QRIS</text>
-                </svg></span>
-              <div>QRIS</div>
-            </div>
-          </div>
-
-          <div id="bankPayment" class="payment-content active">
-            <div class="payment-options">
-              <div class="payment-option selected" onclick="selectPaymentOption(this,'bri')">
-                <div class="payment-option-icon">
-                  <div class="pay-logo-box" style="background:#00529b;"><svg viewBox="0 0 200 70"
-                      xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
-                      <rect width="200" height="70" fill="#00529b" /><text x="100" y="46" text-anchor="middle"
-                        font-family="Arial Black,sans-serif" font-size="28" font-weight="900" fill="white">BRI</text>
-                    </svg></div>
-                </div>
-                <div class="payment-option-name">BRI</div>
-              </div>
-            </div>
-            <div class="bank-account-info">
-              <h4>Informasi Transfer</h4>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Bank</div>
-                  <div class="bank-detail-value" id="selectedBankName">BRI</div>
-                </div>
-              </div>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Nomor Rekening</div>
-                  <div class="bank-detail-value" id="bankAccountNumber">1234567890</div>
-                </div><button class="copy-btn" onclick="copyToClipboard('bankAccountNumber')">📋 Salin</button>
-              </div>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Atas Nama</div>
-                  <div class="bank-detail-value">SADEWA ELEKTRONIK</div>
-                </div>
-              </div>
-              <div class="bank-detail">
-                <div>
-                  <div class="bank-detail-label">Jumlah Transfer</div>
-                  <div class="bank-detail-value" id="transferAmount">Rp 0</div>
-                </div><button class="copy-btn" onclick="copyTransferAmount()">📋 Salin</button>
-              </div>
-            </div>
-            <div class="payment-form" style="margin-top:1.5rem;">
-              <div class="form-group-payment"><label>Nama Pengirim</label><input type="text" id="senderName"
-                  placeholder="Nama sesuai rekening"></div>
-              <div class="form-group-payment"><label>Upload Bukti Transfer (Opsional)</label><input type="file"
-                  id="transferProof" accept="image/*" style="padding:.75rem;"></div>
-            </div>
-            <div class="method-specific-guide">
-              <h5>🏦 Langkah Transfer Bank:</h5>
-              <ul>
-                <li>Salin nomor rekening</li>
-                <li>Buka m-banking Anda</li>
-                <li>Transfer sesuai total pembayaran</li>
-                <li>Isi nama pengirim &amp; upload bukti</li>
-              </ul>
-            </div>
-          </div>
-
-          <div id="qrisPayment" class="payment-content">
-            <div style="text-align:center;padding:1.5rem 0;">
-              <div
-                style="display:inline-block;background:white;border-radius:20px;padding:1.5rem;box-shadow:0 0 40px rgba(228,0,43,0.3);">
-                <!-- QRIS QR CODE - object-fit:contain agar tidak blur/terpotong -->
-                <div id="qrisCodeBox"
-                  style="width:min(300px, calc(100vw - 100px));height:min(300px, calc(100vw - 100px));border-radius:14px;margin:0 auto;border:4px solid #e4002b;box-shadow:0 0 25px rgba(228,0,43,0.4),0 4px 16px rgba(0,0,0,0.3);background:#fff;display:flex;align-items:center;justify-content:center;">
-                  <!-- Menggunakan gambar QRIS toko Sadewa Elektronik asli -->
-                  <img id="qrisImage" src="/qris-sadewa.jpeg" alt="QRIS Sadewa Elektronik Cidahu"
-                    style="width:100%;height:100%;object-fit:contain;image-rendering:pixelated;display:block;border-radius:8px;"
-                    loading="lazy">
-                </div>
-                <button onclick="downloadQRIS()"
-                  style="margin-top: 1rem; padding: 0.5rem 1rem; background: #e4002b; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
-                  <span>⬇️</span> Simpan QRIS
-                </button>
-                <p style="color:#444;font-size:.82rem;margin-top:.75rem;font-weight:700;">📲 Scan QR untuk membayar</p>
-                <p style="color:#777;font-size:.75rem;margin-top:.2rem;font-weight:600;">SADEWA ELEKTRONIK CIDAHU</p>
-                <p style="color:#aaa;font-size:.7rem;margin-top:.1rem;">NMID: ID1024348386623 · A01</p>
-              </div>
-              <div
-                style="margin-top:1.5rem;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.2);border-radius:14px;padding:1.25rem;text-align:left;">
-                <div style="color:var(--primary);font-weight:800;margin-bottom:.75rem;">📲 Cara Bayar via QRIS:</div>
-                <div style="display:flex;flex-direction:column;gap:.6rem;">
-                  <div style="display:flex;gap:.75rem;align-items:flex-start;"><span
-                      style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;">1</span><span
-                      style="color:var(--gray);font-size:.9rem;">Buka e-wallet atau m-banking yang mendukung QRIS</span>
+        <div class="welcome-body">
+          <div class="welcome-panel active" id="wPanel0">
+            <div class="w-panel-heading">🛒 Cara Berbelanja</div>
+            <div class="w-steps">
+              <div class="w-step">
+                <div class="w-step-num">1</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Pilih Produk</div>
+                  <div class="w-step-desc">
+                    Scroll ke bawah untuk melihat semua produk. Gunakan filter
+                    kategori atau search bar untuk mencari barang tertentu.
                   </div>
-                  <div style="display:flex;gap:.75rem;align-items:flex-start;"><span
-                      style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;">2</span><span
-                      style="color:var(--gray);font-size:.9rem;">Pilih menu Scan / Bayar QRIS</span></div>
-                  <div style="display:flex;gap:.75rem;align-items:flex-start;"><span
-                      style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;">3</span><span
-                      style="color:var(--gray);font-size:.9rem;">Scan QR Code, masukkan nominal sesuai total
-                      belanja</span></div>
-                  <div style="display:flex;gap:.75rem;align-items:flex-start;"><span
-                      style="background:linear-gradient(135deg,var(--primary),var(--secondary));color:white;width:24px;height:24px;min-width:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;">4</span><span
-                      style="color:var(--gray);font-size:.9rem;">Kirim screenshot ke WhatsApp kami</span></div>
                 </div>
-                <div
-                  style="margin-top:1rem;padding:.75rem;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);border-radius:8px;color:#10b981;font-size:.85rem;">
-                  ✅ QRIS berlaku untuk semua e-wallet &amp; m-banking di Indonesia</div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">2</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Pilih Varian (jika ada)</div>
+                  <div class="w-step-desc">
+                    Beberapa produk memiliki varian seperti watt lampu, ukuran
+                    kabel, atau jumlah gang saklar. Pilih varian yang sesuai
+                    sebelum melanjutkan.
+                  </div>
+                </div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">3</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">
+                    Beli Langsung atau Tambah Keranjang
+                  </div>
+                  <div class="w-step-desc">
+                    <strong style="color: var(--primary)">Beli Sekarang</strong>
+                    — langsung ke pembayaran.
+                    <strong style="color: var(--primary)">Ikon 🛒</strong> di
+                    samping harga — tambah ke keranjang untuk beli beberapa
+                    produk.
+                  </div>
+                </div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">4</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Keranjang Belanja</div>
+                  <div class="w-step-desc">
+                    Klik ikon 🛒 di pojok kanan atas. Atur jumlah dengan tombol
+                    + / −, lalu klik
+                    <strong style="color: var(--primary)"
+                      >Lanjut ke Pembayaran</strong
+                    >.
+                  </div>
+                </div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">5</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Selesaikan Pembayaran</div>
+                  <div class="w-step-desc">
+                    Pilih metode bayar, isi data, klik
+                    <strong style="color: #10b981">Konfirmasi Pembayaran</strong
+                    >. Detail otomatis terkirim ke WhatsApp kami!
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="form-group-payment" style="margin-top:1rem;"><label>Nama Pembayar</label><input type="text"
-                id="qrisName" placeholder="Nama Anda"></div>
-          </div> <!-- End of STEP 2 -->
-
-          <div id="paymentActionContainer" style="display:none;">
-            <div class="security-note"><span>🔒</span><span>Transaksi Anda aman dan terenkripsi.</span></div>
-            <button class="payment-submit" id="paymentSubmitBtn" onclick="processPayment()">Konfirmasi
-              Pembayaran</button>
+          </div>
+          <div class="welcome-panel" id="wPanel1">
+            <div class="w-panel-heading">💳 Metode Pembayaran</div>
+            <div class="w-payment-cards">
+              <div class="w-pay-card">
+                <div class="w-pay-title">💳 Kartu Kredit/Debit</div>
+                <ul class="w-pay-list">
+                  <li>Visa, Mastercard, Debit</li>
+                  <li>Masukkan 16 digit nomor kartu</li>
+                  <li>Tanggal kadaluarsa &amp; CVV</li>
+                </ul>
+              </div>
+              <div class="w-pay-card">
+                <div class="w-pay-title">🏦 Transfer Bank</div>
+                <ul class="w-pay-list">
+                  <li>BCA, Mandiri, BNI, BRI</li>
+                  <li>Transfer sesuai total bayar</li>
+                  <li>Upload bukti transfer</li>
+                </ul>
+              </div>
+              <div class="w-pay-card">
+                <div class="w-pay-title">📱 E-Wallet &amp; QRIS</div>
+                <ul class="w-pay-list">
+                  <li>GoPay, OVO, DANA, ShopeePay</li>
+                  <li>QRIS semua e-wallet</li>
+                  <li>Konfirmasi via WhatsApp</li>
+                </ul>
+              </div>
+            </div>
+            <div class="w-warn-box">
+              <div class="w-warn-box-title">💡 Penting!</div>
+              <p>
+                Setelah konfirmasi, detail pesanan otomatis terkirim ke WhatsApp
+                kami. Simpan bukti pembayaran!
+              </p>
+            </div>
+          </div>
+          <div class="welcome-panel" id="wPanel2">
+            <div class="w-panel-heading">🔍 Menemukan Produk</div>
+            <div class="w-steps">
+              <div class="w-step">
+                <div class="w-step-num">🔎</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Gunakan Search Bar</div>
+                  <div class="w-step-desc">
+                    Ketik nama produk di kotak pencarian (contoh: "Lampu 10
+                    Watt" atau "Kipas Angin").
+                  </div>
+                </div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">🏷️</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">Filter Kategori</div>
+                  <div class="w-step-desc">
+                    Klik tombol kategori untuk menyaring produk berdasarkan
+                    jenis.
+                  </div>
+                </div>
+              </div>
+              <div class="w-step">
+                <div class="w-step-num">🤖</div>
+                <div class="w-step-body">
+                  <div class="w-step-title">AI Assistant</div>
+                  <div class="w-step-desc">
+                    Tanya AI di bagian "Smart AI Shopping Assistant" untuk
+                    rekomendasi terbaik!
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="w-divider"></div>
+            <div class="w-info-box">
+              <div class="w-info-box-title">📍 Lokasi &amp; Jam Buka</div>
+              <p>
+                Bojong-pari, West Java, Indonesia<br />Senin – Minggu:
+                <strong style="color: var(--light)">08:00 – 20:00</strong
+                ><br />WhatsApp:
+                <strong style="color: var(--primary)">+62 858-7218-9172</strong>
+              </p>
+            </div>
+          </div>
+          <div class="welcome-panel" id="wPanel3">
+            <div class="w-panel-heading">💡 Tips Belanja Efektif</div>
+            <div class="w-tips-grid">
+              <div class="w-tip">
+                <div class="w-tip-icon">✅</div>
+                <div class="w-tip-title">Pilih Varian Dulu</div>
+                <div class="w-tip-desc">
+                  Pastikan memilih varian yang benar sebelum klik Beli atau
+                  tambah ke keranjang.
+                </div>
+              </div>
+              <div class="w-tip">
+                <div class="w-tip-icon">🛍️</div>
+                <div class="w-tip-title">Beli Banyak? Pakai Keranjang</div>
+                <div class="w-tip-desc">
+                  Tambahkan beberapa produk lalu checkout sekaligus.
+                </div>
+              </div>
+              <div class="w-tip">
+                <div class="w-tip-icon">📸</div>
+                <div class="w-tip-title">Simpan Bukti Bayar</div>
+                <div class="w-tip-desc">
+                  Screenshot bukti pembayaran sebelum menutup halaman.
+                </div>
+              </div>
+              <div class="w-tip">
+                <div class="w-tip-icon">🤖</div>
+                <div class="w-tip-title">Tanya AI Dulu</div>
+                <div class="w-tip-desc">
+                  Ragu pilih produk? Tanya AI Assistant untuk rekomendasi
+                  terbaik.
+                </div>
+              </div>
+              <div class="w-tip">
+                <div class="w-tip-icon">📞</div>
+                <div class="w-tip-title">Ada Masalah? Chat Kami</div>
+                <div class="w-tip-desc">
+                  Hubungi kami via WhatsApp kapan saja.
+                </div>
+              </div>
+              <div class="w-tip">
+                <div class="w-tip-icon">🔖</div>
+                <div class="w-tip-title">Bookmark Halaman Ini</div>
+                <div class="w-tip-desc">
+                  Bookmark website ini untuk kebutuhan elektronik berikutnya!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="welcome-footer">
+          <label class="welcome-skip-label" for="skipNextTime"
+            ><input type="checkbox" id="skipNextTime" /> Jangan tampilkan
+            lagi</label
+          >
+          <div class="welcome-nav">
+            <div class="welcome-dots" id="welcomeDots">
+              <div
+                class="welcome-dot active"
+                onclick="switchWelcomeTab(0)"
+              ></div>
+              <div class="welcome-dot" onclick="switchWelcomeTab(1)"></div>
+              <div class="welcome-dot" onclick="switchWelcomeTab(2)"></div>
+              <div class="welcome-dot" onclick="switchWelcomeTab(3)"></div>
+            </div>
+            <button
+              class="welcome-prev-btn"
+              id="welcomePrevBtn"
+              onclick="prevWelcomeTab()"
+              style="display: none"
+            >
+              ← Kembali
+            </button>
+            <button
+              class="welcome-next-btn"
+              id="welcomeNextBtn"
+              onclick="nextWelcomeTab()"
+            >
+              Selanjutnya →
+            </button>
+            <button
+              class="welcome-start-btn"
+              id="welcomeStartBtn"
+              onclick="closeWelcome()"
+            >
+              ✅ Mulai Belanja!
+            </button>
           </div>
         </div>
       </div>
+    </div>
+    <div id="loginModal" class="modal">
+      <div class="modal-content">
+        <h2 class="modal-title">🔐 Admin Login</h2>
+        <div class="form-group">
+          <label>Username</label
+          ><input
+            type="text"
+            id="loginUsername"
+            placeholder="admin"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <div class="form-group">
+          <label>Password</label
+          ><input
+            type="password"
+            id="loginPassword"
+            placeholder="••••••••"
+            autocomplete="off"
+            spellcheck="false"
+          />
+        </div>
+        <button class="btn-login" onclick="handleLogin()">Masuk</button>
+        <button class="btn-cancel" onclick="closeLoginModal()">Batal</button>
+      </div>
+    </div>
+    <div id="mainWebsite" class="page-container active">
+      <section class="hero-section" id="home">
+        <div class="hero-bg"></div>
+        <div class="hero-grid"></div>
+        <div class="hero-orb hero-orb-1"></div>
+        <div class="hero-orb hero-orb-2"></div>
+        <div class="hero-orb hero-orb-3"></div>
+        <div class="hero-inner">
+          <div class="hero-left">
+            <div class="hero-eyebrow">
+              <div class="hero-eyebrow-dot"></div>
+              Pusat Elektronik #1 Cidahu
+            </div>
+            <h1 class="hero-headline">
+              Semua Kebutuhan<br /><span class="hl-accent"
+                >Listrik &amp; Elektronik</span
+              ><br />Ada di Sini
+            </h1>
+            <p class="hero-sub">
+              Dari <strong>lampu LED</strong>, <strong>kipas angin</strong>,
+              kabel, saklar, hingga antena — kami menyediakan produk berkualitas
+              dengan <strong>harga terjangkau</strong> dan pelayanan cepat.
+            </p>
+            <div class="hero-usps">
+              <div class="hero-usp"><span>⚡</span> Harga Kompetitif</div>
+              <div class="hero-usp"><span>🚀</span> Proses Cepat</div>
+              <div class="hero-usp"><span>🤖</span> AI Assistant</div>
+              <div class="hero-usp"><span>📍</span> Cidahu, Jawa Barat</div>
+              <div class="hero-usp"><span>💳</span> Banyak Metode Bayar</div>
+              <div class="hero-usp"><span>📞</span> Respon via WhatsApp</div>
+            </div>
+            <div class="hero-ctas">
+              <a href="#products" class="hero-cta-primary"
+                >⚡ Lihat Produk Unggulan</a
+              >
+              <a
+                href="https://wa.me/+6285872189172"
+                class="hero-cta-secondary"
+                target="_blank"
+                >💬 Tanya via WhatsApp</a
+              >
+            </div>
+            <div class="hero-stats">
+              <div class="hero-stat">
+                <div class="hero-stat-num">100+</div>
+                <div class="hero-stat-label">Produk Tersedia</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">4.9★</div>
+                <div class="hero-stat-label">Rating Pelanggan</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">7 Hari</div>
+                <div class="hero-stat-label">Buka Setiap Hari</div>
+              </div>
+              <div class="hero-stat">
+                <div class="hero-stat-num">08–20</div>
+                <div class="hero-stat-label">Jam Operasional</div>
+              </div>
+            </div>
+          </div>
+          <div class="hero-right">
+            <div class="hero-showcase">
+              <div class="hero-badge-float hero-badge-float-1">
+                <div class="hero-badge-icon">🔥</div>
+                <div class="hero-badge-info">
+                  <div class="hero-badge-val">Promo Aktif</div>
+                  <div class="hero-badge-sub">Stok terbatas!</div>
+                </div>
+              </div>
+              <div class="hero-main-card">
+                <div class="hero-card-label">— Kategori Produk</div>
+                <div class="hero-product-icons hero-product-icons--3col">
+                  <a
+                    href="#products"
+                    class="hero-product-icon-box"
+                    onclick="filterCategoryGroup(['Kipas Angin', 'Lampu'])"
+                  >
+                    <span class="pib-icon">🏠</span>
+                    <span class="pib-label"
+                      >Peralatan Rumah Tangga<br /><small
+                        >Kipas, lampu &amp; lainnya</small
+                      ></span
+                    >
+                  </a>
+                  <a
+                    href="#products"
+                    class="hero-product-icon-box"
+                    onclick="
+                      filterCategoryGroup(['Kabel', 'Saklar', 'Stopkontak'])
+                    "
+                  >
+                    <span class="pib-icon">⚡</span>
+                    <span class="pib-label"
+                      >Peralatan Listrik<br /><small
+                        >Kabel, saklar, stopkontak</small
+                      ></span
+                    >
+                  </a>
+                  <a
+                    href="#products"
+                    class="hero-product-icon-box"
+                    onclick="filterCategoryGroup(['Lainnya'])"
+                  >
+                    <span class="pib-icon">🔧</span>
+                    <span class="pib-label"
+                      >Peralatan Pertukangan<br /><small
+                        >Alat &amp; perkakas kerja</small
+                      ></span
+                    >
+                  </a>
+                </div>
+                <div class="hero-promo-strip">
+                  <div class="hero-promo-text">
+                    <div class="hero-promo-title">🏷️ Info Toko</div>
+                    <div class="hero-promo-value">Buka 08:00 – 20:00</div>
+                  </div>
+                  <button
+                    class="hero-promo-cta"
+                    onclick="
+                      document
+                        .getElementById('contact')
+                        .scrollIntoView({ behavior: 'smooth' })
+                    "
+                  >
+                    📍 Lokasi Kami
+                  </button>
+                </div>
+              </div>
+              <div class="hero-badge-float hero-badge-float-2">
+                <div class="hero-badge-icon">🤖</div>
+                <div class="hero-badge-info">
+                  <div class="hero-badge-val">AI Assistant</div>
+                  <div class="hero-badge-sub">Siap bantu 24/7</div>
+                </div>
+              </div>
+            </div>
+            <div class="hero-trust">
+              <div class="hero-trust-item">
+                <span class="ti-check">✓</span> Produk Bergaransi
+              </div>
+              <div class="hero-trust-item">
+                <span class="ti-check">✓</span> Bayar Aman
+              </div>
+              <div class="hero-trust-item">
+                <span class="ti-check">✓</span> WhatsApp Responsif
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="hero-scroll">
+          <div class="hero-scroll-line"></div>
+          Scroll
+        </div>
+      </section>
+      <nav>
+        <div class="nav-container">
+          <a href="#home" class="nav-logo"
+            ><img
+              src="./logo-sadewa.png"
+              alt="Sadewa Elektronik"
+              class="nav-logo-img"
+            />
+            SADEWA</a
+          >
+          <ul>
+            <li><a href="#products">Produk</a></li>
+            <li><a href="#contact">Kontak</a></li>
+            <li><a href="#chat">AI Assistant</a></li>
+            <li><a href="#about">Tentang Kami</a></li>
+          </ul>
+          <div class="nav-right">
+            <div class="search-wrap" aria-label="Cari produk">
+              <span class="search-icon">🔎</span
+              ><input
+                id="productSearch"
+                type="text"
+                placeholder="Cari produk..."
+                autocomplete="off"
+              /><button
+                class="search-clear"
+                id="clearSearchBtn"
+                type="button"
+                title="Bersihkan"
+              >
+                ×
+              </button>
+            </div>
+            <span class="search-meta" id="searchMeta"
+              >Menampilkan 0 dari 0</span
+            >
 
-      <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
-              <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
-        <div class="mobile-bottom-nav-inner">
-          <a href="#home" class="mbn-item"><span class="mbn-icon">🏠</span><span>Beranda</span></a>
-          <a href="#products" class="mbn-item"><span class="mbn-icon">⚡</span><span>Produk</span></a>
-          <button class="mbn-item" onclick="toggleCart()"><span class="mbn-icon">🛒</span><span class="mbn-cart-badge"
-           id="mbnCartBadge">0</span><span>Keranjang</span></button>
-          <a href="#chat" class="mbn-item">
-            <span class="mbn-icon">🤖</span>
-            <span>AI</span>
-          </a>
-          <a href="#contact" class="mbn-item"><span class="mbn-icon">📞</span><span>Kontak</span></a>
+            <div class="cart-icon-wrapper">
+              <button class="cart-btn" onclick="toggleCart()">
+                🛒<span id="cartBadge" class="cart-badge">0</span>
+              </button>
+            </div>
+            <!-- Riwayat Pesanan / Invoice -->
+            <button
+              class="admin-btn"
+              onclick="openRiwayatModal()"
+              title="Riwayat Pesanan"
+            >
+              🧾 <span>Riwayat</span>
+            </button>
+            <!-- Tombol Login Google -->
+            <button
+              id="btnLoginGoogle"
+              class="admin-btn"
+              onclick="loginWithGoogle()"
+              title="Login dengan Google"
+            >
+              <svg width="18" height="18" viewBox="0 0 48 48">
+                <path
+                  fill="#FFC107"
+                  d="M43.6 20.5H42V20H24v8h11.3c-1.6 4.7-6.1 8-11.3 8-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"
+                />
+                <path
+                  fill="#FF3D00"
+                  d="M6.3 14.7l6.6 4.8C14.6 15.9 18.9 13 24 13c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34.6 6.1 29.6 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"
+                />
+                <path
+                  fill="#4CAF50"
+                  d="M24 44c5.5 0 10.4-1.9 14.3-5.1l-6.6-5.6C29.6 35 26.9 36 24 36c-5.2 0-9.6-3.3-11.2-8H6.1v6.2C9.4 39.8 16.1 44 24 44z"
+                />
+                <path
+                  fill="#1976D2"
+                  d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C41.4 36.4 44 30.7 44 24c0-1.3-.1-2.7-.4-3.5z"
+                />
+              </svg>
+              <span>Login</span>
+            </button>
+            <button
+              class="admin-btn"
+              onclick="showLoginModal()"
+              title="Admin Login"
+              style="padding: 0.75rem"
+            >
+              ⚙️
+            </button>
+          </div>
         </div>
       </nav>
-      <!-- =========================================
+      <div class="container">
+        <section id="products">
+          <h2 class="section-title">Produk Unggulan</h2>
+          <div class="category-bar" id="categoryBar">
+            <button
+              class="cat-btn active"
+              onclick="filterCategory('all', this)"
+            >
+              🌐 Semua
+            </button>
+            <button class="cat-btn" onclick="filterCategory('Lampu', this)">
+              💡 Lampu
+            </button>
+            <button
+              class="cat-btn"
+              onclick="filterCategory('Kipas Angin', this)"
+            >
+              💨 Kipas Angin
+            </button>
+            <button class="cat-btn" onclick="filterCategory('Kabel', this)">
+              🔌 Kabel
+            </button>
+            <button class="cat-btn" onclick="filterCategory('Saklar', this)">
+              🎛️ Saklar
+            </button>
+            <button class="cat-btn" onclick="filterCategory('Antena', this)">
+              📡 Antena
+            </button>
+            <button
+              class="cat-btn"
+              onclick="filterCategory('Stopkontak', this)"
+            >
+              🔋 Stopkontak
+            </button>
+            <button class="cat-btn" onclick="filterCategory('Lainnya', this)">
+              📦 Lainnya
+            </button>
+          </div>
+          <div class="product-grid" id="productGrid"></div>
+          <div class="pagination" id="paginationContainer"></div>
+        </section>
+        <section id="contact" class="contact-section">
+          <h2 class="section-title">Hubungi Kami</h2>
+          <div class="contact-grid">
+            <div class="contact-card">
+              <div class="contact-icon">📱</div>
+              <h3 class="contact-title">WhatsApp</h3>
+              <p class="contact-info">Chat langsung dengan kami</p>
+              <a
+                href="https://wa.me/+6285872189172"
+                class="contact-link"
+                target="_blank"
+                >Chat Sekarang</a
+              >
+            </div>
+            <div class="contact-card">
+              <div class="contact-icon">📧</div>
+              <h3 class="contact-title">Email</h3>
+              <p class="contact-info">
+                <a
+                  href="/cdn-cgi/l/email-protection"
+                  class="__cf_email__"
+                  data-cfemail="740715101103151118111f00061b1a1d1f45341319151d185a171b19"
+                  >[email&#160;protected]</a
+                >
+              </p>
+              <a
+                href="/cdn-cgi/l/email-protection#e7948683829086828b828c939588898e8cd6a7808a868e8bc984888a"
+                class="contact-link"
+                >Kirim Email</a
+              >
+            </div>
+            <div class="contact-card">
+              <div class="contact-icon">📍</div>
+              <h3 class="contact-title">Lokasi</h3>
+              <p class="contact-info">Bojong-pari, West Java, Indonesia</p>
+              <a
+                href="https://maps.app.goo.gl/GF1r9Dp8J8ZhPWfj7"
+                class="contact-link"
+                target="_blank"
+                >Lihat Peta</a
+              >
+            </div>
+            <div class="contact-card">
+              <div class="contact-icon">⏰</div>
+              <h3 class="contact-title">Jam Operasional</h3>
+              <p class="contact-info">Senin – Minggu: 08:00 – 20:00</p>
+            </div>
+          </div>
+        </section>
+
+        <section class="kategori-section" id="social">
+          <div class="eyebrow">
+            <span class="dash"></span>
+            <span class="label">Ikuti Media Sosial Kami</span>
+          </div>
+
+          <div class="kategori-list">
+            <a
+              href=" https://www.instagram.com/sadewaelektronik/"
+              target="_blank"
+              rel="noopener"
+              class="kategori-card"
+            >
+              <div class="kategori-icon">
+                <img
+                  src="https://cdn.simpleicons.org/shopee/EE4D2D"
+                  alt="Shopee"
+                  style="width: 28px; height: 28px"
+                />
+              </div>
+              <div class="kategori-text">
+                <div class="title">Shopee</div>
+                <div class="desc">
+                  Kunjungi toko Shopee resmi kami untuk promo &amp; cashback
+                  eksklusif
+                </div>
+              </div>
+              <div class="kategori-arrow">→</div>
+            </a>
+
+            <a
+              href="https://instagram.com/sadewaelektronik"
+              target="_blank"
+              rel="noopener"
+              class="kategori-card"
+            >
+              <div class="kategori-icon">
+                <img
+                  src="https://cdn.simpleicons.org/instagram/E1306C"
+                  alt="Instagram"
+                  style="width: 28px; height: 28px"
+                />
+              </div>
+              <div class="kategori-text">
+                <div class="title">Instagram</div>
+                <div class="desc">
+                  Lihat produk terbaru, promo, dan aktivitas toko kami
+                </div>
+              </div>
+              <div class="kategori-arrow">→</div>
+            </a>
+          </div>
+        </section>
+
+        <section id="chat" class="chat-section">
+          <h2 class="section-title">🧠 Smart AI Shopping Assistant</h2>
+          <p
+            style="
+              text-align: center;
+              color: var(--gray);
+              margin-top: -2rem;
+              margin-bottom: 2rem;
+            "
+          >
+            Asisten virtual cerdas untuk membantu Anda memilih produk terbaik
+          </p>
+          <div id="chatlog"></div>
+          <div class="chat-input-container">
+            <input
+              type="text"
+              id="userInput"
+              placeholder="Tanyakan tentang produk..."
+            />
+            <button id="sendBtn" onclick="handleSend()">Kirim</button>
+          </div>
+        </section>
+      </div>
+      <footer id="about">
+        <h3 class="logo footer-logo" style="margin-bottom: 0.75rem">
+          <img
+            src="./logo-sadewa.png"
+            alt="Sadewa Elektronik"
+            class="footer-logo-img"
+          />
+          Sadewa Elektronik
+        </h3>
+        <p
+          style="
+            max-width: 800px;
+            margin: 1.25rem auto;
+            color: var(--gray);
+            font-size: 1rem;
+            line-height: 1.8;
+          "
+        >
+          Sadewa Elektronik adalah pusat elektronik modern di wilayah Cidahu dan
+          sekitarnya. Kami menyediakan produk listrik dan elektronik berkualitas
+          dengan harga kompetitif, pelayanan cepat, serta dukungan teknologi AI.
+        </p>
+        <div class="footer-links">
+          <a href="#products">Produk</a><a href="#contact">Kontak</a
+          ><a href="#chat">AI Assistant</a><a href="#">Kebijakan Privasi</a
+          ><a href="#">Syarat &amp; Ketentuan</a><a href="#">FAQ</a>
+        </div>
+        <p class="copyright">
+          © 2025 Sadewa Elektronik · Trusted Local Electronics Partner
+        </p>
+      </footer>
+    </div>
+    <div id="adminPage" class="page-container">
+      <div class="admin-topbar">
+        <div class="admin-topbar-title">⚙️ Sadewa Admin</div>
+        <div class="admin-topbar-actions">
+          <button class="admin-btn-view" onclick="goToWebsite()">
+            🏪 Lihat Website
+          </button>
+          <button class="admin-btn-logout" onclick="adminLogout()">
+            🚪 Logout
+          </button>
+        </div>
+      </div>
+      <div class="admin-body">
+        <div class="admin-stats-row">
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon">📦</div>
+            <div class="admin-stat-info">
+              <div class="admin-stat-val" id="statTotalProd">0</div>
+              <div class="admin-stat-label">Total Produk</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon">💡</div>
+            <div class="admin-stat-info">
+              <div class="admin-stat-val" id="statLampu">0</div>
+              <div class="admin-stat-label">Lampu</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon">💨</div>
+            <div class="admin-stat-info">
+              <div class="admin-stat-val" id="statKipas">0</div>
+              <div class="admin-stat-label">Kipas Angin</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon">🔌</div>
+            <div class="admin-stat-info">
+              <div class="admin-stat-val" id="statKabel">0</div>
+              <div class="admin-stat-label">Kabel</div>
+            </div>
+          </div>
+          <div class="admin-stat-card">
+            <div class="admin-stat-icon">📁</div>
+            <div class="admin-stat-info">
+              <div class="admin-stat-val" id="statLainnya">0</div>
+              <div class="admin-stat-label">Kategori Lain</div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-grid">
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title" id="formCardTitle">
+                ➕ Tambah Produk Baru
+              </div>
+              <button
+                class="admin-btn-secondary"
+                id="formResetBtn"
+                onclick="resetAdminForm()"
+                style="display: none"
+              >
+                ✕ Batal Edit
+              </button>
+            </div>
+            <div class="admin-card-body">
+              <input type="hidden" id="editProductId" />
+              <div class="admin-form-group">
+                <label>Nama Produk *</label
+                ><input
+                  type="text"
+                  id="adminName"
+                  placeholder="Contoh: Lampu LED Philips"
+                />
+              </div>
+              <div class="admin-form-row">
+                <div class="admin-form-group">
+                  <label>Kategori *</label
+                  ><select id="adminCategory" onchange="handleCategoryChange()">
+                    <option value="">-- Pilih Kategori --</option>
+                    <option value="Lampu">💡 Lampu</option>
+                    <option value="Kipas Angin">💨 Kipas Angin</option>
+                    <option value="Kabel">🔌 Kabel</option>
+                    <option value="Saklar">🎛️ Saklar</option>
+                    <option value="Antena">📡 Antena</option>
+                    <option value="Stopkontak">🔋 Stopkontak</option>
+                    <option value="Lainnya">📦 Lainnya</option>
+                  </select>
+                </div>
+                <div class="admin-form-group">
+                  <label>Stok</label
+                  ><input
+                    type="number"
+                    id="adminStock"
+                    placeholder="0"
+                    min="0"
+                  />
+                </div>
+              </div>
+              <div class="admin-form-group">
+                <label>Deskripsi</label
+                ><textarea
+                  id="adminDesc"
+                  placeholder="Deskripsi singkat produk..."
+                ></textarea>
+              </div>
+              <div class="admin-form-group">
+                <label>📷 Gambar Utama Produk</label>
+                <div
+                  class="product-img-preview-box"
+                  id="mainImgPreviewBox"
+                  onclick="document.getElementById('adminMainImage').click()"
+                >
+                  <div class="placeholder-text">
+                    🖼️<br />Klik untuk upload gambar
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  id="adminMainImage"
+                  accept="image/*"
+                  style="display: none"
+                  onchange="previewMainImage(this)"
+                />
+                <button
+                  type="button"
+                  class="admin-btn-secondary"
+                  style="width: 100%; margin-top: 0.4rem"
+                  onclick="document.getElementById('adminMainImage').click()"
+                >
+                  📁 Pilih Gambar Utama
+                </button>
+              </div>
+              <div class="admin-form-group">
+                <label>🎥 Video Produk (Opsional)</label>
+                <div
+                  class="product-img-preview-box"
+                  id="mainVideoPreviewBox"
+                  style="background: rgba(0, 0, 0, 0.3); cursor: pointer"
+                  onclick="document.getElementById('adminMainVideo').click()"
+                >
+                  <div class="placeholder-text">
+                    🎬<br />Klik untuk upload video<br /><span
+                      style="font-size: 0.7rem; color: var(--gray)"
+                      >Maks 500MB</span
+                    >
+                  </div>
+                </div>
+                <input
+                  type="file"
+                  id="adminMainVideo"
+                  accept="video/*"
+                  style="display: none"
+                  onchange="previewMainVideo(this)"
+                />
+                <button
+                  type="button"
+                  class="admin-btn-secondary"
+                  style="width: 100%; margin-top: 0.4rem"
+                  onclick="document.getElementById('adminMainVideo').click()"
+                >
+                  🎬 Pilih Video Produk
+                </button>
+                <button
+                  type="button"
+                  class="admin-btn-secondary"
+                  style="
+                    width: 100%;
+                    margin-top: 0.3rem;
+                    color: #ef4444;
+                    border-color: rgba(239, 68, 68, 0.3);
+                  "
+                  onclick="clearMainVideo()"
+                  id="clearVideoBtn"
+                  style="display: none"
+                >
+                  ✕ Hapus Video
+                </button>
+              </div>
+              <div class="admin-form-group">
+                <label>Harga Dasar (Rp) *</label
+                ><input
+                  type="text"
+                  id="adminPrice"
+                  inputmode="numeric"
+                  placeholder="15.000"
+                  oninput="formatRupiahInput(this)"
+                />
+              </div>
+              <div class="admin-form-group">
+                <label>Display Harga (opsional)</label
+                ><input
+                  type="text"
+                  id="adminDisplayPrice"
+                  placeholder="Contoh: Mulai Rp 15.000"
+                />
+              </div>
+              <div class="admin-form-group">
+                <label>Emoji / Icon (jika tidak ada gambar)</label
+                ><input type="text" id="adminEmoji" placeholder="💡" />
+              </div>
+              <div class="admin-form-group">
+                <label
+                  ><input
+                    type="checkbox"
+                    id="hasVariants"
+                    onchange="toggleVariantManager()"
+                    style="accent-color: var(--primary); margin-right: 0.4rem"
+                  />
+                  Produk memiliki varian (harga &amp; gambar berbeda per
+                  varian)</label
+                >
+              </div>
+              <div id="variantManagerSection" style="display: none">
+                <div class="variant-manager">
+                  <div class="variant-manager-title">🎛️ Manajemen Varian</div>
+                  <div id="variantList"></div>
+                  <button
+                    type="button"
+                    class="add-variant-btn"
+                    onclick="addVariantRow()"
+                  >
+                    + Tambah Varian
+                  </button>
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.75rem; margin-top: 1.25rem">
+                <button
+                  class="admin-btn-primary"
+                  style="flex: 1"
+                  onclick="saveProduct()"
+                >
+                  💾 Simpan Produk
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="admin-card">
+            <div class="admin-card-header">
+              <div class="admin-card-title">
+                📋 Daftar Produk (<span id="productCountLabel">0</span>)
+              </div>
+              <div style="display: flex; gap: 0.5rem">
+                <select
+                  id="adminFilterCat"
+                  onchange="renderAdminProductList()"
+                  style="
+                    padding: 0.5rem 0.75rem;
+                    background: rgba(10, 14, 39, 0.7);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                    border-radius: 8px;
+                    color: var(--light);
+                    font-size: 0.82rem;
+                    outline: none;
+                  "
+                >
+                  <option value="all">Semua</option>
+                  <option value="Lampu">Lampu</option>
+                  <option value="Kipas Angin">Kipas Angin</option>
+                  <option value="Kabel">Kabel</option>
+                  <option value="Saklar">Saklar</option>
+                  <option value="Antena">Antena</option>
+                  <option value="Stopkontak">Stopkontak</option>
+                  <option value="Lainnya">Lainnya</option>
+                </select>
+              </div>
+            </div>
+            <div class="admin-card-body" style="padding: 1rem">
+              <input
+                type="text"
+                class="admin-search"
+                id="adminSearch"
+                placeholder="🔍 Cari produk..."
+                oninput="renderAdminProductList()"
+              />
+              <div class="admin-product-list" id="adminProductList">
+                <div class="admin-empty-state">
+                  <div class="admin-empty-icon">📦</div>
+                  <p>Belum ada produk.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="admin-card admin-orders-card">
+          <div class="admin-card-header">
+            <div class="admin-card-title">
+              🧾 Pesanan &amp; Invoice (<span id="adminOrderCountLabel">0</span
+              >)
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <select
+                id="adminOrderFilterStatus"
+                onchange="filterAdminOrders()"
+                style="
+                  padding: 0.5rem 0.75rem;
+                  background: rgba(10, 14, 39, 0.7);
+                  border: 1px solid rgba(0, 212, 255, 0.2);
+                  border-radius: 8px;
+                  color: var(--light);
+                  font-size: 0.82rem;
+                  outline: none;
+                "
+              >
+                <option value="all">Semua Status</option>
+                <option value="Menunggu Konfirmasi">
+                  🕒 Menunggu Konfirmasi
+                </option>
+                <option value="Diproses">📦 Diproses</option>
+                <option value="Dikirim">🚚 Dikirim</option>
+                <option value="Selesai">✅ Selesai</option>
+                <option value="Dibatalkan">❌ Dibatalkan</option>
+              </select>
+              <button
+                class="admin-btn-view"
+                style="padding: 0.5rem 0.85rem; font-size: 0.78rem"
+                onclick="loadAdminOrders()"
+                title="Muat ulang"
+              >
+                🔄
+              </button>
+            </div>
+          </div>
+          <div class="admin-card-body" style="padding: 1rem">
+            <input
+              type="text"
+              class="admin-search"
+              id="adminOrderSearch"
+              placeholder="🔍 Cari nama, No. HP, atau No. Invoice..."
+              oninput="filterAdminOrders()"
+            />
+            <div class="admin-order-list" id="adminOrderList">
+              <div class="admin-empty-state">
+                <div class="admin-empty-icon">🧾</div>
+                <p>Belum ada pesanan.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="admin-notif" id="adminNotif"></div>
+    </div>
+    <div class="help-btn" onclick="toggleHelpModal()" title="Panduan">❓</div>
+    <div id="helpModal" class="help-modal">
+      <div class="help-container">
+        <div class="help-header">
+          <h2 class="help-title">📚 Panduan Penggunaan</h2>
+          <button class="help-close" onclick="toggleHelpModal()">✕</button>
+        </div>
+        <div class="help-section">
+          <h3>👋 Selamat Datang!</h3>
+          <p>
+            Panduan ini membantu Anda berbelanja dengan mudah di Sadewa
+            Elektronik.
+          </p>
+        </div>
+        <div class="help-section">
+          <h3>🔍 Cara Mencari Produk</h3>
+          <ol class="help-steps">
+            <li class="help-step">
+              <span class="help-step-number">1</span
+              ><span class="help-step-text"
+                ><strong>Search Bar:</strong> Ketik nama produk di kotak
+                pencarian</span
+              >
+            </li>
+            <li class="help-step">
+              <span class="help-step-number">2</span
+              ><span class="help-step-text"
+                ><strong>Filter Kategori:</strong> Klik tombol kategori</span
+              >
+            </li>
+            <li class="help-step">
+              <span class="help-step-number">3</span
+              ><span class="help-step-text"
+                ><strong>Detail Produk:</strong> Scroll ke bawah melihat semua
+                produk</span
+              >
+            </li>
+          </ol>
+        </div>
+        <div class="help-section">
+          <h3>🛒 Cara Berbelanja</h3>
+          <div class="help-feature">
+            <div class="help-feature-title">🛒 Beli Sekarang</div>
+            <div class="help-feature-desc">
+              Pilih produk → Pilih varian → Klik "Beli Sekarang"
+            </div>
+          </div>
+          <div class="help-feature">
+            <div class="help-feature-title">🛍️ Keranjang</div>
+            <div class="help-feature-desc">
+              Klik 🛒 di samping harga → Buka keranjang → Checkout
+            </div>
+          </div>
+        </div>
+        <div class="help-tips">
+          <div class="help-tips-title">💡 Tips</div>
+          <ul>
+            <li>Pilih varian sebelum tambah ke keranjang</li>
+            <li>Simpan bukti transfer</li>
+            <li>Gunakan AI Assistant jika ragu</li>
+          </ul>
+        </div>
+        <div class="help-contact">
+          <h4>💬 Butuh Bantuan?</h4>
+          <p>CS kami siap membantu!</p>
+          <a
+            href="https://wa.me/+6285872189172"
+            class="help-contact-btn"
+            target="_blank"
+            >Chat WhatsApp</a
+          >
+        </div>
+      </div>
+    </div>
+
+    <div id="cartModal" class="cart-modal" onclick="closeCartOnOverlay(event)">
+      <div class="cart-sidebar">
+        <div class="cart-header">
+          <h2 class="cart-title">🛒 Keranjang</h2>
+          <button class="cart-close" onclick="toggleCart()">✕</button>
+        </div>
+        <div class="cart-items" id="cartItemsContainer">
+          <div class="cart-empty">
+            <div class="cart-empty-icon">🛒</div>
+            <p class="cart-empty-text">Keranjang masih kosong</p>
+          </div>
+        </div>
+        <div class="cart-footer">
+          <div class="cart-total">
+            <span class="cart-total-label">Total:</span
+            ><span class="cart-total-value" id="cartTotalValue">Rp 0</span>
+          </div>
+          <button class="cart-checkout-btn" onclick="checkoutWithPayment()">
+            💳 Lanjut ke Pembayaran
+          </button>
+          <button class="cart-clear-btn" onclick="clearCart()">
+            Kosongkan Keranjang
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- PRODUCT DETAIL MODAL (SHOPEE STYLE) -->
+    <div
+      id="productDetailModal"
+      class="product-detail-modal"
+      onclick="if (event.target === this) closeProductDetail();"
+    >
+      <div class="product-detail-content">
+        <button
+          class="btn-close-detail"
+          onclick="closeProductDetail()"
+          title="Tutup"
+        >
+          ✕
+        </button>
+        <div class="detail-media-container">
+          <div class="main-view" id="detailMainView"></div>
+          <div class="thumbnail-strip" id="detailThumbStrip"></div>
+        </div>
+        <div class="detail-info">
+          <div class="detail-category" id="detailCategory"></div>
+          <h2 class="detail-title" id="detailTitle"></h2>
+          <div class="detail-price" id="detailPrice"></div>
+          <div class="detail-stock" id="detailStock"></div>
+          <p class="detail-desc" id="detailDesc"></p>
+          <div class="detail-variants" id="detailVariants"></div>
+          <div class="detail-actions">
+            <button
+              class="btn-add-cart-wide"
+              id="detailAddCartBtn"
+              onclick="addToCart(currentDetailProductId)"
+            >
+              🛒 Tambah Keranjang
+            </button>
+            <button
+              class="btn"
+              id="detailBuyBtn"
+              onclick="buyDirectly(currentDetailProductId)"
+            >
+              Beli Sekarang
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="paymentModal" class="payment-modal">
+      <div class="payment-container" id="checkoutContainer">
+        <div class="payment-header">
+          <h2 class="payment-title" id="checkoutTitle">📍 Alamat Pengiriman</h2>
+          <button class="payment-close" onclick="closePaymentModal()">✕</button>
+        </div>
+
+        <!-- STEP 1: SHIPPING ADDRESS -->
+        <div id="checkoutStep1" class="checkout-step active">
+          <div class="form-group-payment">
+            <label>Nama Lengkap Penerima *</label>
+            <input
+              type="text"
+              id="shipName"
+              placeholder="Masukkan nama lengkap"
+              required
+            />
+          </div>
+          <div class="form-group-payment">
+            <label>Nomor HP / WhatsApp *</label>
+            <input
+              type="tel"
+              id="shipPhone"
+              placeholder="Contoh: 08123456789"
+              oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+              required
+            />
+          </div>
+          <div class="form-group-payment">
+            <label>Provinsi, Kota, Kecamatan, Kode Pos *</label>
+            <input
+              type="text"
+              id="shipRegion"
+              placeholder="Contoh: Jawa Barat, Sukabumi, Cidahu, 43358"
+              required
+            />
+          </div>
+          <div class="form-group-payment">
+            <label>Alamat Lengkap (Nama Jalan, Gedung, No. Rumah) *</label>
+            <textarea
+              id="shipAddress"
+              placeholder="Masukkan alamat lengkap..."
+              rows="3"
+              style="
+                width: 100%;
+                padding: 0.75rem;
+                border: 1px solid rgba(0, 212, 255, 0.3);
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.05);
+                color: var(--dark);
+                font-family: inherit;
+                resize: vertical;
+              "
+              required
+            ></textarea>
+          </div>
+          <div class="form-group-payment">
+            <label>Detail Patokan (Opsional)</label>
+            <input
+              type="text"
+              id="shipDetail"
+              placeholder="Contoh: Patokan dekat masjid warna hijau"
+            />
+          </div>
+          <div class="form-group-payment">
+            <label>Pesan untuk Penjual / Kurir (Opsional)</label>
+            <input
+              type="text"
+              id="shipNote"
+              placeholder="Tinggalkan pesan..."
+            />
+          </div>
+
+          <div class="form-group-payment ongkir-box" id="ongkirBoxWrap">
+            <label>🚚 Cek Ongkos Kirim</label>
+            <div class="autocomplete-wrap">
+              <input
+                type="text"
+                id="shipDestSearch"
+                placeholder="Ketik kota/kecamatan tujuan..."
+                autocomplete="off"
+              />
+              <div class="autocomplete-list" id="shipDestList"></div>
+            </div>
+            <input type="hidden" id="shipDestId" />
+            <select id="shipCourier" style="margin-top: 0.75rem">
+              <option value="">-- Pilih Kurir --</option>
+              <option value="jne">JNE</option>
+              <option value="jnt">J&T</option>
+              <option value="pos">Pos Indonesia</option>
+              <option value="anteraja">AnterAja</option>
+            </select>
+            <button
+              type="button"
+              class="admin-btn-secondary"
+              id="cekOngkirBtn"
+              style="width: 100%; margin-top: 0.75rem"
+            >
+              Hitung Ongkir
+            </button>
+            <div id="ongkirResult" style="margin-top: 0.6rem"></div>
+          </div>
+
+          <button
+            class="payment-submit"
+            onclick="goToPaymentStep()"
+            style="margin-top: 1rem"
+          >
+            Lanjut ke Pembayaran ➡️
+          </button>
+        </div>
+        <!-- STEP 2: PAYMENT METHOD -->
+        <div id="checkoutStep2" class="checkout-step" style="display: none">
+          <button
+            onclick="goToAddressStep()"
+            style="
+              background: none;
+              border: none;
+              color: var(--primary);
+              cursor: pointer;
+              font-weight: 600;
+              margin-bottom: 1rem;
+              display: inline-flex;
+              align-items: center;
+              gap: 5px;
+            "
+          >
+            ⬅️ Kembali ke Alamat
+          </button>
+
+          <div class="order-summary">
+            <h3>📦 Ringkasan Pesanan</h3>
+            <div id="paymentOrderItems"></div>
+            <div class="order-total">
+              <span class="order-total-label">Total Harga:</span
+              ><span class="order-total-value" id="paymentTotal">Rp 0</span>
+            </div>
+          </div>
+          <div class="payment-guide">
+            <h4>📋 Panduan Pembayaran</h4>
+            <ol class="guide-steps">
+              <li class="guide-step">
+                <span class="step-number">1</span
+                ><span class="step-text">Pilih metode pembayaran</span>
+              </li>
+              <li class="guide-step">
+                <span class="step-number">2</span
+                ><span class="step-text">Isi data pembayaran</span>
+              </li>
+              <li class="guide-step">
+                <span class="step-number">3</span
+                ><span class="step-text">Periksa kembali pesanan</span>
+              </li>
+              <li class="guide-step">
+                <span class="step-number">4</span
+                ><span class="step-text">Klik "Konfirmasi Pembayaran"</span>
+              </li>
+              <li class="guide-step">
+                <span class="step-number">5</span
+                ><span class="step-text">Detail terkirim ke WhatsApp kami</span>
+              </li>
+            </ol>
+            <div class="guide-note">
+              <strong>💡 Tips:</strong> Pastikan data sudah benar sebelum
+              konfirmasi.
+            </div>
+          </div>
+          <div class="payment-methods">
+            <h3>Pilih Metode Pembayaran</h3>
+            <div class="payment-tabs">
+              <div
+                class="payment-tab active"
+                onclick="switchPaymentTab('bank', this)"
+              >
+                <span
+                  class="payment-tab-icon"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 3px;
+                    min-height: 36px;
+                    flex-wrap: wrap;
+                  "
+                  ><svg
+                    viewBox="0 0 50 14"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="
+                      height: 14px;
+                      background: #00529b;
+                      border-radius: 3px;
+                      padding: 1px 3px;
+                    "
+                  >
+                    <text
+                      x="25"
+                      y="11"
+                      text-anchor="middle"
+                      font-family="Arial Black,sans-serif"
+                      font-size="10"
+                      font-weight="900"
+                      fill="white"
+                    >
+                      BRI
+                    </text>
+                  </svg></span
+                >
+                <div>Transfer</div>
+              </div>
+              <div class="payment-tab" onclick="switchPaymentTab('qris', this)">
+                <span
+                  class="payment-tab-icon"
+                  style="
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    min-height: 36px;
+                  "
+                  ><svg
+                    viewBox="0 0 120 40"
+                    xmlns="http://www.w3.org/2000/svg"
+                    style="height: 26px"
+                  >
+                    <rect width="120" height="40" rx="5" fill="white" />
+                    <rect
+                      x="0"
+                      y="0"
+                      width="10"
+                      height="40"
+                      rx="5"
+                      fill="#e4002b"
+                    />
+                    <text
+                      x="65"
+                      y="27"
+                      text-anchor="middle"
+                      font-family="Arial Black,sans-serif"
+                      font-size="22"
+                      font-weight="900"
+                      fill="#333"
+                    >
+                      QRIS
+                    </text>
+                  </svg></span
+                >
+                <div>QRIS</div>
+              </div>
+            </div>
+
+            <div id="bankPayment" class="payment-content active">
+              <div class="payment-options">
+                <div
+                  class="payment-option selected"
+                  onclick="selectPaymentOption(this, 'bri')"
+                >
+                  <div class="payment-option-icon">
+                    <div class="pay-logo-box" style="background: #00529b">
+                      <svg
+                        viewBox="0 0 200 70"
+                        xmlns="http://www.w3.org/2000/svg"
+                        style="width: 100%; height: 100%"
+                      >
+                        <rect width="200" height="70" fill="#00529b" />
+                        <text
+                          x="100"
+                          y="46"
+                          text-anchor="middle"
+                          font-family="Arial Black,sans-serif"
+                          font-size="28"
+                          font-weight="900"
+                          fill="white"
+                        >
+                          BRI
+                        </text>
+                      </svg>
+                    </div>
+                  </div>
+                  <div class="payment-option-name">BRI</div>
+                </div>
+              </div>
+              <div class="bank-account-info">
+                <h4>Informasi Transfer</h4>
+                <div class="bank-detail">
+                  <div>
+                    <div class="bank-detail-label">Bank</div>
+                    <div class="bank-detail-value" id="selectedBankName">
+                      BRI
+                    </div>
+                  </div>
+                </div>
+                <div class="bank-detail">
+                  <div>
+                    <div class="bank-detail-label">Nomor Rekening</div>
+                    <div class="bank-detail-value" id="bankAccountNumber">
+                      1234567890
+                    </div>
+                  </div>
+                  <button
+                    class="copy-btn"
+                    onclick="copyToClipboard('bankAccountNumber')"
+                  >
+                    📋 Salin
+                  </button>
+                </div>
+                <div class="bank-detail">
+                  <div>
+                    <div class="bank-detail-label">Atas Nama</div>
+                    <div class="bank-detail-value">SADEWA ELEKTRONIK</div>
+                  </div>
+                </div>
+                <div class="bank-detail">
+                  <div>
+                    <div class="bank-detail-label">Jumlah Transfer</div>
+                    <div class="bank-detail-value" id="transferAmount">
+                      Rp 0
+                    </div>
+                  </div>
+                  <button class="copy-btn" onclick="copyTransferAmount()">
+                    📋 Salin
+                  </button>
+                </div>
+              </div>
+              <div class="payment-form" style="margin-top: 1.5rem">
+                <div class="form-group-payment">
+                  <label>Nama Pengirim</label
+                  ><input
+                    type="text"
+                    id="senderName"
+                    placeholder="Nama sesuai rekening"
+                  />
+                </div>
+                <div class="form-group-payment">
+                  <label>Upload Bukti Transfer (Opsional)</label
+                  ><input
+                    type="file"
+                    id="transferProof"
+                    accept="image/*"
+                    style="padding: 0.75rem"
+                  />
+                </div>
+              </div>
+              <div class="method-specific-guide">
+                <h5>🏦 Langkah Transfer Bank:</h5>
+                <ul>
+                  <li>Salin nomor rekening</li>
+                  <li>Buka m-banking Anda</li>
+                  <li>Transfer sesuai total pembayaran</li>
+                  <li>Isi nama pengirim &amp; upload bukti</li>
+                </ul>
+              </div>
+            </div>
+
+            <div id="qrisPayment" class="payment-content">
+              <div style="text-align: center; padding: 1.5rem 0">
+                <div
+                  style="
+                    display: inline-block;
+                    background: white;
+                    border-radius: 20px;
+                    padding: 1.5rem;
+                    box-shadow: 0 0 40px rgba(228, 0, 43, 0.3);
+                  "
+                >
+                  <!-- QRIS QR CODE - object-fit:contain agar tidak blur/terpotong -->
+                  <div
+                    id="qrisCodeBox"
+                    style="
+                      width: min(300px, calc(100vw - 100px));
+                      height: min(300px, calc(100vw - 100px));
+                      border-radius: 14px;
+                      margin: 0 auto;
+                      border: 4px solid #e4002b;
+                      box-shadow:
+                        0 0 25px rgba(228, 0, 43, 0.4),
+                        0 4px 16px rgba(0, 0, 0, 0.3);
+                      background: #fff;
+                      display: flex;
+                      align-items: center;
+                      justify-content: center;
+                    "
+                  >
+                    <!-- Menggunakan gambar QRIS toko Sadewa Elektronik asli -->
+                    <img
+                      id="qrisImage"
+                      src="/qris-sadewa.jpeg"
+                      alt="QRIS Sadewa Elektronik Cidahu"
+                      style="
+                        width: 100%;
+                        height: 100%;
+                        object-fit: contain;
+                        image-rendering: pixelated;
+                        display: block;
+                        border-radius: 8px;
+                      "
+                      loading="lazy"
+                    />
+                  </div>
+                  <button
+                    onclick="downloadQRIS()"
+                    style="
+                      margin-top: 1rem;
+                      padding: 0.5rem 1rem;
+                      background: #e4002b;
+                      color: white;
+                      border: none;
+                      border-radius: 8px;
+                      font-weight: bold;
+                      cursor: pointer;
+                      display: inline-flex;
+                      align-items: center;
+                      gap: 8px;
+                    "
+                  >
+                    <span>⬇️</span> Simpan QRIS
+                  </button>
+                  <p
+                    style="
+                      color: #444;
+                      font-size: 0.82rem;
+                      margin-top: 0.75rem;
+                      font-weight: 700;
+                    "
+                  >
+                    📲 Scan QR untuk membayar
+                  </p>
+                  <p
+                    style="
+                      color: #777;
+                      font-size: 0.75rem;
+                      margin-top: 0.2rem;
+                      font-weight: 600;
+                    "
+                  >
+                    SADEWA ELEKTRONIK CIDAHU
+                  </p>
+                  <p style="color: #aaa; font-size: 0.7rem; margin-top: 0.1rem">
+                    NMID: ID1024348386623 · A01
+                  </p>
+                </div>
+                <div
+                  style="
+                    margin-top: 1.5rem;
+                    background: rgba(0, 212, 255, 0.06);
+                    border: 1px solid rgba(0, 212, 255, 0.2);
+                    border-radius: 14px;
+                    padding: 1.25rem;
+                    text-align: left;
+                  "
+                >
+                  <div
+                    style="
+                      color: var(--primary);
+                      font-weight: 800;
+                      margin-bottom: 0.75rem;
+                    "
+                  >
+                    📲 Cara Bayar via QRIS:
+                  </div>
+                  <div
+                    style="display: flex; flex-direction: column; gap: 0.6rem"
+                  >
+                    <div
+                      style="
+                        display: flex;
+                        gap: 0.75rem;
+                        align-items: flex-start;
+                      "
+                    >
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            var(--primary),
+                            var(--secondary)
+                          );
+                          color: white;
+                          width: 24px;
+                          height: 24px;
+                          min-width: 24px;
+                          border-radius: 50%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          font-size: 0.8rem;
+                          font-weight: 900;
+                        "
+                        >1</span
+                      ><span style="color: var(--gray); font-size: 0.9rem"
+                        >Buka e-wallet atau m-banking yang mendukung QRIS</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        gap: 0.75rem;
+                        align-items: flex-start;
+                      "
+                    >
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            var(--primary),
+                            var(--secondary)
+                          );
+                          color: white;
+                          width: 24px;
+                          height: 24px;
+                          min-width: 24px;
+                          border-radius: 50%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          font-size: 0.8rem;
+                          font-weight: 900;
+                        "
+                        >2</span
+                      ><span style="color: var(--gray); font-size: 0.9rem"
+                        >Pilih menu Scan / Bayar QRIS</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        gap: 0.75rem;
+                        align-items: flex-start;
+                      "
+                    >
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            var(--primary),
+                            var(--secondary)
+                          );
+                          color: white;
+                          width: 24px;
+                          height: 24px;
+                          min-width: 24px;
+                          border-radius: 50%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          font-size: 0.8rem;
+                          font-weight: 900;
+                        "
+                        >3</span
+                      ><span style="color: var(--gray); font-size: 0.9rem"
+                        >Scan QR Code, masukkan nominal sesuai total
+                        belanja</span
+                      >
+                    </div>
+                    <div
+                      style="
+                        display: flex;
+                        gap: 0.75rem;
+                        align-items: flex-start;
+                      "
+                    >
+                      <span
+                        style="
+                          background: linear-gradient(
+                            135deg,
+                            var(--primary),
+                            var(--secondary)
+                          );
+                          color: white;
+                          width: 24px;
+                          height: 24px;
+                          min-width: 24px;
+                          border-radius: 50%;
+                          display: flex;
+                          align-items: center;
+                          justify-content: center;
+                          font-size: 0.8rem;
+                          font-weight: 900;
+                        "
+                        >4</span
+                      ><span style="color: var(--gray); font-size: 0.9rem"
+                        >Kirim screenshot ke WhatsApp kami</span
+                      >
+                    </div>
+                  </div>
+                  <div
+                    style="
+                      margin-top: 1rem;
+                      padding: 0.75rem;
+                      background: rgba(16, 185, 129, 0.1);
+                      border: 1px solid rgba(16, 185, 129, 0.3);
+                      border-radius: 8px;
+                      color: #10b981;
+                      font-size: 0.85rem;
+                    "
+                  >
+                    ✅ QRIS berlaku untuk semua e-wallet &amp; m-banking di
+                    Indonesia
+                  </div>
+                </div>
+              </div>
+              <div class="form-group-payment" style="margin-top: 1rem">
+                <label>Nama Pembayar</label
+                ><input type="text" id="qrisName" placeholder="Nama Anda" />
+              </div>
+            </div>
+            <!-- End of STEP 2 -->
+
+            <div id="paymentActionContainer" style="display: none">
+              <div class="security-note">
+                <span>🔒</span><span>Transaksi Anda aman dan terenkripsi.</span>
+              </div>
+              <button
+                class="payment-submit"
+                id="paymentSubmitBtn"
+                onclick="processPayment()"
+              >
+                Konfirmasi Pembayaran
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVOICE MODAL -->
+    <div
+      id="invoiceModal"
+      class="payment-modal"
+      onclick="closeInvoiceOnOverlay(event)"
+    >
+      <div class="payment-container invoice-container">
+        <div class="payment-header no-print">
+          <h2 class="payment-title" style="font-size: 1.5rem">
+            🧾 Invoice Pesanan
+          </h2>
+          <button class="payment-close" onclick="closeInvoiceModal()">✕</button>
+        </div>
+        <div id="invoiceContent"></div>
+        <div class="invoice-actions no-print">
+          <button class="btn-add-cart-wide" onclick="printInvoice()">
+            🖨️ Cetak / Simpan PDF
+          </button>
+          <button class="cart-clear-btn" onclick="closeInvoiceModal()">
+            Tutup
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIWAYAT PESANAN MODAL -->
+    <div
+      id="riwayatModal"
+      class="payment-modal"
+      onclick="closeRiwayatOnOverlay(event)"
+    >
+      <div class="payment-container riwayat-container">
+        <div class="payment-header">
+          <h2 class="payment-title" style="font-size: 1.5rem">
+            🧾 Riwayat Pesanan
+          </h2>
+          <button class="payment-close" onclick="closeRiwayatModal()">✕</button>
+        </div>
+        <div id="riwayatList" class="riwayat-list"></div>
+      </div>
+    </div>
+
+    <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
+      <div class="mobile-bottom-nav-inner">
+        <a href="#home" class="mbn-item"
+          ><span class="mbn-icon">🏠</span><span>Beranda</span></a
+        >
+        <a href="#products" class="mbn-item"
+          ><span class="mbn-icon">⚡</span><span>Produk</span></a
+        >
+        <button class="mbn-item" onclick="toggleCart()">
+          <span class="mbn-icon">🛒</span
+          ><span class="mbn-cart-badge" id="mbnCartBadge">0</span
+          ><span>Keranjang</span>
+        </button>
+        <a href="#chat" class="mbn-item">
+          <span class="mbn-icon">🤖</span>
+          <span>AI</span>
+        </a>
+        <a href="#contact" class="mbn-item"
+          ><span class="mbn-icon">📞</span><span>Kontak</span></a
+        >
+      </div>
+    </nav>
+    <!-- =========================================
        SCRIPTS
   ========================================= -->
-      <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+    <script
+      data-cfasync="false"
+      src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"
+    ></script>
 
-
-      <!-- =========================================
+    <!-- =========================================
        CHATBOT
   ========================================= -->
-      <div id="toastNotif" class="toast-notification"></div>
+    <div id="toastNotif" class="toast-notification"></div>
 
-
-      <!-- ⛔ DINONAKTIFKAN: Floating Chat Button custom (diganti Tawk.to widget) -->
-      <!-- Kalau mau balik pakai chat custom lagi, un-comment blok ini -->
-      <!--
+    <!-- ⛔ DINONAKTIFKAN: Floating Chat Button custom (diganti Tawk.to widget) -->
+    <!-- Kalau mau balik pakai chat custom lagi, un-comment blok ini -->
+    <!--
       <button class="chat-bubble-btn" id="chatBubbleBtn" onclick="toggleBuyerChat()" title="Chat dengan Penjual"
         style="display:none;">
         <span class="cb-icon">💬</span>
@@ -1119,138 +2614,151 @@
       </button>
       -->
 
-      <!-- BUYER: Chat Window -->
-      <div class="buyer-chat-window" id="buyerChatWindow">
-        <div class="bcw-header">
-          <div class="bcw-avatar"><img src="./logo-sadewa.png" alt="Sadewa" style="width:100%;height:100%;object-fit:cover;border-radius:50%;"></div>
-          <div class="bcw-store-info">
-            <div class="bcw-store-name">Sadewa Elektronik</div>
-            <div class="bcw-store-status">Online · Respon cepat</div>
-          </div>
-          <button class="bcw-close" onclick="toggleBuyerChat()">✕</button>
+    <!-- ORDER CHANNEL CHOICE MODAL -->
+    <div
+      class="channel-choice-overlay"
+      id="channelChoiceOverlay"
+      onclick="if (event.target === this) closeChannelChoice();"
+    >
+      <div class="channel-choice-box">
+        <div class="channel-choice-title">📨 Kirim Pesanan Melalui</div>
+        <div class="channel-choice-desc">
+          Pilih cara untuk mengirim konfirmasi pesanan Anda ke kami
         </div>
-        <div class="bcw-messages" id="bcwMessages">
-          <div class="bcw-msg recv">
-            <div class="bcw-bubble">Halo! 👋 Selamat datang di Sadewa Elektronik. Ada yang bisa kami bantu?</div>
-            <div class="bcw-time">Sadewa · Otomatis</div>
-          </div>
-        </div>
-        <div class="bcw-input-area">
-          <textarea class="bcw-input" id="bcwInput" placeholder="Ketik pesan..." rows="1"
-            onkeydown="handleBcwKey(event)" oninput="autoResizeBcw(this)"></textarea>
-          <button class="bcw-send" id="bcwSendBtn" onclick="sendBuyerMessage()">➤</button>
-        </div>
-      </div>
-
-      <!-- ADMIN: Chat Panel -->
-      <div class="admin-chat-panel" id="adminChatPanel">
-        <div class="acp-sidebar">
-          <div class="acp-sidebar-header">
-            <div class="acp-sidebar-title">💬 Pesan Masuk</div>
-            <input type="text" class="acp-search" id="acpSearch" placeholder="Cari pelanggan..."
-              oninput="filterConversations()">
-          </div>
-          <div class="acp-conv-list" id="acpConvList">
-            <div class="acp-empty-state">
-              <div class="acp-empty-icon">💬</div>
-              <p style="font-size:.875rem;">Belum ada percakapan</p>
-            </div>
-          </div>
-        </div>
-        <div class="acp-chat-area" id="acpChatArea">
-          <div class="acp-empty-state" style="display:flex;">
-            <div class="acp-empty-icon">📨</div>
-            <p style="font-size:.875rem;text-align:center;">Pilih percakapan<br>untuk mulai balas pesan</p>
-          </div>
-        </div>
-      </div>
-
-      <!-- ORDER CHANNEL CHOICE MODAL -->
-      <div class="channel-choice-overlay" id="channelChoiceOverlay"
-        onclick="if(event.target===this)closeChannelChoice()">
-        <div class="channel-choice-box">
-          <div class="channel-choice-title">📨 Kirim Pesanan Melalui</div>
-          <div class="channel-choice-desc">Pilih cara untuk mengirim konfirmasi pesanan Anda ke kami</div>
-          <div class="channel-choice-options">
-            <div class="channel-option-btn" onclick="sendViaWhatsApp()">
-              <div class="channel-option-icon wa">💬</div>
-              <div class="channel-option-info">
-                <div class="channel-option-name">WhatsApp</div>
-                <div class="channel-option-sub">Kirim pesanan langsung ke WhatsApp kami</div>
+        <div class="channel-choice-options">
+          <div class="channel-option-btn" onclick="sendViaWhatsApp()">
+            <div class="channel-option-icon wa">💬</div>
+            <div class="channel-option-info">
+              <div class="channel-option-name">WhatsApp</div>
+              <div class="channel-option-sub">
+                Kirim pesanan langsung ke WhatsApp kami
               </div>
-              <div class="channel-option-arrow">›</div>
             </div>
-            <div class="channel-option-btn" onclick="sendViaChat()">
-              <div class="channel-option-icon chat">⚡</div>
-              <div class="channel-option-info">
-                <div class="channel-option-name">Chat Langsung</div>
-                <div class="channel-option-sub">Chat real-time dengan admin di website ini</div>
+            <div class="channel-option-arrow">›</div>
+          </div>
+          <div class="channel-option-btn" onclick="sendViaChat()">
+            <div class="channel-option-icon chat">⚡</div>
+            <div class="channel-option-info">
+              <div class="channel-option-name">Chat Langsung</div>
+              <div class="channel-option-sub">
+                Chat real-time dengan admin di website ini
               </div>
-              <div class="channel-option-arrow">›</div>
             </div>
+            <div class="channel-option-arrow">›</div>
           </div>
-          <button class="channel-choice-cancel" onclick="closeChannelChoice()">Batal</button>
         </div>
+        <button class="channel-choice-cancel" onclick="closeChannelChoice()">
+          Batal
+        </button>
       </div>
-      <!-- CHAT PAGE FULL SCREEN -->
-      <div class="chat-page-overlay" id="chatPageOverlay">
-        <!-- Top bar -->
-        <div class="cp-topbar">
-          <button class="cp-back-btn" onclick="closeChatPage()" title="Kembali">←</button>
-          <div class="cp-seller-avatar">
-            <img src="./logo-sadewa.png" alt="Sadewa" style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-            <span class="cp-seller-online"></span>
-          </div>
-          <div class="cp-seller-info">
-            <div class="cp-seller-name">Sadewa Elektronik</div>
-            <div class="cp-seller-status">Online · Respon cepat</div>
-          </div>
-          <a href="https://wa.me/+6285872189172" target="_blank" class="cp-wa-btn">
-            💬 <span>WhatsApp</span>
-          </a>
+    </div>
+    <!-- CHAT PAGE FULL SCREEN -->
+    <div class="chat-page-overlay" id="chatPageOverlay">
+      <!-- Top bar -->
+      <div class="cp-topbar">
+        <button class="cp-back-btn" onclick="closeChatPage()" title="Kembali">
+          ←
+        </button>
+        <div class="cp-seller-avatar">
+          <img
+            src="./logo-sadewa.png"
+            alt="Sadewa"
+            style="
+              width: 100%;
+              height: 100%;
+              object-fit: cover;
+              border-radius: 50%;
+            "
+          />
+          <span class="cp-seller-online"></span>
         </div>
-
-        <!-- Quick reply chips -->
-        <div class="cp-quick-chips" id="cpQuickChips">
-          <button class="cp-chip" onclick="cpSendChip('Halo, saya ingin tanya produk')">👋 Halo</button>
-          <button class="cp-chip" onclick="cpSendChip('Bagaimana status pesanan saya?')">📦 Cek pesanan</button>
-          <button class="cp-chip" onclick="cpSendChip('Apakah ada promo atau diskon?')">🏷 Promo</button>
-          <button class="cp-chip" onclick="cpSendChip('Berapa lama pengiriman ke daerah saya?')">🚚 Pengiriman</button>
-          <button class="cp-chip" onclick="cpSendChip('Apakah produk bergaransi?')">✅ Garansi</button>
+        <div class="cp-seller-info">
+          <div class="cp-seller-name">Sadewa Elektronik</div>
+          <div class="cp-seller-status">Online · Respon cepat</div>
         </div>
-
-        <!-- Messages area -->
-        <div class="cp-messages-area" id="cpMessagesArea"></div>
-
-        <!-- Input area -->
-        <div class="cp-input-area">
-          <textarea class="cp-input" id="cpInput" placeholder="Ketik pesan..." rows="1" onkeydown="cpHandleKey(event)"
-            oninput="cpAutoResize(this)"></textarea>
-          <button class="cp-send-btn" id="cpSendBtn" onclick="cpSendMessage()">➤</button>
-        </div>
+        <a
+          href="https://wa.me/+6285872189172"
+          target="_blank"
+          class="cp-wa-btn"
+        >
+          💬 <span>WhatsApp</span>
+        </a>
       </div>
 
-      <!-- Toast notification -->
-      <div class="cp-toast" id="cpToast"></div>
+      <!-- Quick reply chips -->
+      <div class="cp-quick-chips" id="cpQuickChips">
+        <button
+          class="cp-chip"
+          onclick="cpSendChip('Halo, saya ingin tanya produk')"
+        >
+          👋 Halo
+        </button>
+        <button
+          class="cp-chip"
+          onclick="cpSendChip('Bagaimana status pesanan saya?')"
+        >
+          📦 Cek pesanan
+        </button>
+        <button
+          class="cp-chip"
+          onclick="cpSendChip('Apakah ada promo atau diskon?')"
+        >
+          🏷 Promo
+        </button>
+        <button
+          class="cp-chip"
+          onclick="cpSendChip('Berapa lama pengiriman ke daerah saya?')"
+        >
+          🚚 Pengiriman
+        </button>
+        <button
+          class="cp-chip"
+          onclick="cpSendChip('Apakah produk bergaransi?')"
+        >
+          ✅ Garansi
+        </button>
+      </div>
 
-  <script type="module" src="firebase-app.js"></script>
-  <script src="Script.js" defer></script> 
-  <script src="ongkir.js" defer></script>
+      <!-- Messages area -->
+      <div class="cp-messages-area" id="cpMessagesArea"></div>
 
-  <!--Start of Tawk.to Script-->
-<script type="text/javascript">
-var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
-(function(){
-var s1=document.createElement("script"),s0=document.getElementsByTagName("script")[0];
-s1.async=true;
-s1.src='https://embed.tawk.to/6a926b04120e0034480d22ac/1k15v42qm';
-s1.charset='UTF-8';
-s1.setAttribute('crossorigin','*');
-s0.parentNode.insertBefore(s1,s0);
-})();
-</script>
-<!--End of Tawk.to Script-->
+      <!-- Input area -->
+      <div class="cp-input-area">
+        <textarea
+          class="cp-input"
+          id="cpInput"
+          placeholder="Ketik pesan..."
+          rows="1"
+          onkeydown="cpHandleKey(event)"
+          oninput="cpAutoResize(this)"
+        ></textarea>
+        <button class="cp-send-btn" id="cpSendBtn" onclick="cpSendMessage()">
+          ➤
+        </button>
+      </div>
+    </div>
 
-</body>
+    <!-- Toast notification -->
+    <div class="cp-toast" id="cpToast"></div>
 
+    <script type="module" src="firebase-app.js"></script>
+    <script src="Script.js" defer></script>
+    <script src="ongkir.js" defer></script>
+
+    <!--Start of Tawk.to Script-->
+    <script type="text/javascript">
+      var Tawk_API = Tawk_API || {},
+        Tawk_LoadStart = new Date();
+      (function () {
+        var s1 = document.createElement("script"),
+          s0 = document.getElementsByTagName("script")[0];
+        s1.async = true;
+        s1.src = "https://embed.tawk.to/6a926b04120e0034480d22ac/1k15v42qm";
+        s1.charset = "UTF-8";
+        s1.setAttribute("crossorigin", "*");
+        s0.parentNode.insertBefore(s1, s0);
+      })();
+    </script>
+    <!--End of Tawk.to Script-->
+  </body>
 </html>

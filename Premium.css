@@ -3990,21 +3990,21 @@
         flex-shrink: 0
       }
 
-      .admin-btn {
-        padding: .55rem .6rem !important;
-        font-size: 1rem;
-        flex-shrink: 0
-      }
-      
-    /* Chat page full-screen */
-    .chat-page-overlay {
-      position: fixed;
-      inset: 0;
-      background: #050816;
-      z-index: 8000;
-      display: none;
-      flex-direction: column;
+        .admin-btn {
+          padding: .55rem .6rem !important;
+          font-size: 1rem;
+          flex-shrink: 0
+        }
     }
+      /* Chat page full-screen */
+      .chat-page-overlay {
+        position: fixed;
+        inset: 0;
+        background: #050816;
+        z-index: 8000;
+        display: none;
+        flex-direction: column;
+      }
 
     .chat-page-overlay.active {
       display: flex;
@@ -4512,3 +4512,38 @@
 .ongkir-loading, .ongkir-error { font-size: .82rem; padding: .5rem 0; }
 .ongkir-loading { color: var(--gray); }
 .ongkir-error { color: #ef4444; }
+
+/* ── Tombol Login Google (Premium) ── */
+#btnLoginGoogle {
+  background: var(--primary);
+  color: var(--darker);
+  padding: .6rem 1.2rem;
+  border-radius: 50px;   /* ← ini yang bikin membulat penuh */
+  border: none;
+  font-weight: 700;
+  font-size: .95rem;
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  transition: all .25s;
+}
+
+#btnLoginGoogle:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(201, 168, 76, .4);
+  filter: brightness(1.08);
+}
+
+/* Tombol gear/admin dibuat lebih kecil & netral, tidak menyaingi tombol Google */
+.admin-btn[title="Admin Login"] {
+  background: rgba(255, 255, 255, .05);
+  color: var(--gray);
+  border: 1px solid var(--border-soft);
+  border-radius: 10px;
+}
+
+.admin-btn[title="Admin Login"]:hover {
+  background: var(--primary-dim);
+  border-color: var(--border);
+  color: var(--primary);
+}
