@@ -652,16 +652,161 @@ window.applyFilters = function () {
   if (sm) sm.textContent = `Menampilkan ${filteredProducts.length} dari ${products.length}`;
 };
 
+// ============================================================
+// SEARCH SUGGEST — dropdown saran produk yang mengikuti ketikan
+// user di search bar, dan langsung membuka detail produk begitu
+// dipilih. Search bar ada di <nav> yang position:sticky, jadi
+// selalu terlihat & bisa dipakai dari section manapun user
+// sedang berada (tidak perlu scroll balik ke atas dulu).
+// ============================================================
+let _searchDebounce = null;
+let _searchActiveIndex = -1;
+let _searchSuggestItems = [];
+
+function _searchMatchList(rawQuery) {
+  const q = rawQuery.trim().toLowerCase();
+  if (!q) return [];
+  return (products || [])
+    .filter(p => (p.name && p.name.toLowerCase().includes(q)) || (p.description && p.description.toLowerCase().includes(q)))
+    .sort((a, b) => {
+      // Produk yang namanya diawali kata pencarian ditaruh paling atas.
+      const an = (a.name || '').toLowerCase();
+      const bn = (b.name || '').toLowerCase();
+      const aStarts = an.startsWith(q) ? 0 : 1;
+      const bStarts = bn.startsWith(q) ? 0 : 1;
+      if (aStarts !== bStarts) return aStarts - bStarts;
+      return an.localeCompare(bn);
+    })
+    .slice(0, 6);
+}
+
+function _searchHighlight(text, rawQuery) {
+  const q = rawQuery.trim();
+  if (!q || !text) return text || '';
+  const idx = text.toLowerCase().indexOf(q.toLowerCase());
+  if (idx === -1) return text;
+  return `${text.slice(0, idx)}<mark>${text.slice(idx, idx + q.length)}</mark>${text.slice(idx + q.length)}`;
+}
+
+function _renderSearchSuggest(rawQuery) {
+  const box = document.getElementById('searchSuggest');
+  if (!box) return;
+  _searchSuggestItems = _searchMatchList(rawQuery);
+  _searchActiveIndex = -1;
+
+  if (!rawQuery.trim()) { box.classList.remove('visible'); box.innerHTML = ''; return; }
+
+  if (!_searchSuggestItems.length) {
+    box.innerHTML = `<div class="search-suggest-empty">Produk "${rawQuery.trim()}" tidak ditemukan.</div>`;
+    box.classList.add('visible');
+    return;
+  }
+
+  box.innerHTML = _searchSuggestItems.map((p, i) => {
+    const thumb = (p.media && p.media.startsWith('data:image'))
+      ? `<img src="${p.media}" alt="${p.name}">`
+      : `<span class="search-suggest-emoji">${p.media || '⚡'}</span>`;
+    const price = p.displayPrice || `Rp ${(p.price || 0).toLocaleString('id-ID')}`;
+    return `
+      <div class="search-suggest-item" data-idx="${i}" data-id="${p.id}">
+        <div class="search-suggest-thumb">${thumb}</div>
+        <div class="search-suggest-info">
+          <div class="search-suggest-name">${_searchHighlight(p.name, rawQuery)}</div>
+          <div class="search-suggest-price">${price}</div>
+        </div>
+      </div>`;
+  }).join('') + `<div class="search-suggest-footer" id="searchSuggestSeeAll">Lihat semua hasil untuk "${rawQuery.trim()}" →</div>`;
+
+  box.classList.add('visible');
+
+  box.querySelectorAll('.search-suggest-item').forEach(el => {
+    el.addEventListener('click', () => _pickSearchSuggestion(el.dataset.id));
+  });
+  const seeAll = document.getElementById('searchSuggestSeeAll');
+  if (seeAll) seeAll.addEventListener('click', () => _goToProductGridWithQuery(rawQuery));
+}
+
+// Dipanggil saat user memilih salah satu saran: langsung buka detail
+// produk tersebut, dari section manapun user sedang berada di halaman
+// (modal detail bersifat fixed-overlay, jadi tidak perlu scroll).
+function _pickSearchSuggestion(productId) {
+  const si = document.getElementById('productSearch');
+  const p = products.find(x => x.id === productId);
+  if (si && p) si.value = p.name;
+  lastSearchQuery = si ? si.value : '';
+  window.applyFilters();
+  _hideSearchSuggest();
+  if (typeof window.openProductDetail === 'function') window.openProductDetail(productId);
+}
+
+// "Lihat semua hasil" — scroll ke grid produk dengan filter pencarian aktif,
+// dipakai kalau user memang mau membandingkan beberapa produk sekaligus.
+function _goToProductGridWithQuery(rawQuery) {
+  const si = document.getElementById('productSearch');
+  if (si) si.value = rawQuery;
+  lastSearchQuery = rawQuery;
+  window.applyFilters();
+  _hideSearchSuggest();
+  const section = document.getElementById('products');
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function _hideSearchSuggest() {
+  const box = document.getElementById('searchSuggest');
+  if (box) { box.classList.remove('visible'); box.innerHTML = ''; }
+  _searchActiveIndex = -1;
+}
+
+function _moveSearchSuggestActive(delta) {
+  const box = document.getElementById('searchSuggest');
+  if (!box || !_searchSuggestItems.length) return;
+  const items = Array.from(box.querySelectorAll('.search-suggest-item'));
+  if (!items.length) return;
+  items[_searchActiveIndex]?.classList.remove('active');
+  _searchActiveIndex = (_searchActiveIndex + delta + items.length) % items.length;
+  items[_searchActiveIndex].classList.add('active');
+  items[_searchActiveIndex].scrollIntoView({ block: 'nearest' });
+}
+
 function initSearchBar() {
   const si = document.getElementById('productSearch');
   const cb = document.getElementById('clearSearchBtn');
   if (cb) cb.classList.toggle('visible', !!(si && si.value));
+
   if (si) si.oninput = (e) => {
-    lastSearchQuery = e.target.value;
-    if (cb) cb.classList.toggle('visible', !!e.target.value);
+    const val = e.target.value;
+    lastSearchQuery = val;
+    if (cb) cb.classList.toggle('visible', !!val);
     window.applyFilters();
+    clearTimeout(_searchDebounce);
+    _searchDebounce = setTimeout(() => _renderSearchSuggest(val), 120);
   };
-  if (cb) cb.onclick = () => { si.value = ''; lastSearchQuery = ''; cb.classList.remove('visible'); window.applyFilters(); };
+
+  if (si) si.addEventListener('focus', () => { if (si.value.trim()) _renderSearchSuggest(si.value); });
+
+  if (si) si.addEventListener('keydown', (e) => {
+    const box = document.getElementById('searchSuggest');
+    const isOpen = box && box.classList.contains('visible') && _searchSuggestItems.length;
+    if (e.key === 'ArrowDown') { if (isOpen) { e.preventDefault(); _moveSearchSuggestActive(1); } }
+    else if (e.key === 'ArrowUp') { if (isOpen) { e.preventDefault(); _moveSearchSuggestActive(-1); } }
+    else if (e.key === 'Enter') {
+      if (isOpen && _searchActiveIndex >= 0) {
+        e.preventDefault();
+        _pickSearchSuggestion(_searchSuggestItems[_searchActiveIndex].id);
+      } else if (isOpen && _searchSuggestItems.length) {
+        e.preventDefault();
+        _pickSearchSuggestion(_searchSuggestItems[0].id);
+      }
+    } else if (e.key === 'Escape') { _hideSearchSuggest(); si.blur(); }
+  });
+
+  if (cb) cb.onclick = () => { si.value = ''; lastSearchQuery = ''; cb.classList.remove('visible'); window.applyFilters(); _hideSearchSuggest(); };
+
+  // Tutup dropdown saat klik di luar search bar.
+  document.addEventListener('click', (e) => {
+    const wrap = si ? si.closest('.search-wrap') : null;
+    if (wrap && !wrap.contains(e.target)) _hideSearchSuggest();
+  });
 }
 
 window.renderProducts = function () {
