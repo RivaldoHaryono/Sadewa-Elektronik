@@ -6,7 +6,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebas
 import {
   getFirestore, collection, onSnapshot, query, orderBy,
   enableIndexedDbPersistence, doc, addDoc, updateDoc, deleteDoc,
-  serverTimestamp, setDoc, increment, getDocs, where, writeBatch, runTransaction
+  serverTimestamp, setDoc, increment, getDocs, getDoc, where, writeBatch, runTransaction
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged,
@@ -28,15 +28,87 @@ const db = getFirestore(app);
 const auth = getAuth(app);
 // ── Google Login ──
 const googleProvider = new GoogleAuthProvider();
+// Selalu tampilkan daftar pilihan akun Google (account chooser), bukan
+// langsung masuk pakai akun terakhir yang tersimpan di browser. Penting
+// karena banyak orang punya lebih dari satu akun Gmail (pribadi/kerja/dll)
+// dan perlu bisa memilih akun yang mana yang dipakai belanja.
+googleProvider.setCustomParameters({ prompt: 'select_account' });
 
 window.loginWithGoogle = async function () {
   try {
     const result = await signInWithPopup(auth, googleProvider);
     console.log("Login berhasil:", result.user);
+    if (typeof window.showBuyerToast === 'function') {
+      window.showBuyerToast(`✅ Login berhasil sebagai ${result.user.email}`);
+    }
   } catch (err) {
     console.error("Login gagal:", err);
+    // popup-closed-by-user / cancelled: jangan tampilkan sebagai error mengganggu
+    if (err.code !== 'auth/popup-closed-by-user' && err.code !== 'auth/cancelled-popup-request') {
+      if (typeof window.showBuyerToast === 'function') {
+        window.showBuyerToast('❌ Login Google gagal, silakan coba lagi', true);
+      }
+    }
   }
 };
+
+// ── Logout Google (buyer) ──
+// Hanya sign-out dari Firebase Auth. Tidak menghapus keranjang/localStorage
+// pembeli (cartItems, alamat tersimpan) supaya belanjaan tidak hilang saat
+// user cuma ingin ganti akun / menjaga privasi di perangkat bersama.
+window.logoutGoogle = async function () {
+  try {
+    await signOut(auth);
+    if (typeof window.showBuyerToast === 'function') {
+      window.showBuyerToast('👋 Anda telah logout');
+    }
+  } catch (err) {
+    console.error('logoutGoogle error:', err);
+  }
+};
+
+// ── UI: tombol Login <-> alamat Gmail + tombol Logout ──
+// Dipanggil setiap kali status auth berubah (lihat onAuthStateChanged di bawah).
+function updateBuyerAuthUI(user) {
+  const btn = document.getElementById('btnLoginGoogle');
+  const label = document.getElementById('btnLoginGoogleLabel');
+  const logoutBtn = document.getElementById('btnLogoutGoogle');
+  if (!btn || !label) return;
+
+  const isGoogleBuyer = !!(user && user.providerData &&
+    user.providerData.some(p => p.providerId === 'google.com'));
+
+  if (isGoogleBuyer) {
+    label.textContent = user.email;
+    btn.title = user.email;
+    btn.classList.add('logged-in');
+    btn.onclick = null; // tidak ada aksi klik saat sudah login (info saja)
+    if (logoutBtn) logoutBtn.style.display = 'inline-flex';
+  } else {
+    label.textContent = 'Login';
+    btn.title = 'Login dengan Google';
+    btn.classList.remove('logged-in');
+    btn.onclick = window.loginWithGoogle;
+    if (logoutBtn) logoutBtn.style.display = 'none';
+  }
+}
+
+// Wajib login Google sebelum transaksi. Dipanggil di titik masuk checkout
+// (openPaymentModal & buyDirectly). Mengembalikan true kalau boleh lanjut.
+function requireBuyerLogin() {
+  const isGoogleBuyer = !!(currentUser && currentUser.providerData &&
+    currentUser.providerData.some(p => p.providerId === 'google.com'));
+  if (!isGoogleBuyer) {
+    if (typeof window.showBuyerToast === 'function') {
+      window.showBuyerToast('🔒 Silakan login dengan Google terlebih dahulu untuk melanjutkan transaksi', true);
+    } else {
+      alert('Silakan login dengan Google terlebih dahulu untuk melanjutkan transaksi');
+    }
+    window.loginWithGoogle();
+    return false;
+  }
+  return true;
+}
 const prodCol = collection(db, "sadewaProducts");
 
 try {
@@ -60,12 +132,20 @@ let mainImageBase64 = '';
 let mainVideoBase64 = '';
 let variantCounter = 0;
 
-// Admin credentials (fallback local auth)
-const ADMIN_USER = 'sadewa';
-const ADMIN_PASS = 'sadewa990';
+// [PATCH KEAMANAN] Kredensial admin hardcoded (ADMIN_USER/ADMIN_PASS) DIHAPUS.
+// Alasan: file .js ini dikirim ke browser SIAPA SAJA yang membuka situs — artinya
+// username & password admin sebelumnya bisa dibaca langsung lewat "View Source",
+// tanpa perlu hacking sama sekali. Login admin sekarang WAJIB lewat Firebase
+// Authentication (signInWithEmailAndPassword). Buat akun admin di Firebase Console
+// > Authentication > Add user, dengan email format: <username>@sadewa-admin.local
 
 onAuthStateChanged(auth, (user) => {
   currentUser = user;
+  // Catatan: auth instance ini dipakai bareng oleh login Google (pembeli) dan
+  // login email/password (admin, lihat handleLogin()). updateBuyerAuthUI akan
+  // otomatis mendeteksi apakah user yang sedang login itu akun Google
+  // (providerId 'google.com') sebelum menampilkan alamat gmail di tombol.
+  updateBuyerAuthUI(user);
 });
 
 // ============================================================
@@ -181,7 +261,43 @@ window.clearCart = function () {
 // PAYMENT
 // ============================================================
 let selectedPaymentMethod = 'bank', selectedPaymentProvider = 'bri';
-const bankAccounts = { bri: { number: '3456-01-001829-50-2', name: 'AI JULAEHA' } };
+// true setelah tombol "Konfirmasi Pembayaran" ditekan & detail (rekening/QRIS)
+// sudah ditampilkan ke pembeli. Direset setiap kali tab/opsi pembayaran diganti.
+let paymentDetailsRevealed = false;
+// Cache hasil fetch dari Firestore (sadewaSettings/payment), supaya tidak
+// query berulang setiap kali reveal dipanggil dalam 1 sesi checkout.
+let _sadewaPaymentSettings = null;
+
+// Nilai default/fallback kalau dokumen Firestore "sadewaSettings/payment"
+// belum dibuat atau gagal diambil (misal offline) -- supaya checkout TIDAK
+// pernah rusak total. Admin mengubah nomor rekening/QRIS asli lewat Firestore
+// Console: collection "sadewaSettings" -> dokumen "payment". Lihat catatan
+// struktur dokumen di bagian bawah file ini / dokumentasi yang menyertai.
+const DEFAULT_PAYMENT_SETTINGS = {
+  banks: {
+    bri: { bankName: 'BRI', accountNumber: '3456-01-001829-50-2', accountName: 'AI JULAEHA' }
+  },
+  qris: {
+    imageUrl: '/qris-sadewa.jpeg',
+    merchantName: 'SADEWA ELEKTRONIK CIDAHU',
+    nmid: 'ID1024348386623 \u00b7 A01'
+  }
+};
+
+// Ambil pengaturan pembayaran dari Firestore, di-cache di memori selama sesi.
+async function getPaymentSettings() {
+  if (_sadewaPaymentSettings) return _sadewaPaymentSettings;
+  try {
+    const snap = await getDoc(doc(db, 'sadewaSettings', 'payment'));
+    _sadewaPaymentSettings = snap.exists()
+      ? { ...DEFAULT_PAYMENT_SETTINGS, ...snap.data(), banks: { ...DEFAULT_PAYMENT_SETTINGS.banks, ...(snap.data().banks || {}) } }
+      : DEFAULT_PAYMENT_SETTINGS;
+  } catch (err) {
+    console.error('getPaymentSettings:', err);
+    _sadewaPaymentSettings = DEFAULT_PAYMENT_SETTINGS;
+  }
+  return _sadewaPaymentSettings;
+}
 
 window.refreshPaymentTotals = function () {
   const items = window.isBuyNowMode ? (window.tempBuyNowCart || []) : cartItems;
@@ -204,7 +320,9 @@ window.refreshPaymentTotals = function () {
 
 window.openPaymentModal = function () {
   if (cartItems.length === 0) { alert('Keranjang Anda masih kosong!'); return; }
+  if (!requireBuyerLogin()) return;
   if (typeof window.resetOngkirSelection === 'function') window.resetOngkirSelection();
+  resetPaymentReveal();
   window.refreshPaymentTotals();
   document.getElementById('checkoutStep1').style.display = 'block';
   document.getElementById('checkoutStep2').style.display = 'none';
@@ -220,6 +338,7 @@ window.goToPaymentStep = function () {
   const address = document.getElementById('shipAddress').value.trim();
   if (!name || !phone || !region || !address) { alert('Mohon lengkapi semua kolom bertanda * (wajib diisi)'); return; }
   if (phone.length < 10) { alert('Nomor HP tidak valid!'); return; }
+  resetPaymentReveal();
   window.refreshPaymentTotals();
   document.getElementById('checkoutStep1').style.display = 'none';
   document.getElementById('checkoutStep2').style.display = 'block';
@@ -234,10 +353,24 @@ window.goToAddressStep = function () {
   document.getElementById('checkoutTitle').innerHTML = '📍 Alamat Pengiriman';
 };
 
+// Reset field2 form pembayaran (nama pengirim/pembayar + file bukti) supaya
+// tidak "nyangkut" dari transaksi sebelumnya dan lolos validasi tanpa upload ulang.
+function resetPaymentForm() {
+  const senderName = document.getElementById('senderName');
+  const transferProof = document.getElementById('transferProof');
+  const qrisName = document.getElementById('qrisName');
+  const qrisProof = document.getElementById('qrisProof');
+  if (senderName) senderName.value = '';
+  if (transferProof) transferProof.value = '';
+  if (qrisName) qrisName.value = '';
+  if (qrisProof) qrisProof.value = '';
+}
+
 window.closePaymentModal = function () {
   document.getElementById('paymentModal').classList.remove('active');
   window.isBuyNowMode = false;
   window.tempBuyNowCart = [];
+  resetPaymentForm();
 };
 
 window.switchPaymentTab = function (tab, clickedEl) {
@@ -245,35 +378,68 @@ window.switchPaymentTab = function (tab, clickedEl) {
   if (clickedEl) clickedEl.classList.add('active');
   document.querySelectorAll('.payment-content').forEach(c => c.classList.remove('active'));
   selectedPaymentMethod = tab;
-  if (tab === 'card') { document.getElementById('cardPayment').classList.add('active'); selectedPaymentProvider = 'visa'; }
-  else if (tab === 'bank') { document.getElementById('bankPayment').classList.add('active'); selectedPaymentProvider = 'bri'; updateBankInfo('bri'); }
+  if (tab === 'bank') { document.getElementById('bankPayment').classList.add('active'); selectedPaymentProvider = 'bri'; }
   else if (tab === 'ewallet') { document.getElementById('ewalletPayment').classList.add('active'); selectedPaymentProvider = 'gopay'; }
   else if (tab === 'qris') { document.getElementById('qrisPayment').classList.add('active'); selectedPaymentProvider = 'qris'; }
+  // Ganti metode/tab -> detail (rekening/QRIS) yg mungkin sudah terbuka harus
+  // disembunyikan lagi sampai pembeli menekan "Konfirmasi Pembayaran" ulang.
+  resetPaymentReveal();
 };
 
 window.selectPaymentOption = function (element, provider) {
   element.parentElement.querySelectorAll('.payment-option').forEach(opt => opt.classList.remove('selected'));
   element.classList.add('selected'); selectedPaymentProvider = provider;
-  if (selectedPaymentMethod === 'bank') updateBankInfo(provider);
+  resetPaymentReveal();
 };
 
-function updateBankInfo(bank) {
-  const b = bankAccounts[bank];
+function updateBankInfo(bank, settings) {
+  const b = (settings && settings.banks && settings.banks[bank]) || DEFAULT_PAYMENT_SETTINGS.banks[bank];
   if (b) {
-    document.getElementById('selectedBankName').textContent = b.name;
-    document.getElementById('bankAccountNumber').textContent = b.number;
+    document.getElementById('selectedBankName').textContent = b.bankName || '-';
+    document.getElementById('bankAccountNumber').textContent = b.accountNumber || '-';
+    const nameEl = document.getElementById('selectedBankAccountName');
+    if (nameEl) nameEl.textContent = b.accountName || 'SADEWA ELEKTRONIK';
   }
 }
 
-window.formatCardNumber = function (input) {
-  let v = input.value.replace(/\s/g, '');
-  input.value = v.match(/.{1,4}/g)?.join(' ') || v;
-};
-window.formatExpiry = function (input) {
-  let v = input.value.replace(/\D/g, '');
-  if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
-  input.value = v;
-};
+// Sembunyikan lagi kotak detail (rekening/QRIS) & kembalikan placeholder +
+// label tombol ke kondisi awal. Dipanggil setiap kali metode/opsi pembayaran
+// diganti, supaya detail lama tidak nyangkut kebawa ke metode yang baru dipilih.
+function resetPaymentReveal() {
+  paymentDetailsRevealed = false;
+  const bankPh = document.getElementById('bankDetailPlaceholder');
+  const bankBox = document.getElementById('bankDetailBox');
+  const qrisPh = document.getElementById('qrisDetailPlaceholder');
+  const qrisBox = document.getElementById('qrisDetailBox');
+  if (bankPh) bankPh.style.display = 'block';
+  if (bankBox) bankBox.style.display = 'none';
+  if (qrisPh) qrisPh.style.display = 'block';
+  if (qrisBox) qrisBox.style.display = 'none';
+  const btn = document.getElementById('paymentSubmitBtn');
+  if (btn) btn.textContent = 'Konfirmasi Pembayaran';
+}
+
+// Dipanggil dari processPayment() saat tombol "Konfirmasi Pembayaran" diklik
+// PERTAMA KALI: ambil data rekening/QRIS dari Firestore lalu tampilkan.
+// Klik KEDUA baru benar-benar mengirim pesanan (lihat processPayment()).
+async function revealPaymentDetails() {
+  const settings = await getPaymentSettings();
+  if (selectedPaymentMethod === 'bank') {
+    updateBankInfo(selectedPaymentProvider, settings);
+    document.getElementById('bankDetailPlaceholder').style.display = 'none';
+    document.getElementById('bankDetailBox').style.display = 'block';
+  } else if (selectedPaymentMethod === 'qris') {
+    const q = settings.qris || DEFAULT_PAYMENT_SETTINGS.qris;
+    const img = document.getElementById('qrisImage');
+    if (img && q.imageUrl) img.src = q.imageUrl;
+    document.getElementById('qrisDetailPlaceholder').style.display = 'none';
+    document.getElementById('qrisDetailBox').style.display = 'block';
+  }
+  paymentDetailsRevealed = true;
+  const btn = document.getElementById('paymentSubmitBtn');
+  if (btn) btn.textContent = '\u2705 Saya Sudah Bayar, Kirim Konfirmasi';
+}
+
 window.copyToClipboard = function (elementId) {
   const t = document.getElementById(elementId).textContent;
   navigator.clipboard.writeText(t).then(() => alert('Disalin: ' + t));
@@ -291,28 +457,36 @@ window.downloadQRIS = function () {
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
 };
 
-window.processPayment = function () {
+window.processPayment = async function () {
   const btn = document.getElementById('paymentSubmitBtn');
+  // Klik PERTAMA: baru tampilkan nomor rekening / kode QRIS, jangan kirim
+  // pesanan dulu. Klik KEDUA (label tombol sudah berubah) baru lanjut kirim.
+  if (!paymentDetailsRevealed) {
+    btn.disabled = true; btn.textContent = 'Memuat...';
+    await revealPaymentDetails();
+    btn.disabled = false;
+    return;
+  }
   btn.disabled = true; btn.textContent = 'Memproses...';
   let isValid = true, message = '';
-  if (selectedPaymentMethod === 'card') {
-    const cn = document.getElementById('cardNumber').value;
-    const nm = document.getElementById('cardName').value;
-    const ex = document.getElementById('cardExpiry').value;
-    const cv = document.getElementById('cardCVV').value;
-    if (!cn || !nm || !ex || !cv) { isValid = false; message = 'Mohon lengkapi semua data kartu!'; }
-    else if (cn.replace(/\s/g, '').length < 16) { isValid = false; message = 'Nomor kartu tidak valid!'; }
-    else if (cv.length < 3) { isValid = false; message = 'CVV tidak valid!'; }
-  } else if (selectedPaymentMethod === 'bank') {
-    if (!document.getElementById('senderName').value) { isValid = false; message = 'Mohon masukkan nama pengirim!'; }
+  if (selectedPaymentMethod === 'bank') {
+    const senderName = document.getElementById('senderName').value.trim();
+    const proofFile = document.getElementById('transferProof').files[0];
+    if (!senderName) { isValid = false; message = 'Mohon masukkan nama pengirim!'; }
+    else if (!proofFile) { isValid = false; message = 'Mohon upload bukti transfer terlebih dahulu!'; }
   } else if (selectedPaymentMethod === 'ewallet') {
     const ph = document.getElementById('ewalletPhone').value;
     const nm = document.getElementById('ewalletName').value;
     if (!ph || !nm) { isValid = false; message = 'Mohon lengkapi data e-wallet!'; }
     else if (ph.length < 10) { isValid = false; message = 'Nomor HP tidak valid!'; }
+  } else if (selectedPaymentMethod === 'qris') {
+    const qrisName = document.getElementById('qrisName').value.trim();
+    const proofFile = document.getElementById('qrisProof').files[0];
+    if (!qrisName) { isValid = false; message = 'Mohon masukkan nama pembayar!'; }
+    else if (!proofFile) { isValid = false; message = 'Mohon upload bukti pembayaran terlebih dahulu!'; }
   }
   setTimeout(() => {
-    if (!isValid) { alert(message); btn.disabled = false; btn.textContent = 'Konfirmasi Pembayaran'; return; }
+    if (!isValid) { alert(message); btn.disabled = false; btn.textContent = '\u2705 Saya Sudah Bayar, Kirim Konfirmasi'; return; }
     window._pendingOrder = {
       items: window.isBuyNowMode ? (window.tempBuyNowCart || []) : [...cartItems],
       method: selectedPaymentMethod,
@@ -320,7 +494,7 @@ window.processPayment = function () {
     };
     window._pendingOrder.total = window._pendingOrder.items.reduce((s, i) => s + (i.price * i.quantity), 0) + getShippingCost();
     window._pendingOrder.shipping = window._sadewaShippingCost || null;
-    btn.disabled = false; btn.textContent = 'Konfirmasi Pembayaran';
+    btn.disabled = false; btn.textContent = '\u2705 Saya Sudah Bayar, Kirim Konfirmasi';
     window.showChannelChoice();
   }, 500);
 };
@@ -386,8 +560,7 @@ function sendPaymentToWhatsApp(invoiceNumber) {
   }
   const total = subtotal + (shipping && shipping.cost > 0 ? shipping.cost : 0);
   message += `━━━━━━━━━━━━━━━━━━━━\n*Total: Rp ${total.toLocaleString('id-ID')}*\n\n*Metode Pembayaran:*\n`;
-  if (selectedPaymentMethod === 'card') message += `💳 ${selectedPaymentProvider.toUpperCase()} - **** ${document.getElementById('cardNumber').value.slice(-4)}\nNama: ${document.getElementById('cardName').value}\n`;
-  else if (selectedPaymentMethod === 'bank') message += `🏦 Transfer ${bankAccounts[selectedPaymentProvider]?.name || ''}\nNama: ${document.getElementById('senderName').value}\n`;
+  if (selectedPaymentMethod === 'bank') message += `🏦 Transfer ${((_sadewaPaymentSettings && _sadewaPaymentSettings.banks[selectedPaymentProvider]) || DEFAULT_PAYMENT_SETTINGS.banks[selectedPaymentProvider])?.bankName || ''}\nNama: ${document.getElementById('senderName').value}\n`;
   else if (selectedPaymentMethod === 'ewallet') message += `📱 ${selectedPaymentProvider.toUpperCase()}\nNomor: ${document.getElementById('ewalletPhone').value}\nNama: ${document.getElementById('ewalletName').value}\n`;
   else if (selectedPaymentMethod === 'qris') message += `📲 QRIS\nNama: ${document.getElementById('qrisName').value || '-'}\n`;
   message += '\n━━━━━━━━━━━━━━━━━━━━\n🙏 Terima kasih berbelanja di Sadewa Elektronik!';
@@ -736,6 +909,7 @@ window.addToCart = function (productId, variantFromModal) {
 };
 
 window.buyDirectly = function (productId, variantFromModal) {
+  if (!requireBuyerLogin()) return;
   const product = products.find(p => p.id === productId);
   if (!product) return;
   const resolved = _resolveVariant(product, variantFromModal);
@@ -774,14 +948,10 @@ window.handleLogin = async function () {
   if (!user || !pass) { alert('⚠️ Silakan isi username dan password!'); return; }
   if (loginBtn) { loginBtn.disabled = true; loginBtn.textContent = '⏳ Memverifikasi...'; }
   try {
+    // [PATCH KEAMANAN] Satu-satunya jalur login sekarang Firebase Authentication.
+    // Tidak ada lagi fallback password lokal yang bisa dibaca dari source code.
     const email = user.toLowerCase() + '@sadewa-admin.local';
-    const userCredential = await signInWithEmailAndPassword(auth, email, pass).catch(err => {
-      const fallbackCodes = ['auth/user-not-found', 'auth/invalid-credential', 'auth/wrong-password', 'auth/invalid-email', 'auth/network-request-failed', 'auth/too-many-requests'];
-      if (fallbackCodes.includes(err.code) || err.code?.startsWith('auth/')) {
-        if (user === ADMIN_USER && pass === ADMIN_PASS) return { user: { uid: 'local-admin', email } };
-      }
-      throw err;
-    });
+    const userCredential = await signInWithEmailAndPassword(auth, email, pass);
     if (userCredential?.user) {
       currentUser = userCredential.user;
       adminAuthenticated = true;
@@ -793,21 +963,11 @@ window.handleLogin = async function () {
       renderAdminProductList();
       updateAdminStats();
       window.loadAdminOrders();
+      showAdminNotif('✅ Login berhasil');
     }
   } catch (error) {
-    if (user === ADMIN_USER && pass === ADMIN_PASS) {
-      currentUser = { uid: 'local-admin', email: user };
-      adminAuthenticated = true;
-      document.getElementById('loginUsername').value = '';
-      document.getElementById('loginPassword').value = '';
-      window.closeLoginModal();
-      document.getElementById('mainWebsite').classList.remove('active');
-      document.getElementById('adminPage').classList.add('active');
-      renderAdminProductList();
-      updateAdminStats();
-      window.loadAdminOrders();
-      showAdminNotif('✅ Login berhasil');
-    } else { showAdminNotif('❌ Username atau password salah!', true); }
+    console.error('handleLogin:', error);
+    showAdminNotif('❌ Username atau password salah!', true);
   } finally {
     if (loginBtn) { loginBtn.disabled = false; loginBtn.textContent = 'Masuk'; }
   }
@@ -815,7 +975,7 @@ window.handleLogin = async function () {
 
 window.adminLogout = async function () {
   try {
-    if (currentUser && currentUser.uid !== 'local-admin') await signOut(auth);
+    if (currentUser) await signOut(auth);
     currentUser = null; adminAuthenticated = false;
     document.getElementById('adminPage').classList.remove('active');
     document.getElementById('mainWebsite').classList.add('active');
@@ -1218,15 +1378,19 @@ function _fmtInvDate(d) {
   if (isNaN(dt.getTime())) return '-';
   return dt.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' }) + ' \u00b7 ' + dt.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
 }
-const ORDER_STATUSES = ['Menunggu Konfirmasi', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'];
+// 'Ditangguhkan' = gerbang wajib untuk SEMUA order baru. Admin harus cek manual
+// satu-satu (nama/HP/alamat masuk akal, bukan bot/iseng) sebelum menggesernya
+// ke 'Diproses'. Order tidak bisa "lompat" masuk antrian proses tanpa diverifikasi.
+const ORDER_STATUSES = ['Ditangguhkan', 'Diproses', 'Dikirim', 'Selesai', 'Dibatalkan'];
 function _statusIcon(s) {
-  const map = { 'Menunggu Konfirmasi': '\ud83d\udd52', 'Diproses': '\ud83d\udce6', 'Dikirim': '\ud83d\ude9a', 'Selesai': '\u2705', 'Dibatalkan': '\u274c' };
-  return (map[s] || '\ud83d\udd52') + ' ' + (s || 'Menunggu Konfirmasi');
+  const map = { 'Ditangguhkan': '\u23f8\ufe0f', 'Diproses': '\ud83d\udce6', 'Dikirim': '\ud83d\ude9a', 'Selesai': '\u2705', 'Dibatalkan': '\u274c' };
+  return (map[s] || '\u23f8\ufe0f') + ' ' + (s || 'Ditangguhkan');
 }
 function _paymentLabel(method, provider) {
-  const labels = { card: '\ud83d\udcb3 Kartu Debit/Kredit', bank: '<img src="./icon/bri-logo.png" alt="BRI" class="inv-pay-icon inv-pay-icon-bank">', ewallet: '\ud83d\udcf1 E-Wallet', qris: '<img src="./icon/qris-logo.png" alt="QRIS" class="inv-pay-icon">' };
+  const labels = { bank: '<img src="./icon/bri-logo.png" alt="BRI" class="inv-pay-icon inv-pay-icon-bank">', ewallet: '\ud83d\udcf1 E-Wallet', qris: '<img src="./icon/qris-logo.png" alt="QRIS" class="inv-pay-icon">' };
   let base = labels[method] || (method || '-');
-  if (method === 'bank' && bankAccounts[provider]) base += ' \u2014 ' + bankAccounts[provider].name;
+  const _banks = (_sadewaPaymentSettings && _sadewaPaymentSettings.banks) || DEFAULT_PAYMENT_SETTINGS.banks;
+  if (method === 'bank' && _banks[provider]) base += ' \u2014 ' + _banks[provider].bankName;
   else if (method === 'ewallet' && provider) base += ' \u2014 ' + provider.toUpperCase();
   return base;
 }
@@ -1260,6 +1424,13 @@ async function _saveOrderToFirestore(items, total, method, channel) {
   const orderData = {
     invoiceNumber,
     buyerUid: _getBuyerSession(),
+    // Akun Google yang login saat transaksi (diwajibkan oleh requireBuyerLogin()
+    // di openPaymentModal/buyDirectly). Dicatat terpisah dari buyerUid (sesi lokal)
+    // supaya tiap pesanan bisa ditelusuri ke akun Gmail pembeli yang sebenarnya.
+    buyerGoogleEmail: (currentUser && currentUser.providerData &&
+      currentUser.providerData.some(p => p.providerId === 'google.com')) ? currentUser.email : null,
+    buyerGoogleUid: (currentUser && currentUser.providerData &&
+      currentUser.providerData.some(p => p.providerId === 'google.com')) ? currentUser.uid : null,
     buyerName: shipName, buyerPhone: shipPhone, buyerRegion: shipRegion,
     buyerAddress: shipAddress, buyerDetail: shipDetail, buyerNote: shipNote,
     items: items.map(i => ({ name: i.name, variant: i.variant || '', qty: i.quantity, price: i.price })),
@@ -1271,7 +1442,10 @@ async function _saveOrderToFirestore(items, total, method, channel) {
     paymentMethod: method,
     paymentProvider: selectedPaymentProvider || '',
     channel,
-    status: 'Menunggu Konfirmasi',
+    // Semua order baru WAJIB masuk sini dulu (bukan langsung 'Diproses').
+    // Admin baru boleh menggesernya lewat dropdown di panel admin setelah
+    // memastikan ini pembeli asli, bukan spam bot / iseng.
+    status: 'Ditangguhkan',
     createdAt: serverTimestamp()
   };
   let savedId = null;
@@ -1407,22 +1581,53 @@ window.loadAdminOrders = async function () {
     listEl.innerHTML = '<div class="admin-empty-state"><p>\u26a0\ufe0f Gagal memuat pesanan.</p></div>';
   }
 };
-window.renderAdminOrders = function () {
-  const listEl = document.getElementById('adminOrderList');
-  if (!listEl) return;
+// Helper tanggal lokal (bukan UTC) supaya cocok dengan nilai <input type="date">
+// dan tidak meleset karena selisih zona waktu WIB (UTC+7).
+function _localDateStr(dt) {
+  const pad = (n) => String(n).padStart(2, '0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}`;
+}
+
+// Satu sumber logika filter dipakai bareng oleh renderAdminOrders() &
+// exportOrdersToCSV(), supaya daftar yang tampil di layar dan isi file CSV
+// SELALU sinkron (tidak ada kasus "kok yang ke-download beda sama yang di layar").
+// overrideStatus dipakai oleh tombol "Export Produk Terjual" untuk memaksa
+// status = 'Selesai' tanpa perlu mengubah dropdown filter di layar.
+function _getFilteredAdminOrders(overrideStatus) {
   const kw = (document.getElementById('adminOrderSearch')?.value || '').toLowerCase();
-  const filterStatus = document.getElementById('adminOrderFilterStatus')?.value || 'all';
+  const filterStatus = overrideStatus || document.getElementById('adminOrderFilterStatus')?.value || 'all';
+  const dateFrom = document.getElementById('adminOrderDateFrom')?.value || '';
+  const dateTo = document.getElementById('adminOrderDateTo')?.value || '';
+
   let orders = window._adminOrders || [];
   if (kw) orders = orders.filter(o => (o.buyerName || '').toLowerCase().includes(kw) || (o.invoiceNumber || '').toLowerCase().includes(kw) || (o.buyerPhone || '').includes(kw));
   if (filterStatus !== 'all') orders = orders.filter(o => o.status === filterStatus);
+  if (dateFrom || dateTo) {
+    orders = orders.filter(o => {
+      const raw = o.createdAt;
+      const dt = raw && raw.toDate ? raw.toDate() : (raw instanceof Date ? raw : new Date(raw));
+      if (isNaN(dt.getTime())) return false;
+      const dayStr = _localDateStr(dt);
+      if (dateFrom && dayStr < dateFrom) return false;
+      if (dateTo && dayStr > dateTo) return false;
+      return true;
+    });
+  }
+  return orders;
+}
+
+window.renderAdminOrders = function () {
+  const listEl = document.getElementById('adminOrderList');
+  if (!listEl) return;
+  const orders = _getFilteredAdminOrders();
   const countLabel = document.getElementById('adminOrderCountLabel');
   if (countLabel) countLabel.textContent = orders.length;
-  if (!orders.length) { listEl.innerHTML = '<div class="admin-empty-state"><div class="admin-empty-icon">\ud83e\uddfe</div><p>Belum ada pesanan.</p></div>'; return; }
+  if (!orders.length) { listEl.innerHTML = '<div class="admin-empty-state"><div class="admin-empty-icon">\ud83e\uddfe</div><p>Tidak ada pesanan yang cocok dengan filter.</p></div>'; return; }
   listEl.innerHTML = orders.map(o => `
-    <div class="admin-order-item">
+    <div class="admin-order-item${o.status === 'Ditangguhkan' ? ' is-pending-review' : ''}">
       <div class="admin-order-main">
         <div class="admin-order-top">
-          <span class="admin-order-inv">\ud83e\uddfe ${_esc(o.invoiceNumber)}</span>
+          <span class="admin-order-inv">\ud83e\uddfe ${_esc(o.invoiceNumber)}${o.status === 'Ditangguhkan' ? '<span class="admin-order-pending-badge">\u26a0\ufe0f Perlu Verifikasi</span>' : ''}</span>
           <span class="admin-order-date">${_fmtInvDate(o.createdAt)}</span>
         </div>
         <div class="admin-order-buyer">${_esc(o.buyerName)} &middot; ${_esc(o.buyerPhone)}</div>
@@ -1438,6 +1643,97 @@ window.renderAdminOrders = function () {
     </div>`).join('');
 };
 window.filterAdminOrders = function () { window.renderAdminOrders(); };
+
+// ── Export Pesanan & Pelanggan ke CSV (Excel/Google Sheets) ──
+// Mengikuti kata kunci pencarian & filter status yang sedang aktif di panel
+// admin, jadi kalau admin sudah mempersempit tampilan (misal cuma status
+// "Selesai"), file CSV yang di-download juga cuma berisi itu saja.
+function _csvEscape(value) {
+  const s = (value === null || value === undefined) ? '' : String(value);
+  // Kalau ada koma, kutip dua, atau baris baru -> wajib dibungkus tanda kutip
+  if (/[",\n\r]/.test(s)) return '"' + s.replace(/"/g, '""') + '"';
+  return s;
+}
+
+window.exportOrdersToCSV = function (overrideStatus, filenameTag) {
+  let orders = _getFilteredAdminOrders(overrideStatus);
+
+  // Alur pasti: hanya pelanggan yang BENAR-BENAR sudah login Google DAN
+  // sudah menyelesaikan transaksi (ada dokumen order = pasti sudah checkout,
+  // lihat requireBuyerLogin() di openPaymentModal/buyDirectly) yang boleh
+  // masuk daftar export. Order lama (dibuat sebelum fitur wajib-login
+  // diaktifkan) tidak punya buyerGoogleEmail -> di-skip, bukan diikutkan
+  // dengan placeholder, supaya daftar customer ini bersih & bisa dipercaya.
+  const totalBeforeFilter = orders.length;
+  orders = orders.filter(o => !!o.buyerGoogleEmail);
+  const skippedCount = totalBeforeFilter - orders.length;
+
+  if (!orders.length) {
+    const msg = skippedCount > 0
+      ? `⚠️ Tidak ada pelanggan valid untuk di-export (${skippedCount} order lama dilewati karena belum ada data login Google)`
+      : '⚠️ Tidak ada data untuk di-export';
+    if (typeof window.showAdminNotif === 'function') showAdminNotif(msg, true);
+    else alert(msg);
+    return;
+  }
+
+  const headers = [
+    'No. Invoice', 'Tanggal', 'Nama Pembeli', 'Email Gmail', 'No. HP',
+    'Wilayah', 'Alamat Lengkap', 'Produk', 'Subtotal', 'Ongkir', 'Total',
+    'Metode Pembayaran', 'Status'
+  ];
+
+  const rows = orders.map(o => [
+    o.invoiceNumber || '',
+    _fmtInvDate(o.createdAt),
+    o.buyerName || '',
+    o.buyerGoogleEmail,
+    o.buyerPhone || '',
+    o.buyerRegion || '',
+    o.buyerAddress || '',
+    (o.items || []).map(i => `${i.name}${i.variant ? ' (' + i.variant + ')' : ''} x${i.qty}`).join('; '),
+    o.subtotal || 0,
+    o.shippingCost || 0,
+    o.total || 0,
+    o.paymentMethod || '',
+    o.status || ''
+  ]);
+
+  // \ufeff (BOM) di depan supaya Excel langsung baca huruf/simbol Indonesia
+  // dengan benar (bukan karakter aneh), khususnya di Excel Windows.
+  const csvContent = '\ufeff' + [headers, ...rows]
+    .map(row => row.map(_csvEscape).join(','))
+    .join('\r\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  const todayStr = _localDateStr(new Date());
+  const tag = filenameTag ? `-${filenameTag}` : '';
+  a.href = url;
+  a.download = `Sadewa-Elektronik-Pesanan${tag}-${todayStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  if (typeof window.showAdminNotif === 'function') {
+    const extra = skippedCount > 0 ? ` (${skippedCount} order lama dilewati)` : '';
+    showAdminNotif(`✅ ${orders.length} data pelanggan berhasil di-export${extra}`);
+  }
+};
+
+// ── Tombol utama: "Export Produk Terjual" ──
+// Ini yang dipakai admin untuk kebutuhan "download CSV produk yang berhasil
+// dijual ke customer". Dipaksa ke status 'Selesai' (bukan sekadar mengikuti
+// dropdown), lalu dropdown ikut disetel ke 'Selesai' juga supaya tampilan
+// layar & isi file yang di-download selalu sinkron dan tidak membingungkan.
+window.exportSoldProducts = function () {
+  const statusSelect = document.getElementById('adminOrderFilterStatus');
+  if (statusSelect) statusSelect.value = 'Selesai';
+  window.renderAdminOrders();
+  window.exportOrdersToCSV('Selesai', 'Produk-Terjual');
+};
 window.viewInvoiceFromAdmin = function (id) {
   const o = (window._adminOrders || []).find(x => x.id === id);
   if (o) window.openInvoiceModal(o);

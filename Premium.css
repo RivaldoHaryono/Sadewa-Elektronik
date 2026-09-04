@@ -741,7 +741,7 @@
     .nav-container {
       max-width: 1400px;
       margin: 0 auto;
-      padding: 1rem 2rem;
+      padding: 0.75rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -863,6 +863,126 @@
       border: 1px solid var(--border-soft);
       background: rgba(21, 31, 51, .6);
       white-space: nowrap
+    }
+
+    /* ==== Dropdown saran pencarian (autosuggest) ====
+       Muncul di bawah search bar apapun posisi scroll user, karena
+       <nav> bersifat position:sticky. Memilih salah satu saran akan
+       langsung membuka detail produk terkait lewat openProductDetail(). */
+    .search-suggest {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      right: 0;
+      background: rgba(15, 20, 40, .98);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(0, 212, 255, .25);
+      border-radius: 14px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, .55);
+      max-height: 380px;
+      overflow-y: auto;
+      z-index: 1100;
+      padding: .4rem
+    }
+
+    .search-suggest.visible {
+      display: block;
+      animation: searchSuggestIn .18s ease
+    }
+
+    @keyframes searchSuggestIn {
+      from { opacity: 0; transform: translateY(-6px) }
+      to { opacity: 1; transform: translateY(0) }
+    }
+
+    .search-suggest-item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      padding: .6rem .65rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background .15s
+    }
+
+    .search-suggest-item:hover,
+    .search-suggest-item.active {
+      background: rgba(0, 212, 255, .1)
+    }
+
+    .search-suggest-thumb {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      border-radius: 8px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, .04);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .search-suggest-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover
+    }
+
+    .search-suggest-emoji {
+      font-size: 1.3rem
+    }
+
+    .search-suggest-info {
+      flex: 1;
+      min-width: 0
+    }
+
+    .search-suggest-name {
+      color: var(--light);
+      font-size: .88rem;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap
+    }
+
+    .search-suggest-name mark {
+      background: rgba(0, 212, 255, .3);
+      color: var(--light);
+      border-radius: 3px;
+      padding: 0 2px
+    }
+
+    .search-suggest-price {
+      color: var(--primary);
+      font-size: .8rem;
+      font-weight: 700;
+      margin-top: .15rem
+    }
+
+    .search-suggest-empty {
+      padding: 1rem .75rem;
+      color: var(--gray);
+      font-size: .85rem;
+      text-align: center
+    }
+
+    .search-suggest-footer {
+      padding: .65rem .75rem;
+      margin-top: .2rem;
+      border-top: 1px solid rgba(255, 255, 255, .06);
+      color: var(--primary);
+      font-size: .8rem;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: background .15s
+    }
+
+    .search-suggest-footer:hover {
+      background: rgba(0, 212, 255, .08)
     }
 
     .cart-btn {
@@ -3164,7 +3284,9 @@
     .admin-topbar-actions {
       display: flex;
       gap: .75rem;
-      align-items: center
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: flex-end
     }
 
     .admin-body {
@@ -3247,7 +3369,9 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: .75rem
+      gap: .75rem;
+      flex-wrap: wrap;
+      row-gap: .6rem
     }
 
     .admin-card-title {
@@ -3422,6 +3546,55 @@
       background: rgba(0, 212, 255, .2)
     }
 
+    /* ==== Tab navigasi Produk / Pesan di topbar admin (dulu belum ada style,
+       jadi tampil sebagai tombol putih polos bawaan browser) ==== */
+    .admin-tab-btn {
+      padding: .65rem 1.15rem;
+      background: rgba(255, 255, 255, .06);
+      color: var(--gray-light);
+      border: 1px solid var(--border-soft);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: .85rem;
+      cursor: pointer;
+      transition: all .25s;
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      white-space: nowrap
+    }
+
+    .admin-tab-btn:hover {
+      background: rgba(0, 212, 255, .12);
+      border-color: rgba(0, 212, 255, .3);
+      color: var(--primary)
+    }
+
+    .admin-tab-btn.active {
+      background: rgba(0, 212, 255, .16);
+      border-color: var(--primary);
+      color: var(--primary)
+    }
+
+    .admin-tab-badge {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-width: 20px;
+      height: 20px;
+      padding: 0 .4rem;
+      border-radius: 50px;
+      background: #ef4444;
+      color: #fff;
+      font-size: .7rem;
+      font-weight: 900;
+      line-height: 1
+    }
+
+    .admin-tab-badge.visible {
+      display: inline-flex
+    }
+
     .admin-product-list {
       display: flex;
       flex-direction: column;
@@ -3514,6 +3687,185 @@
     .admin-search:focus {
       border-color: var(--primary);
       box-shadow: 0 0 0 2px var(--primary-dim)
+    }
+
+    /* ==== Admin header: kontrol seragam + tombol export CSV ==== */
+    .admin-select {
+      padding: .5rem .75rem;
+      background: rgba(10, 14, 39, .7);
+      border: 1px solid rgba(0, 212, 255, .2);
+      border-radius: 8px;
+      color: var(--light);
+      font-size: .82rem;
+      outline: none;
+      cursor: pointer;
+      transition: border-color .2s
+    }
+
+    .admin-select:focus {
+      border-color: var(--primary)
+    }
+
+    .admin-header-actions {
+      display: flex;
+      gap: .5rem;
+      align-items: center;
+      flex-wrap: wrap
+    }
+
+    .admin-btn-export {
+      padding: .65rem 1.15rem;
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: .8rem;
+      cursor: pointer;
+      transition: all .25s;
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      white-space: nowrap
+    }
+
+    .admin-btn-export:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(34, 197, 94, .35);
+      filter: brightness(1.05)
+    }
+
+    .admin-btn-export:disabled {
+      opacity: .6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none
+    }
+
+    .admin-btn-export-outline {
+      padding: .65rem 1rem;
+      background: rgba(0, 212, 255, .08);
+      color: var(--primary);
+      border: 1px solid rgba(0, 212, 255, .3);
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: .78rem;
+      cursor: pointer;
+      transition: all .25s;
+      white-space: nowrap
+    }
+
+    .admin-btn-export-outline:hover {
+      background: rgba(0, 212, 255, .18)
+    }
+
+    .admin-filter-row {
+      display: flex;
+      gap: .6rem;
+      flex-wrap: wrap;
+      margin-bottom: .85rem
+    }
+
+    .admin-date-field {
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      flex: 1;
+      min-width: 140px
+    }
+
+    .admin-date-field label {
+      font-size: .68rem;
+      color: var(--gray);
+      font-weight: 700;
+      letter-spacing: .4px;
+      text-transform: uppercase
+    }
+
+    .admin-date-input {
+      padding: .5rem .65rem;
+      background: rgba(10, 14, 39, .7);
+      border: 1px solid rgba(0, 212, 255, .2);
+      border-radius: 8px;
+      color: var(--light);
+      font-size: .82rem;
+      outline: none;
+      color-scheme: dark
+    }
+
+    .admin-date-input:focus {
+      border-color: var(--primary)
+    }
+
+    .admin-export-hint {
+      font-size: .72rem;
+      color: var(--gray);
+      line-height: 1.5;
+      margin-top: .65rem;
+      padding-top: .65rem;
+      border-top: 1px dashed var(--border-soft)
+    }
+
+    /* ==== Perbaikan responsif: header admin tidak lagi berhimpitan di layar kecil ==== */
+    @media (max-width: 720px) {
+      .admin-topbar {
+        flex-wrap: wrap;
+        gap: .75rem;
+        padding: 1rem 1.25rem
+      }
+
+      .admin-topbar-title {
+        font-size: 1.2rem
+      }
+
+      .admin-topbar-actions {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: .5rem
+      }
+
+      .admin-body {
+        padding: 1.25rem
+      }
+
+      .admin-card-header {
+        flex-direction: column;
+        align-items: flex-start
+      }
+
+      .admin-header-actions {
+        width: 100%
+      }
+
+      .admin-header-actions .admin-select,
+      .admin-header-actions .admin-btn-export,
+      .admin-header-actions .admin-btn-export-outline {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        justify-content: center
+      }
+    }
+
+    @media (max-width: 480px) {
+      .admin-stats-row {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .admin-topbar-title {
+        font-size: 1.05rem
+      }
+
+      .admin-btn-view,
+      .admin-btn-logout {
+        padding: .55rem .85rem;
+        font-size: .75rem
+      }
+
+      .admin-filter-row {
+        flex-direction: column
+      }
     }
 
     .admin-empty-state {
@@ -3957,8 +4309,8 @@
       }
 
       .nav-container {
-        padding: .75rem 1rem;
-        flex-wrap: nowrap
+      padding: 0.6rem 1rem;
+      flex-wrap: nowrap;
       }
 
       .nav-container>ul {
@@ -3982,6 +4334,21 @@
 
       .search-meta {
         display: none
+      }
+
+      .search-suggest {
+        left: -0.45rem;
+        right: -0.45rem;
+        max-height: 60vh;
+        border-radius: 12px
+      }
+
+      .search-suggest-name {
+        font-size: .82rem
+      }
+
+      .search-suggest-price {
+        font-size: .75rem
       }
 
       .cart-btn {
@@ -4546,4 +4913,293 @@
   background: var(--primary-dim);
   border-color: var(--border);
   color: var(--primary);
+}
+/* ======================================================================
+   PERBAIKAN UI/UX — TUTORIAL "PANDUAN BELANJA" (welcome-modal)
+   & "❓ PANDUAN PENGGUNAAN" (help-modal) UNTUK LAYAR MOBILE
+   Additive only — tidak mengubah tampilan desktop, hanya menambahkan
+   penyesuaian ukuran & spacing di bawah 600px dan 380px.
+   ====================================================================== */
+
+/* ---- Tablet kecil & HP besar (≤600px) ---- */
+@media (max-width: 600px) {
+  /* --- Welcome modal / tutorial "Panduan Belanja" --- */
+  .welcome-overlay {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .welcome-modal {
+    max-width: 100%;
+    width: 100%;
+    max-height: 94vh;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .welcome-hero {
+    padding: 1.5rem 1.25rem 1.1rem;
+  }
+
+  .welcome-badge {
+    font-size: 0.7rem;
+    padding: 0.3rem 0.8rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .welcome-hero-title {
+    font-size: 1.4rem;
+    letter-spacing: 1px;
+  }
+
+  .welcome-hero-sub {
+    font-size: 0.82rem;
+    line-height: 1.5;
+  }
+
+  .welcome-tab {
+    min-width: 82px;
+    padding: 0.75rem 0.35rem;
+    font-size: 0.72rem;
+  }
+
+  .welcome-tab-icon {
+    font-size: 1.1rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .welcome-body {
+    padding: 1.25rem 1.25rem;
+  }
+
+  .w-panel-heading {
+    font-size: 1.05rem;
+    margin-bottom: 1rem;
+  }
+
+  .w-steps {
+    gap: 0.75rem;
+  }
+
+  .w-step {
+    padding: 1rem;
+    gap: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .w-step-num {
+    min-width: 34px;
+    height: 34px;
+    font-size: 0.95rem;
+    border-radius: 10px;
+  }
+
+  .w-step-title {
+    font-size: 0.92rem;
+  }
+
+  .w-step-desc {
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  .w-payment-cards,
+  .w-tips-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+
+  .w-pay-card,
+  .w-tip {
+    padding: 1rem;
+  }
+
+  .w-pay-title {
+    font-size: 1rem;
+  }
+
+  .w-tip-icon {
+    font-size: 1.6rem;
+  }
+
+  .w-tip-title {
+    font-size: 0.9rem;
+  }
+
+  .w-tip-desc {
+    font-size: 0.82rem;
+  }
+
+  .w-info-box,
+  .w-warn-box {
+    padding: 1rem 1.1rem;
+  }
+
+  .w-info-box p,
+  .w-warn-box p {
+    font-size: 0.85rem;
+  }
+
+  .welcome-footer {
+    padding: 1rem 1.25rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.85rem;
+  }
+
+  .welcome-skip-label {
+    justify-content: center;
+    font-size: 0.82rem;
+  }
+
+  .welcome-nav {
+    justify-content: space-between;
+  }
+
+  .welcome-prev-btn,
+  .welcome-next-btn,
+  .welcome-start-btn {
+    flex: 1;
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    text-align: center;
+  }
+
+  /* --- Help modal / "❓ Panduan Penggunaan" --- */
+  .help-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .help-container {
+    padding: 1.5rem 1.15rem;
+    max-height: 92vh;
+    border-radius: 22px 22px 0 0;
+  }
+
+  .help-header {
+    margin-bottom: 1.25rem;
+    padding-bottom: 1rem;
+  }
+
+  .help-title {
+    font-size: 1.3rem;
+  }
+
+  .help-close {
+    width: 34px;
+    height: 34px;
+    font-size: 1.15rem;
+  }
+
+  .help-section {
+    padding: 1.1rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .help-section h3 {
+    font-size: 1.05rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .help-section p {
+    font-size: 0.88rem;
+    line-height: 1.65;
+  }
+
+  .help-step {
+    padding: 0.8rem 0;
+    gap: 0.75rem;
+  }
+
+  .help-step-number {
+    width: 26px;
+    height: 26px;
+    min-width: 26px;
+    font-size: 0.85rem;
+  }
+
+  .help-step-text {
+    font-size: 0.88rem;
+  }
+
+  .help-feature {
+    padding: 0.85rem;
+    margin: 0.75rem 0;
+  }
+
+  .help-feature-title {
+    font-size: 0.92rem;
+  }
+
+  .help-feature-desc {
+    font-size: 0.85rem;
+  }
+
+  .help-tips {
+    padding: 1rem;
+  }
+
+  .help-tips-title {
+    font-size: 1rem;
+  }
+
+  .help-tips li {
+    font-size: 0.85rem;
+  }
+
+  .help-contact {
+    padding: 1.1rem;
+    margin-top: 1.5rem;
+  }
+
+  .help-contact h4 {
+    font-size: 1.1rem;
+  }
+
+  .help-contact p {
+    font-size: 0.85rem;
+  }
+
+  .help-contact-btn {
+    padding: 0.65rem 1.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+}
+
+/* ---- HP kecil (≤380px), mis. iPhone SE / Android entry-level ---- */
+@media (max-width: 380px) {
+  .welcome-tab {
+    min-width: 74px;
+    font-size: 0.68rem;
+    padding: 0.65rem 0.25rem;
+  }
+
+  .welcome-tab-icon {
+    font-size: 1rem;
+  }
+
+  .welcome-hero-title {
+    font-size: 1.2rem;
+  }
+
+  .welcome-hero-sub {
+    font-size: 0.78rem;
+  }
+
+  .welcome-body {
+    padding: 1rem;
+  }
+
+  .w-step {
+    padding: 0.85rem;
+  }
+
+  .help-container {
+    padding: 1.25rem 0.9rem;
+  }
+
+  .help-title {
+    font-size: 1.15rem;
+  }
 }

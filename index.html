@@ -246,6 +246,35 @@
         display: flex;
       }
 
+      /* ==== Placeholder "detail pembayaran terkunci" (rekening/QRIS) ====
+         Ditampilkan sebelum tombol "Konfirmasi Pembayaran" ditekan;
+         dipakai oleh #bankDetailPlaceholder & #qrisDetailPlaceholder,
+         digantikan oleh #bankDetailBox / #qrisDetailBox lewat revealPaymentDetails()
+         di firebase-app.js. ==== */
+      .payment-detail-placeholder {
+        text-align: center;
+        padding: 2rem 1.25rem;
+        margin-top: 1rem;
+        background: rgba(0, 212, 255, 0.05);
+        border: 1.5px dashed rgba(0, 212, 255, 0.3);
+        border-radius: 14px;
+      }
+      .payment-detail-placeholder-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        opacity: 0.85;
+      }
+      .payment-detail-placeholder-text {
+        color: var(--gray, #a9b4ca);
+        font-size: 0.9rem;
+        line-height: 1.6;
+        max-width: 320px;
+        margin: 0 auto;
+      }
+      .payment-detail-placeholder-text strong {
+        color: var(--primary);
+      }
+
       /* ==== Tombol Login Google: dibuat bulat penuh (pill), menyesuaikan header ==== */
       #btnLoginGoogle {
         border-radius: 999px !important;
@@ -253,6 +282,40 @@
         align-items: center;
         gap: 8px;
         overflow: hidden;
+        max-width: 220px;
+        cursor: pointer;
+      }
+      /* Saat sudah login: label jadi alamat gmail, dibatasi lebar + ellipsis
+         supaya tidak merusak layout header pada email yang panjang. */
+      #btnLoginGoogle.logged-in {
+        cursor: default;
+        background: rgba(16, 185, 129, 0.12);
+        border: 1px solid rgba(16, 185, 129, 0.35);
+        color: var(--light, #f4f6fb) !important;
+      }
+      #btnLoginGoogle.logged-in #btnLoginGoogleLabel {
+        color: var(--light, #f4f6fb) !important;
+        font-weight: 600;
+      }
+      #btnLoginGoogleLabel {
+        max-width: 150px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      #btnLogoutGoogle {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.75rem;
+      }
+      @media (max-width: 430px) {
+        #btnLoginGoogle.logged-in {
+          max-width: 130px;
+        }
+        #btnLoginGoogleLabel {
+          max-width: 80px;
+        }
       }
 
       /* ==== Logo brand (ganti ikon petir ⚡ dengan logo resmi) ==== */
@@ -537,72 +600,6 @@
         }
       }
 
-      /* ==== Riwayat Pesanan (Buyer) ==== */
-      .riwayat-container {
-        max-width: 560px;
-      }
-      .riwayat-list {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-        max-height: 60vh;
-        overflow-y: auto;
-      }
-      .riwayat-item {
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(0, 212, 255, 0.15);
-        border-radius: 12px;
-        padding: 1rem 1.1rem;
-        cursor: pointer;
-        transition: all 0.2s;
-      }
-      .riwayat-item:hover {
-        border-color: var(--primary);
-        background: rgba(255, 255, 255, 0.07);
-      }
-      .riwayat-item-top {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 0.35rem;
-      }
-      .riwayat-inv-no {
-        font-weight: 800;
-        color: var(--primary);
-        font-size: 0.9rem;
-      }
-      .riwayat-status {
-        font-size: 0.78rem;
-        color: var(--gray-light, #a9b4ca);
-      }
-      .riwayat-item-mid {
-        font-size: 0.8rem;
-        color: var(--gray, #7d8ba8);
-        margin-bottom: 0.5rem;
-      }
-      .riwayat-item-bottom {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-      }
-      .riwayat-total {
-        font-weight: 800;
-        color: var(--light);
-      }
-      .riwayat-arrow {
-        font-size: 0.8rem;
-        color: var(--primary);
-        font-weight: 700;
-      }
-      .riwayat-empty,
-      .riwayat-loading {
-        text-align: center;
-        padding: 3rem 1rem;
-        color: var(--gray, #7d8ba8);
-        font-size: 0.9rem;
-        line-height: 1.6;
-      }
-
       /* ==== Admin: Pesanan & Invoice ==== */
       .admin-orders-card {
         margin-top: 1.5rem;
@@ -627,6 +624,29 @@
       .admin-order-item:hover {
         border-color: var(--border);
         background: rgba(10, 14, 39, 0.8);
+      }
+      /* Order baru yang belum diverifikasi admin — dibuat menonjol supaya
+         tidak tercampur/ketlisut di antara order yang sudah jelas asli. */
+      .admin-order-item.is-pending-review {
+        border-color: rgba(245, 158, 11, 0.6);
+        background: rgba(245, 158, 11, 0.08);
+        box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.15);
+      }
+      .admin-order-item.is-pending-review:hover {
+        border-color: rgba(245, 158, 11, 0.9);
+        background: rgba(245, 158, 11, 0.13);
+      }
+      .admin-order-pending-badge {
+        display: inline-block;
+        font-size: 0.68rem;
+        font-weight: 800;
+        color: #f59e0b;
+        background: rgba(245, 158, 11, 0.15);
+        border: 1px solid rgba(245, 158, 11, 0.4);
+        border-radius: 6px;
+        padding: 1px 7px;
+        margin-left: 6px;
+        vertical-align: middle;
       }
       .admin-order-main {
         flex: 1;
@@ -690,7 +710,8 @@
           <div class="welcome-badge">⚡ Selamat Datang</div>
           <h1 class="welcome-hero-title">SADEWA ELEKTRONIK</h1>
           <p class="welcome-hero-sub">
-            Panduan belanja cepat · Baca sebentar, belanja lebih mudah!
+            Panduan singkat sebelum mulai · Baca sebentar, transaksi jadi lebih
+            mudah!
           </p>
         </div>
         <div class="welcome-tabs" id="welcomeTabs">
@@ -739,11 +760,12 @@
                     Beli Langsung atau Tambah Keranjang
                   </div>
                   <div class="w-step-desc">
+                    Klik
                     <strong style="color: var(--primary)">Beli Sekarang</strong>
-                    — langsung ke pembayaran.
-                    <strong style="color: var(--primary)">Ikon 🛒</strong> di
-                    samping harga — tambah ke keranjang untuk beli beberapa
-                    produk.
+                    untuk langsung ke pembayaran, atau klik ikon
+                    <strong style="color: var(--primary)">🛒</strong>
+                    di samping harga jika ingin menambahkan beberapa produk
+                    sekaligus ke keranjang.
                   </div>
                 </div>
               </div>
@@ -765,9 +787,9 @@
                 <div class="w-step-body">
                   <div class="w-step-title">Selesaikan Pembayaran</div>
                   <div class="w-step-desc">
-                    Pilih metode bayar, isi data, klik
+                    Pilih metode pembayaran, lengkapi data, lalu klik
                     <strong style="color: #10b981">Konfirmasi Pembayaran</strong
-                    >. Detail otomatis terkirim ke WhatsApp kami!
+                    >. Detail pesanan otomatis terkirim ke WhatsApp kami!
                   </div>
                 </div>
               </div>
@@ -777,26 +799,16 @@
             <div class="w-panel-heading">💳 Metode Pembayaran</div>
             <div class="w-payment-cards">
               <div class="w-pay-card">
-                <div class="w-pay-title">💳 Kartu Kredit/Debit</div>
+                <div class="w-pay-title">🏦 Transfer Bank BRI</div>
                 <ul class="w-pay-list">
-                  <li>Visa, Mastercard, Debit</li>
-                  <li>Masukkan 16 digit nomor kartu</li>
-                  <li>Tanggal kadaluarsa &amp; CVV</li>
-                </ul>
-              </div>
-              <div class="w-pay-card">
-                <div class="w-pay-title">🏦 Transfer Bank</div>
-                <ul class="w-pay-list">
-                  <li>BCA, Mandiri, BNI, BRI</li>
                   <li>Transfer sesuai total bayar</li>
                   <li>Upload bukti transfer</li>
                 </ul>
               </div>
               <div class="w-pay-card">
-                <div class="w-pay-title">📱 E-Wallet &amp; QRIS</div>
+                <div class="w-pay-title">📱 QRIS</div>
                 <ul class="w-pay-list">
-                  <li>GoPay, OVO, DANA, ShopeePay</li>
-                  <li>QRIS semua e-wallet</li>
+                  <li>Scan menggunakan e-wallet atau m-banking apa saja</li>
                   <li>Konfirmasi via WhatsApp</li>
                 </ul>
               </div>
@@ -1159,6 +1171,12 @@
               >
                 ×
               </button>
+              <div
+                class="search-suggest"
+                id="searchSuggest"
+                role="listbox"
+                aria-label="Saran produk"
+              ></div>
             </div>
             <span class="search-meta" id="searchMeta"
               >Menampilkan 0 dari 0</span
@@ -1169,15 +1187,7 @@
                 🛒<span id="cartBadge" class="cart-badge">0</span>
               </button>
             </div>
-            <!-- Riwayat Pesanan / Invoice -->
-            <button
-              class="admin-btn"
-              onclick="openRiwayatModal()"
-              title="Riwayat Pesanan"
-            >
-              🧾 <span>Riwayat</span>
-            </button>
-            <!-- Tombol Login Google -->
+            <!-- Tombol Login Google / Info Akun Pembeli -->
             <button
               id="btnLoginGoogle"
               class="admin-btn"
@@ -1202,7 +1212,17 @@
                   d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.2 5.7l6.6 5.6C41.4 36.4 44 30.7 44 24c0-1.3-.1-2.7-.4-3.5z"
                 />
               </svg>
-              <span>Login</span>
+              <span id="btnLoginGoogleLabel">Login</span>
+            </button>
+            <!-- Tombol Logout: tersembunyi sampai user login Google -->
+            <button
+              id="btnLogoutGoogle"
+              class="admin-btn"
+              onclick="logoutGoogle()"
+              title="Logout dari akun Google"
+              style="display: none"
+            >
+              🚪
             </button>
             <button
               class="admin-btn"
@@ -1657,19 +1677,11 @@
               <div class="admin-card-title">
                 📋 Daftar Produk (<span id="productCountLabel">0</span>)
               </div>
-              <div style="display: flex; gap: 0.5rem">
+              <div class="admin-header-actions">
                 <select
                   id="adminFilterCat"
+                  class="admin-select"
                   onchange="renderAdminProductList()"
-                  style="
-                    padding: 0.5rem 0.75rem;
-                    background: rgba(10, 14, 39, 0.7);
-                    border: 1px solid rgba(0, 212, 255, 0.2);
-                    border-radius: 8px;
-                    color: var(--light);
-                    font-size: 0.82rem;
-                    outline: none;
-                  "
                 >
                   <option value="all">Semua</option>
                   <option value="Lampu">Lampu</option>
@@ -1705,23 +1717,15 @@
               🧾 Pesanan &amp; Invoice (<span id="adminOrderCountLabel">0</span
               >)
             </div>
-            <div style="display: flex; gap: 0.5rem; align-items: center">
+            <div class="admin-header-actions">
               <select
                 id="adminOrderFilterStatus"
+                class="admin-select"
                 onchange="filterAdminOrders()"
-                style="
-                  padding: 0.5rem 0.75rem;
-                  background: rgba(10, 14, 39, 0.7);
-                  border: 1px solid rgba(0, 212, 255, 0.2);
-                  border-radius: 8px;
-                  color: var(--light);
-                  font-size: 0.82rem;
-                  outline: none;
-                "
               >
                 <option value="all">Semua Status</option>
-                <option value="Menunggu Konfirmasi">
-                  🕒 Menunggu Konfirmasi
+                <option value="Ditangguhkan">
+                  ⏸️ Ditangguhkan (Perlu Verifikasi)
                 </option>
                 <option value="Diproses">📦 Diproses</option>
                 <option value="Dikirim">🚚 Dikirim</option>
@@ -1736,6 +1740,21 @@
               >
                 🔄
               </button>
+              <button
+                class="admin-btn-export-outline"
+                onclick="exportOrdersToCSV()"
+                title="Export data sesuai pencarian, status &amp; tanggal yang sedang aktif"
+              >
+                ⬇️ Export (Filter Aktif)
+              </button>
+              <button
+                class="admin-btn-export"
+                id="exportSoldBtn"
+                onclick="exportSoldProducts()"
+                title="Download CSV pesanan berstatus Selesai (produk yang berhasil terjual ke customer)"
+              >
+                🏆 Export Produk Terjual
+              </button>
             </div>
           </div>
           <div class="admin-card-body" style="padding: 1rem">
@@ -1746,11 +1765,40 @@
               placeholder="🔍 Cari nama, No. HP, atau No. Invoice..."
               oninput="filterAdminOrders()"
             />
+            <div class="admin-filter-row">
+              <div class="admin-date-field">
+                <label for="adminOrderDateFrom">Dari Tanggal</label>
+                <input
+                  type="date"
+                  id="adminOrderDateFrom"
+                  class="admin-date-input"
+                  onchange="filterAdminOrders()"
+                />
+              </div>
+              <div class="admin-date-field">
+                <label for="adminOrderDateTo">Sampai Tanggal</label>
+                <input
+                  type="date"
+                  id="adminOrderDateTo"
+                  class="admin-date-input"
+                  onchange="filterAdminOrders()"
+                />
+              </div>
+            </div>
             <div class="admin-order-list" id="adminOrderList">
               <div class="admin-empty-state">
                 <div class="admin-empty-icon">🧾</div>
                 <p>Belum ada pesanan.</p>
               </div>
+            </div>
+            <div class="admin-export-hint">
+              💡 <strong>Export (Filter Aktif)</strong> mengunduh CSV sesuai
+              pencarian, status &amp; rentang tanggal yang sedang kamu pilih di
+              atas. <strong>Export Produk Terjual</strong> otomatis menyaring
+              hanya pesanan berstatus <strong>✅ Selesai</strong> — artinya
+              produk sudah benar-benar sampai/dibeli customer. Kedua tombol
+              hanya menyertakan pelanggan yang login via Google (punya data
+              email valid).
             </div>
           </div>
         </div>
@@ -1790,8 +1838,8 @@
             <li class="help-step">
               <span class="help-step-number">3</span
               ><span class="help-step-text"
-                ><strong>Detail Produk:</strong> Scroll ke bawah melihat semua
-                produk</span
+                ><strong>Detail Produk:</strong> Klik produk untuk melihat foto,
+                deskripsi, dan varian secara lengkap</span
               >
             </li>
           </ol>
@@ -1821,7 +1869,10 @@
         </div>
         <div class="help-contact">
           <h4>💬 Butuh Bantuan?</h4>
-          <p>CS kami siap membantu!</p>
+          <p>
+            Butuh video produk atau info tambahan? Klik tombol di bawah untuk
+            chat langsung dengan kami.
+          </p>
           <a
             href="https://wa.me/+6285872189172"
             class="help-contact-btn"
@@ -2184,46 +2235,66 @@
                   <div class="payment-option-name">BRI</div>
                 </div>
               </div>
-              <div class="bank-account-info">
-                <h4>Informasi Transfer</h4>
-                <div class="bank-detail">
-                  <div>
-                    <div class="bank-detail-label">Bank</div>
-                    <div class="bank-detail-value" id="selectedBankName">
-                      BRI
+              <!-- Placeholder: tampil SEBELUM tombol "Konfirmasi Pembayaran" diklik -->
+              <div
+                id="bankDetailPlaceholder"
+                class="payment-detail-placeholder"
+              >
+                <div class="payment-detail-placeholder-icon">🔒</div>
+                <div class="payment-detail-placeholder-text">
+                  Nomor rekening tujuan transfer akan ditampilkan di sini
+                  setelah Anda menekan tombol
+                  <strong>"Konfirmasi Pembayaran"</strong> di bawah.
+                </div>
+              </div>
+              <!-- Detail asli: disembunyikan sampai revealPaymentDetails() dipanggil -->
+              <div id="bankDetailBox" style="display: none">
+                <div class="bank-account-info">
+                  <h4>Informasi Transfer</h4>
+                  <div class="bank-detail">
+                    <div>
+                      <div class="bank-detail-label">Bank</div>
+                      <div class="bank-detail-value" id="selectedBankName">
+                        BRI
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div class="bank-detail">
-                  <div>
-                    <div class="bank-detail-label">Nomor Rekening</div>
-                    <div class="bank-detail-value" id="bankAccountNumber">
-                      1234567890
+                  <div class="bank-detail">
+                    <div>
+                      <div class="bank-detail-label">Nomor Rekening</div>
+                      <div class="bank-detail-value" id="bankAccountNumber">
+                        1234567890
+                      </div>
+                    </div>
+                    <button
+                      class="copy-btn"
+                      onclick="copyToClipboard('bankAccountNumber')"
+                    >
+                      📋 Salin
+                    </button>
+                  </div>
+                  <div class="bank-detail">
+                    <div>
+                      <div class="bank-detail-label">Atas Nama</div>
+                      <div
+                        class="bank-detail-value"
+                        id="selectedBankAccountName"
+                      >
+                        SADEWA ELEKTRONIK
+                      </div>
                     </div>
                   </div>
-                  <button
-                    class="copy-btn"
-                    onclick="copyToClipboard('bankAccountNumber')"
-                  >
-                    📋 Salin
-                  </button>
-                </div>
-                <div class="bank-detail">
-                  <div>
-                    <div class="bank-detail-label">Atas Nama</div>
-                    <div class="bank-detail-value">SADEWA ELEKTRONIK</div>
-                  </div>
-                </div>
-                <div class="bank-detail">
-                  <div>
-                    <div class="bank-detail-label">Jumlah Transfer</div>
-                    <div class="bank-detail-value" id="transferAmount">
-                      Rp 0
+                  <div class="bank-detail">
+                    <div>
+                      <div class="bank-detail-label">Jumlah Transfer</div>
+                      <div class="bank-detail-value" id="transferAmount">
+                        Rp 0
+                      </div>
                     </div>
+                    <button class="copy-btn" onclick="copyTransferAmount()">
+                      📋 Salin
+                    </button>
                   </div>
-                  <button class="copy-btn" onclick="copyTransferAmount()">
-                    📋 Salin
-                  </button>
                 </div>
               </div>
               <div class="payment-form" style="margin-top: 1.5rem">
@@ -2236,7 +2307,9 @@
                   />
                 </div>
                 <div class="form-group-payment">
-                  <label>Upload Bukti Transfer (Opsional)</label
+                  <label
+                    >Upload Bukti Transfer
+                    <span style="color: #ef4444">*Wajib</span></label
                   ><input
                     type="file"
                     id="transferProof"
@@ -2257,255 +2330,286 @@
             </div>
 
             <div id="qrisPayment" class="payment-content">
-              <div style="text-align: center; padding: 1.5rem 0">
-                <div
-                  style="
-                    display: inline-block;
-                    background: white;
-                    border-radius: 20px;
-                    padding: 1.5rem;
-                    box-shadow: 0 0 40px rgba(228, 0, 43, 0.3);
-                  "
-                >
-                  <!-- QRIS QR CODE - object-fit:contain agar tidak blur/terpotong -->
-                  <div
-                    id="qrisCodeBox"
-                    style="
-                      width: min(300px, calc(100vw - 100px));
-                      height: min(300px, calc(100vw - 100px));
-                      border-radius: 14px;
-                      margin: 0 auto;
-                      border: 4px solid #e4002b;
-                      box-shadow:
-                        0 0 25px rgba(228, 0, 43, 0.4),
-                        0 4px 16px rgba(0, 0, 0, 0.3);
-                      background: #fff;
-                      display: flex;
-                      align-items: center;
-                      justify-content: center;
-                    "
-                  >
-                    <!-- Menggunakan gambar QRIS toko Sadewa Elektronik asli -->
-                    <img
-                      id="qrisImage"
-                      src="/qris-sadewa.jpeg"
-                      alt="QRIS Sadewa Elektronik Cidahu"
-                      style="
-                        width: 100%;
-                        height: 100%;
-                        object-fit: contain;
-                        image-rendering: pixelated;
-                        display: block;
-                        border-radius: 8px;
-                      "
-                      loading="lazy"
-                    />
-                  </div>
-                  <button
-                    onclick="downloadQRIS()"
-                    style="
-                      margin-top: 1rem;
-                      padding: 0.5rem 1rem;
-                      background: #e4002b;
-                      color: white;
-                      border: none;
-                      border-radius: 8px;
-                      font-weight: bold;
-                      cursor: pointer;
-                      display: inline-flex;
-                      align-items: center;
-                      gap: 8px;
-                    "
-                  >
-                    <span>⬇️</span> Simpan QRIS
-                  </button>
-                  <p
-                    style="
-                      color: #444;
-                      font-size: 0.82rem;
-                      margin-top: 0.75rem;
-                      font-weight: 700;
-                    "
-                  >
-                    📲 Scan QR untuk membayar
-                  </p>
-                  <p
-                    style="
-                      color: #777;
-                      font-size: 0.75rem;
-                      margin-top: 0.2rem;
-                      font-weight: 600;
-                    "
-                  >
-                    SADEWA ELEKTRONIK CIDAHU
-                  </p>
-                  <p style="color: #aaa; font-size: 0.7rem; margin-top: 0.1rem">
-                    NMID: ID1024348386623 · A01
-                  </p>
+              <!-- Placeholder: tampil SEBELUM tombol "Konfirmasi Pembayaran" diklik -->
+              <div
+                id="qrisDetailPlaceholder"
+                class="payment-detail-placeholder"
+              >
+                <div class="payment-detail-placeholder-icon">🔒</div>
+                <div class="payment-detail-placeholder-text">
+                  Kode QRIS akan ditampilkan di sini setelah Anda menekan tombol
+                  <strong>"Konfirmasi Pembayaran"</strong> di bawah.
                 </div>
-                <div
-                  style="
-                    margin-top: 1.5rem;
-                    background: rgba(0, 212, 255, 0.06);
-                    border: 1px solid rgba(0, 212, 255, 0.2);
-                    border-radius: 14px;
-                    padding: 1.25rem;
-                    text-align: left;
-                  "
-                >
+              </div>
+              <!-- Detail asli: disembunyikan sampai revealPaymentDetails() dipanggil -->
+              <div id="qrisDetailBox" style="display: none">
+                <div style="text-align: center; padding: 1.5rem 0">
                   <div
                     style="
-                      color: var(--primary);
-                      font-weight: 800;
-                      margin-bottom: 0.75rem;
+                      display: inline-block;
+                      background: white;
+                      border-radius: 20px;
+                      padding: 1.5rem;
+                      box-shadow: 0 0 40px rgba(228, 0, 43, 0.3);
                     "
                   >
-                    📲 Cara Bayar via QRIS:
-                  </div>
-                  <div
-                    style="display: flex; flex-direction: column; gap: 0.6rem"
-                  >
+                    <!-- QRIS QR CODE - object-fit:contain agar tidak blur/terpotong -->
                     <div
+                      id="qrisCodeBox"
                       style="
+                        width: min(300px, calc(100vw - 100px));
+                        height: min(300px, calc(100vw - 100px));
+                        border-radius: 14px;
+                        margin: 0 auto;
+                        border: 4px solid #e4002b;
+                        box-shadow:
+                          0 0 25px rgba(228, 0, 43, 0.4),
+                          0 4px 16px rgba(0, 0, 0, 0.3);
+                        background: #fff;
                         display: flex;
-                        gap: 0.75rem;
-                        align-items: flex-start;
+                        align-items: center;
+                        justify-content: center;
                       "
                     >
-                      <span
+                      <!-- Menggunakan gambar QRIS toko Sadewa Elektronik asli -->
+                      <img
+                        id="qrisImage"
+                        src="/qris-sadewa.jpeg"
+                        alt="QRIS Sadewa Elektronik Cidahu"
                         style="
-                          background: linear-gradient(
-                            135deg,
-                            var(--primary),
-                            var(--secondary)
-                          );
-                          color: white;
-                          width: 24px;
-                          height: 24px;
-                          min-width: 24px;
-                          border-radius: 50%;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                          font-size: 0.8rem;
-                          font-weight: 900;
+                          width: 100%;
+                          height: 100%;
+                          object-fit: contain;
+                          image-rendering: pixelated;
+                          display: block;
+                          border-radius: 8px;
                         "
-                        >1</span
-                      ><span style="color: var(--gray); font-size: 0.9rem"
-                        >Buka e-wallet atau m-banking yang mendukung QRIS</span
-                      >
+                        loading="lazy"
+                      />
                     </div>
-                    <div
+                    <button
+                      onclick="downloadQRIS()"
                       style="
-                        display: flex;
-                        gap: 0.75rem;
-                        align-items: flex-start;
+                        margin-top: 1rem;
+                        padding: 0.5rem 1rem;
+                        background: #e4002b;
+                        color: white;
+                        border: none;
+                        border-radius: 8px;
+                        font-weight: bold;
+                        cursor: pointer;
+                        display: inline-flex;
+                        align-items: center;
+                        gap: 8px;
                       "
                     >
-                      <span
-                        style="
-                          background: linear-gradient(
-                            135deg,
-                            var(--primary),
-                            var(--secondary)
-                          );
-                          color: white;
-                          width: 24px;
-                          height: 24px;
-                          min-width: 24px;
-                          border-radius: 50%;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                          font-size: 0.8rem;
-                          font-weight: 900;
-                        "
-                        >2</span
-                      ><span style="color: var(--gray); font-size: 0.9rem"
-                        >Pilih menu Scan / Bayar QRIS</span
-                      >
-                    </div>
-                    <div
+                      <span>⬇️</span> Simpan QRIS
+                    </button>
+                    <p
                       style="
-                        display: flex;
-                        gap: 0.75rem;
-                        align-items: flex-start;
+                        color: #444;
+                        font-size: 0.82rem;
+                        margin-top: 0.75rem;
+                        font-weight: 700;
                       "
                     >
-                      <span
-                        style="
-                          background: linear-gradient(
-                            135deg,
-                            var(--primary),
-                            var(--secondary)
-                          );
-                          color: white;
-                          width: 24px;
-                          height: 24px;
-                          min-width: 24px;
-                          border-radius: 50%;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                          font-size: 0.8rem;
-                          font-weight: 900;
-                        "
-                        >3</span
-                      ><span style="color: var(--gray); font-size: 0.9rem"
-                        >Scan QR Code, masukkan nominal sesuai total
-                        belanja</span
-                      >
-                    </div>
-                    <div
+                      📲 Scan QR untuk membayar
+                    </p>
+                    <p
                       style="
-                        display: flex;
-                        gap: 0.75rem;
-                        align-items: flex-start;
+                        color: #777;
+                        font-size: 0.75rem;
+                        margin-top: 0.2rem;
+                        font-weight: 600;
                       "
                     >
-                      <span
-                        style="
-                          background: linear-gradient(
-                            135deg,
-                            var(--primary),
-                            var(--secondary)
-                          );
-                          color: white;
-                          width: 24px;
-                          height: 24px;
-                          min-width: 24px;
-                          border-radius: 50%;
-                          display: flex;
-                          align-items: center;
-                          justify-content: center;
-                          font-size: 0.8rem;
-                          font-weight: 900;
-                        "
-                        >4</span
-                      ><span style="color: var(--gray); font-size: 0.9rem"
-                        >Kirim screenshot ke WhatsApp kami</span
-                      >
-                    </div>
+                      SADEWA ELEKTRONIK CIDAHU
+                    </p>
+                    <p
+                      style="color: #aaa; font-size: 0.7rem; margin-top: 0.1rem"
+                    >
+                      NMID: ID1024348386623 · A01
+                    </p>
                   </div>
                   <div
                     style="
-                      margin-top: 1rem;
-                      padding: 0.75rem;
-                      background: rgba(16, 185, 129, 0.1);
-                      border: 1px solid rgba(16, 185, 129, 0.3);
-                      border-radius: 8px;
-                      color: #10b981;
-                      font-size: 0.85rem;
+                      margin-top: 1.5rem;
+                      background: rgba(0, 212, 255, 0.06);
+                      border: 1px solid rgba(0, 212, 255, 0.2);
+                      border-radius: 14px;
+                      padding: 1.25rem;
+                      text-align: left;
                     "
                   >
-                    ✅ QRIS berlaku untuk semua e-wallet &amp; m-banking di
-                    Indonesia
+                    <div
+                      style="
+                        color: var(--primary);
+                        font-weight: 800;
+                        margin-bottom: 0.75rem;
+                      "
+                    >
+                      📲 Cara Bayar via QRIS:
+                    </div>
+                    <div
+                      style="display: flex; flex-direction: column; gap: 0.6rem"
+                    >
+                      <div
+                        style="
+                          display: flex;
+                          gap: 0.75rem;
+                          align-items: flex-start;
+                        "
+                      >
+                        <span
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              var(--primary),
+                              var(--secondary)
+                            );
+                            color: white;
+                            width: 24px;
+                            height: 24px;
+                            min-width: 24px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.8rem;
+                            font-weight: 900;
+                          "
+                          >1</span
+                        ><span style="color: var(--gray); font-size: 0.9rem"
+                          >Buka e-wallet atau m-banking yang mendukung
+                          QRIS</span
+                        >
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          gap: 0.75rem;
+                          align-items: flex-start;
+                        "
+                      >
+                        <span
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              var(--primary),
+                              var(--secondary)
+                            );
+                            color: white;
+                            width: 24px;
+                            height: 24px;
+                            min-width: 24px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.8rem;
+                            font-weight: 900;
+                          "
+                          >2</span
+                        ><span style="color: var(--gray); font-size: 0.9rem"
+                          >Pilih menu Scan / Bayar QRIS</span
+                        >
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          gap: 0.75rem;
+                          align-items: flex-start;
+                        "
+                      >
+                        <span
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              var(--primary),
+                              var(--secondary)
+                            );
+                            color: white;
+                            width: 24px;
+                            height: 24px;
+                            min-width: 24px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.8rem;
+                            font-weight: 900;
+                          "
+                          >3</span
+                        ><span style="color: var(--gray); font-size: 0.9rem"
+                          >Scan QR Code, masukkan nominal sesuai total
+                          belanja</span
+                        >
+                      </div>
+                      <div
+                        style="
+                          display: flex;
+                          gap: 0.75rem;
+                          align-items: flex-start;
+                        "
+                      >
+                        <span
+                          style="
+                            background: linear-gradient(
+                              135deg,
+                              var(--primary),
+                              var(--secondary)
+                            );
+                            color: white;
+                            width: 24px;
+                            height: 24px;
+                            min-width: 24px;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 0.8rem;
+                            font-weight: 900;
+                          "
+                          >4</span
+                        ><span style="color: var(--gray); font-size: 0.9rem"
+                          >Kirim screenshot ke WhatsApp kami</span
+                        >
+                      </div>
+                    </div>
+                    <div
+                      style="
+                        margin-top: 1rem;
+                        padding: 0.75rem;
+                        background: rgba(16, 185, 129, 0.1);
+                        border: 1px solid rgba(16, 185, 129, 0.3);
+                        border-radius: 8px;
+                        color: #10b981;
+                        font-size: 0.85rem;
+                      "
+                    >
+                      ✅ QRIS berlaku untuk semua e-wallet &amp; m-banking di
+                      Indonesia
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- /#qrisDetailBox -->
               <div class="form-group-payment" style="margin-top: 1rem">
-                <label>Nama Pembayar</label
+                <label
+                  >Nama Pembayar
+                  <span style="color: #ef4444">*Wajib</span></label
                 ><input type="text" id="qrisName" placeholder="Nama Anda" />
+              </div>
+              <div class="form-group-payment" style="margin-top: 1rem">
+                <label
+                  >Upload Bukti Pembayaran
+                  <span style="color: #ef4444">*Wajib</span></label
+                ><input
+                  type="file"
+                  id="qrisProof"
+                  accept="image/*"
+                  style="padding: 0.75rem"
+                />
               </div>
             </div>
             <!-- End of STEP 2 -->
@@ -2549,23 +2653,6 @@
             Tutup
           </button>
         </div>
-      </div>
-    </div>
-
-    <!-- RIWAYAT PESANAN MODAL -->
-    <div
-      id="riwayatModal"
-      class="payment-modal"
-      onclick="closeRiwayatOnOverlay(event)"
-    >
-      <div class="payment-container riwayat-container">
-        <div class="payment-header">
-          <h2 class="payment-title" style="font-size: 1.5rem">
-            🧾 Riwayat Pesanan
-          </h2>
-          <button class="payment-close" onclick="closeRiwayatModal()">✕</button>
-        </div>
-        <div id="riwayatList" class="riwayat-list"></div>
       </div>
     </div>
 

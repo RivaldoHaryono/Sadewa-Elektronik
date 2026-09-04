@@ -1301,3 +1301,210 @@
   justify-content: center;
   min-height: 100px;
 }
+
+/* ==================================================================
+   INVOICE — styling on-screen (di dalam modal gelap) & cetak (PDF/print)
+   Class .inv-* dipakai oleh _buildInvoiceHtml() di firebase-app.js
+   ================================================================== */
+.invoice-print-area {
+  color: var(--light, #fff);
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+.inv-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid rgba(0, 212, 255, 0.25);
+}
+.inv-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+.inv-logo {
+  width: 44px;
+  height: 44px;
+  object-fit: contain;
+  border-radius: 8px;
+}
+.inv-brand-name {
+  font-weight: 900;
+  font-size: 1.05rem;
+}
+.inv-brand-sub {
+  font-size: 0.78rem;
+  color: var(--gray-light, #a9b4ca);
+}
+.inv-meta {
+  text-align: right;
+  font-size: 0.85rem;
+}
+.inv-title {
+  font-weight: 900;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+  color: var(--primary, #00d4ff);
+  margin-bottom: 0.25rem;
+}
+.inv-status-line {
+  margin-top: 0.25rem;
+}
+.inv-parties {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  font-size: 0.85rem;
+}
+.inv-label {
+  font-weight: 700;
+  color: var(--gray-light, #a9b4ca);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.25rem;
+}
+.inv-buyer-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+.inv-pay-icon {
+  width: 14px;
+  height: 14px;
+  vertical-align: middle;
+}
+.inv-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+  font-size: 0.85rem;
+}
+.inv-table th,
+.inv-table td {
+  padding: 0.55rem 0.5rem;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+  text-align: left;
+}
+.inv-table th {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-light, #a9b4ca);
+}
+.inv-center {
+  text-align: center;
+}
+.inv-right {
+  text-align: right;
+}
+.inv-variant {
+  color: var(--gray-light, #a9b4ca);
+  font-size: 0.8rem;
+}
+.inv-totals {
+  margin-left: auto;
+  max-width: 280px;
+  font-size: 0.9rem;
+}
+.inv-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0;
+}
+.inv-grand-total {
+  border-top: 2px solid rgba(0, 212, 255, 0.3);
+  margin-top: 0.3rem;
+  padding-top: 0.5rem;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--primary, #00d4ff);
+}
+.inv-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px dashed rgba(0, 212, 255, 0.2);
+  font-size: 0.85rem;
+  color: var(--gray-light, #a9b4ca);
+}
+@media (max-width: 480px) {
+  .inv-parties {
+    grid-template-columns: 1fr;
+  }
+  .inv-header {
+    flex-direction: column;
+  }
+  .inv-meta {
+    text-align: left;
+  }
+}
+
+/* ── Cetak invoice: HANYA area invoice yang dicetak, sisa halaman
+   (hero, produk, nav, modal lain, dll) disembunyikan total. Tanpa blok
+   ini, window.print() mencetak seluruh halaman -> bisa jadi banyak
+   halaman kosong walau isi invoice cuma 1 produk. ── */
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  #invoiceModal,
+  #invoiceModal * {
+    visibility: visible !important;
+  }
+  #invoiceModal {
+    position: absolute !important;
+    inset: 0 !important;
+    left: 0 !important;
+    top: 0 !important;
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    opacity: 1 !important;
+    background: #fff !important;
+    backdrop-filter: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  .invoice-container {
+    max-width: 100% !important;
+    width: 100% !important;
+    max-height: none !important;
+    height: auto !important;
+    overflow: visible !important;
+    box-shadow: none !important;
+    border: none !important;
+    border-radius: 0 !important;
+    background: #fff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    animation: none !important;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .invoice-print-area,
+  .invoice-print-area * {
+    color: #111 !important;
+  }
+  .inv-title,
+  .inv-grand-total {
+    color: #000 !important;
+  }
+  .inv-header,
+  .inv-table th,
+  .inv-table td,
+  .inv-grand-total {
+    border-color: #ccc !important;
+  }
+  .inv-footer {
+    border-color: #ccc !important;
+  }
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+}
