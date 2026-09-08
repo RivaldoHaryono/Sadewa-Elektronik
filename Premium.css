@@ -4325,14 +4325,36 @@
         flex-shrink: 0
       }
 
-      .search-wrap {
+      nav .nav-logo-img {
+        height: 64px;
+        width: 64px
+      }
+
+      .nav-right {
         min-width: 0;
+        flex: 1;
+        gap: .4rem;
+        justify-content: flex-end
+      }
+
+      .search-wrap {
+        min-width: 44px;
         flex: 1;
         padding: .45rem .6rem
       }
 
+      #btnLoginGoogleLabel {
+        display: none
+      }
+
       #productSearch {
-        font-size: .875rem
+        font-size: 16px
+      }
+
+      .search-clear {
+        width: 40px;
+        height: 40px;
+        flex-shrink: 0
       }
 
       .search-meta {
@@ -4343,6 +4365,7 @@
         left: -0.45rem;
         right: -0.45rem;
         max-height: 60vh;
+        max-height: 60dvh;
         border-radius: 12px
       }
 
@@ -4361,7 +4384,7 @@
       }
 
         .admin-btn {
-          padding: .55rem .6rem !important;
+          padding: .5rem .45rem !important;
           font-size: 1rem;
           flex-shrink: 0
         }
