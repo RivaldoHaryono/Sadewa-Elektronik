@@ -168,8 +168,12 @@ function saveCartToStorage() {
 
 window.toggleCart = function () {
   const modal = document.getElementById('cartModal');
+  const wasActive = modal.classList.contains('active');
   modal.classList.toggle('active');
-  if (modal.classList.contains('active')) renderCart();
+  const isActive = modal.classList.contains('active');
+  if (isActive && !wasActive) window.lockBodyScroll();
+  else if (!isActive && wasActive) window.unlockBodyScroll();
+  if (isActive) renderCart();
 };
 window.closeCartOnOverlay = function (event) {
   if (event.target.id === 'cartModal') toggleCart();
@@ -329,6 +333,7 @@ window.openPaymentModal = function () {
   document.getElementById('paymentActionContainer').style.display = 'none';
   document.getElementById('checkoutTitle').innerHTML = '📍 Alamat Pengiriman';
   document.getElementById('paymentModal').classList.add('active');
+  window.lockBodyScroll();
 };
 
 window.goToPaymentStep = function () {
@@ -368,6 +373,7 @@ function resetPaymentForm() {
 
 window.closePaymentModal = function () {
   document.getElementById('paymentModal').classList.remove('active');
+  window.unlockBodyScroll();
   window.isBuyNowMode = false;
   window.tempBuyNowCart = [];
   resetPaymentForm();
@@ -501,9 +507,11 @@ window.processPayment = async function () {
 
 window.showChannelChoice = function () {
   document.getElementById('channelChoiceOverlay').classList.add('active');
+  window.lockBodyScroll();
 };
 window.closeChannelChoice = function () {
   document.getElementById('channelChoiceOverlay').classList.remove('active');
+  window.unlockBodyScroll();
 };
 
 window.sendViaWhatsApp = async function () {
@@ -575,11 +583,20 @@ window.checkoutWithPayment = function () {
 };
 
 window.toggleHelpModal = function () {
-  document.getElementById('helpModal').classList.toggle('active');
+  const modal = document.getElementById('helpModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.toggle('active');
+  const isActive = modal.classList.contains('active');
+  if (isActive && !wasActive) window.lockBodyScroll();
+  else if (!isActive && wasActive) window.unlockBodyScroll();
 };
 document.addEventListener('click', function (e) {
   const m = document.getElementById('helpModal');
-  if (m && e.target === m) m.classList.remove('active');
+  if (m && e.target === m) {
+    const wasActive = m.classList.contains('active');
+    m.classList.remove('active');
+    if (wasActive) window.unlockBodyScroll();
+  }
 });
 
 // ============================================================
@@ -963,12 +980,12 @@ window.openProductDetail = function (productId) {
     : '';
 
   document.getElementById('productDetailModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
+  window.lockBodyScroll();
 };
 
 window.closeProductDetail = function () {
   document.getElementById('productDetailModal').classList.remove('active');
-  document.body.style.overflow = '';
+  window.unlockBodyScroll();
   window.currentDetailProductId = null;
 };
 
@@ -1069,6 +1086,7 @@ window.buyDirectly = function (productId, variantFromModal) {
   const ewalletTransferEl = document.getElementById('ewalletTransferAmount');
   if (ewalletTransferEl) ewalletTransferEl.textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
   document.getElementById('paymentModal').classList.add('active');
+  window.lockBodyScroll();
 };
 
 // ============================================================
@@ -1662,9 +1680,11 @@ window.openInvoiceModal = function (order) {
   const c = document.getElementById('invoiceContent');
   if (c) c.innerHTML = _buildInvoiceHtml(order);
   document.getElementById('invoiceModal')?.classList.add('active');
+  window.lockBodyScroll();
 };
 window.closeInvoiceModal = function () {
   document.getElementById('invoiceModal')?.classList.remove('active');
+  window.unlockBodyScroll();
 };
 window.closeInvoiceOnOverlay = function (event) {
   if (event.target === event.currentTarget) window.closeInvoiceModal();
