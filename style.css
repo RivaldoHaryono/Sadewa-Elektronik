@@ -1014,8 +1014,9 @@
   border-top: 1px solid rgba(201, 168, 76, 0.12);
   backdrop-filter: blur(20px);
   z-index: 900;
-  padding: 0.5rem 0;
-  padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  /* padding/padding-bottom (safe-area) dipindahkan ke Premium.css,
+     dipasangkan dengan height calc P0 fix agar tidak double-counting
+     safe-area. Lihat Task 4B-5. */
 }
 
 @media (max-width: 768px) {
@@ -1038,7 +1039,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
-  padding: 0.5rem 0.25rem;
+  padding: 0 0.25rem;
   cursor: pointer;
   border: none;
   background: none;
