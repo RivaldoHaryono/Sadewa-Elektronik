@@ -5,14 +5,36 @@
 // ============================================================
 
 // ============================================================
+// CENTRALIZED BODY SCROLL-LOCK (reference counter)
+// Dipakai oleh semua modal (Script.js & firebase-app.js) supaya body
+// hanya di-unlock kalau BENAR-BENAR tidak ada modal aktif lagi, termasuk
+// pada kasus modal bertumpuk (mis. Product Detail -> Payment,
+// Payment -> Channel Choice).
+// ============================================================
+let _sadewaModalLockCount = 0;
+window.lockBodyScroll = function () {
+  _sadewaModalLockCount++;
+  document.body.style.overflow = 'hidden';
+};
+window.unlockBodyScroll = function () {
+  _sadewaModalLockCount = Math.max(0, _sadewaModalLockCount - 1);
+  if (_sadewaModalLockCount === 0) document.body.style.overflow = '';
+};
+
+// ============================================================
 // WELCOME MODAL
 // ============================================================
 var _wcTab = 0, _wcTotal = 4;
+var _sadewaWelcomeLocked = false;
 
 (function () {
   if (localStorage.getItem('sadewaSkipWelcome') === 'true') {
     var ov = document.getElementById('welcomeOverlay');
     if (ov) ov.style.display = 'none';
+  } else {
+    // Welcome overlay tampil default saat load (belum di-skip) -> body harus terkunci.
+    window.lockBodyScroll();
+    _sadewaWelcomeLocked = true;
   }
 })();
 
@@ -35,6 +57,7 @@ function closeWelcome() {
   var ov = document.getElementById('welcomeOverlay');
   var cb = document.getElementById('skipNextTime');
   if (cb && cb.checked) localStorage.setItem('sadewaSkipWelcome', 'true');
+  if (_sadewaWelcomeLocked) { window.unlockBodyScroll(); _sadewaWelcomeLocked = false; }
   if (!ov) return;
   ov.classList.add('hiding');
   setTimeout(function () { ov.style.display = 'none'; }, 500);
@@ -300,7 +323,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const overlay = document.getElementById('chatPageOverlay'); if (!overlay) return;
     overlay.classList.add('active');
     _cpOpen = true; _cpUnread = 0; _updateCpBadges();
-    document.body.style.overflow = 'hidden';
+    window.lockBodyScroll();
     _cpLoadMessages();
     setTimeout(() => {
       const area = document.getElementById('cpMessagesArea');
@@ -312,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function () {
   window.closeChatPage = function () {
     const overlay = document.getElementById('chatPageOverlay'); if (!overlay) return;
     overlay.classList.remove('active');
-    _cpOpen = false; document.body.style.overflow = '';
+    _cpOpen = false; window.unlockBodyScroll();
     _cpMarkRead();
   };
 
