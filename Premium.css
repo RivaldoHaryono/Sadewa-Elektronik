@@ -2775,6 +2775,7 @@
       padding: 2rem 2.5rem 1.5rem;
       text-align: center;
       position: relative;
+      z-index: 1;
       overflow: hidden
     }
 
@@ -2845,7 +2846,9 @@
     .welcome-tabs {
       display: flex;
       border-bottom: 1px solid rgba(0, 212, 255, .15);
-      background: rgba(5, 8, 22, .8);
+      background: #050816;
+      position: relative;
+      z-index: 2;
       overflow-x: auto;
       scrollbar-width: none
     }
