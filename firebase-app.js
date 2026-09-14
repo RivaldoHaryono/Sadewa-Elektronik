@@ -332,8 +332,10 @@ window.openPaymentModal = function () {
   document.getElementById('checkoutStep2').style.display = 'none';
   document.getElementById('paymentActionContainer').style.display = 'none';
   document.getElementById('checkoutTitle').innerHTML = '📍 Alamat Pengiriman';
-  document.getElementById('paymentModal').classList.add('active');
-  window.lockBodyScroll();
+  const modal = document.getElementById('paymentModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.add('active');
+  if (!wasActive) window.lockBodyScroll();
 };
 
 window.goToPaymentStep = function () {
@@ -372,8 +374,10 @@ function resetPaymentForm() {
 }
 
 window.closePaymentModal = function () {
-  document.getElementById('paymentModal').classList.remove('active');
-  window.unlockBodyScroll();
+  const modal = document.getElementById('paymentModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.remove('active');
+  if (wasActive) window.unlockBodyScroll();
   window.isBuyNowMode = false;
   window.tempBuyNowCart = [];
   resetPaymentForm();
@@ -506,12 +510,16 @@ window.processPayment = async function () {
 };
 
 window.showChannelChoice = function () {
-  document.getElementById('channelChoiceOverlay').classList.add('active');
-  window.lockBodyScroll();
+  const modal = document.getElementById('channelChoiceOverlay');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.add('active');
+  if (!wasActive) window.lockBodyScroll();
 };
 window.closeChannelChoice = function () {
-  document.getElementById('channelChoiceOverlay').classList.remove('active');
-  window.unlockBodyScroll();
+  const modal = document.getElementById('channelChoiceOverlay');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.remove('active');
+  if (wasActive) window.unlockBodyScroll();
 };
 
 window.sendViaWhatsApp = async function () {
@@ -592,10 +600,9 @@ window.toggleHelpModal = function () {
 };
 document.addEventListener('click', function (e) {
   const m = document.getElementById('helpModal');
-  if (m && e.target === m) {
-    const wasActive = m.classList.contains('active');
+  if (m && e.target === m && m.classList.contains('active')) {
     m.classList.remove('active');
-    if (wasActive) window.unlockBodyScroll();
+    window.unlockBodyScroll();
   }
 });
 
@@ -979,13 +986,17 @@ window.openProductDetail = function (productId) {
        </select>`
     : '';
 
-  document.getElementById('productDetailModal').classList.add('active');
-  window.lockBodyScroll();
+  const modal = document.getElementById('productDetailModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.add('active');
+  if (!wasActive) window.lockBodyScroll();
 };
 
 window.closeProductDetail = function () {
-  document.getElementById('productDetailModal').classList.remove('active');
-  window.unlockBodyScroll();
+  const modal = document.getElementById('productDetailModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.remove('active');
+  if (wasActive) window.unlockBodyScroll();
   window.currentDetailProductId = null;
 };
 
@@ -1085,8 +1096,10 @@ window.buyDirectly = function (productId, variantFromModal) {
   document.getElementById('transferAmount').textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
   const ewalletTransferEl = document.getElementById('ewalletTransferAmount');
   if (ewalletTransferEl) ewalletTransferEl.textContent = 'Rp ' + tempCartItem.price.toLocaleString('id-ID');
-  document.getElementById('paymentModal').classList.add('active');
-  window.lockBodyScroll();
+  const modal = document.getElementById('paymentModal');
+  const wasActive = modal.classList.contains('active');
+  modal.classList.add('active');
+  if (!wasActive) window.lockBodyScroll();
 };
 
 // ============================================================
@@ -1679,12 +1692,16 @@ window.openInvoiceModal = function (order) {
   window._currentInvoiceOrder = order;
   const c = document.getElementById('invoiceContent');
   if (c) c.innerHTML = _buildInvoiceHtml(order);
-  document.getElementById('invoiceModal')?.classList.add('active');
-  window.lockBodyScroll();
+  const modal = document.getElementById('invoiceModal');
+  const wasActive = modal ? modal.classList.contains('active') : false;
+  modal?.classList.add('active');
+  if (modal && !wasActive) window.lockBodyScroll();
 };
 window.closeInvoiceModal = function () {
-  document.getElementById('invoiceModal')?.classList.remove('active');
-  window.unlockBodyScroll();
+  const modal = document.getElementById('invoiceModal');
+  const wasActive = modal ? modal.classList.contains('active') : false;
+  modal?.classList.remove('active');
+  if (modal && wasActive) window.unlockBodyScroll();
 };
 window.closeInvoiceOnOverlay = function (event) {
   if (event.target === event.currentTarget) window.closeInvoiceModal();

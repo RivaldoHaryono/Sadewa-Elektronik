@@ -5,13 +5,14 @@
 // ============================================================
 
 // ============================================================
-// CENTRALIZED BODY SCROLL-LOCK (reference counter)
-// Dipakai oleh semua modal (Script.js & firebase-app.js) supaya body
-// hanya di-unlock kalau BENAR-BENAR tidak ada modal aktif lagi, termasuk
-// pada kasus modal bertumpuk (mis. Product Detail -> Payment,
-// Payment -> Channel Choice).
+// CENTRALIZED MODAL SCROLL-LOCK (Task 4C-1)
+// Reference-counted body scroll lock, dipakai bersama oleh semua
+// modal/overlay (Welcome, Chat di file ini; Cart, Product Detail,
+// Payment, Channel Choice, Help, Invoice di firebase-app.js).
+// Diletakkan paling atas & di-expose ke window karena firebase-app.js
+// adalah module script terpisah yang perlu memanggilnya juga.
 // ============================================================
-let _sadewaModalLockCount = 0;
+var _sadewaModalLockCount = 0;
 window.lockBodyScroll = function () {
   _sadewaModalLockCount++;
   document.body.style.overflow = 'hidden';
@@ -25,16 +26,16 @@ window.unlockBodyScroll = function () {
 // WELCOME MODAL
 // ============================================================
 var _wcTab = 0, _wcTotal = 4;
-var _sadewaWelcomeLocked = false;
+var _wcLocked = false; // guard: cegah unlock ganda jika closeWelcome() terpanggil >1x
 
 (function () {
+  var ov = document.getElementById('welcomeOverlay');
   if (localStorage.getItem('sadewaSkipWelcome') === 'true') {
-    var ov = document.getElementById('welcomeOverlay');
     if (ov) ov.style.display = 'none';
-  } else {
-    // Welcome overlay tampil default saat load (belum di-skip) -> body harus terkunci.
+  } else if (ov) {
+    // Overlay tampil default dari CSS (display:flex) saat page load — lock di sini.
     window.lockBodyScroll();
-    _sadewaWelcomeLocked = true;
+    _wcLocked = true;
   }
 })();
 
@@ -57,9 +58,9 @@ function closeWelcome() {
   var ov = document.getElementById('welcomeOverlay');
   var cb = document.getElementById('skipNextTime');
   if (cb && cb.checked) localStorage.setItem('sadewaSkipWelcome', 'true');
-  if (_sadewaWelcomeLocked) { window.unlockBodyScroll(); _sadewaWelcomeLocked = false; }
   if (!ov) return;
   ov.classList.add('hiding');
+  if (_wcLocked) { window.unlockBodyScroll(); _wcLocked = false; }
   setTimeout(function () { ov.style.display = 'none'; }, 500);
 }
 
@@ -67,6 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
   var ov = document.getElementById('welcomeOverlay');
   if (ov) ov.addEventListener('click', function (e) { if (e.target === this) closeWelcome(); });
 });
+
 
 // ============================================================
 // CHATBOT AI
@@ -321,9 +323,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.openChatPage = function () {
     const overlay = document.getElementById('chatPageOverlay'); if (!overlay) return;
+    const wasOpen = _cpOpen;
     overlay.classList.add('active');
     _cpOpen = true; _cpUnread = 0; _updateCpBadges();
-    window.lockBodyScroll();
+    if (!wasOpen) window.lockBodyScroll();
     _cpLoadMessages();
     setTimeout(() => {
       const area = document.getElementById('cpMessagesArea');
@@ -334,8 +337,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.closeChatPage = function () {
     const overlay = document.getElementById('chatPageOverlay'); if (!overlay) return;
+    const wasOpen = _cpOpen;
     overlay.classList.remove('active');
-    _cpOpen = false; window.unlockBodyScroll();
+    _cpOpen = false;
+    if (wasOpen) window.unlockBodyScroll();
     _cpMarkRead();
   };
 
